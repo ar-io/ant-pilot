@@ -1,0 +1,13 @@
+{
+  "ticker": "GNT-SOURCE",
+  "name": "GNT Source Contract v0.1.3",
+  "owner": "",
+  "evolve": null,
+  "records": {
+      "@": ""
+  }
+  ,
+  "balances": {
+    "": 0
+  }
+}
