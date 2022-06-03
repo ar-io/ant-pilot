@@ -32,5 +32,7 @@ Make sure to update the variables at the top of each tool's `.ts` file, as well 
 - `update-record` creates a new record in a GNT or updates existing one
 - `update-test-record` creates a new record in a GNT or updates existing one on Redstone Testnet
 
+The above scripts can be run like the following example
+`yarn ts-node .\src\tools\create-gnt-and-buy-record.ts`
 
 
