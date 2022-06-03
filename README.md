@@ -20,6 +20,7 @@ In order to deploy contracts and use the Gateway Name Service Registry (along wi
 
 Make sure to update the variables at the top of each tool's `.ts` file, as well as the local wallet file in `constants.ts`  
 
+- `buy-record` purchases a new GNS Name in the registry (if availabile) and adds the reference to the GNT Smartweave Address  
 - `create-gnt` creates a new GNT with arweave data pointer
 - `create-gnt-and-buy-record` creates a new GNT with arweave data pointer and then registers it in the GNS Registry
 - `create-test-gnt` creates a new GNT with arweave data pointer on RedStone Testnet
