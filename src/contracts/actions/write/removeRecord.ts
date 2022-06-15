@@ -1,4 +1,4 @@
-import { PstAction, GNTState, ContractResult } from "../../types/types";
+import { PstAction, ANTState, ContractResult } from "../../types/types";
 
 declare const ContractError;
 const MAX_NAME_LENGTH = 20;
@@ -6,7 +6,7 @@ const TX_ID_LENGTH = 43;
 
 // Sets an existing record and if one does not exist, it cre
 export const removeRecord = async (
-  state: GNTState,
+  state: ANTState,
   { caller, input: { subDomain } }: PstAction
 ): Promise<ContractResult> => {
   const balances = state.balances;
@@ -24,7 +24,7 @@ export const removeRecord = async (
   if (subDomain in records) {
     delete records[subDomain];
   } else {
-    throw new ContractError(`SubDomain does not exist in this GNT!`);
+    throw new ContractError(`SubDomain does not exist in this ANT!`);
   }
 
   return { state };

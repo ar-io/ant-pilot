@@ -1,5 +1,5 @@
 // ~~ Write types for your contract ~~
-export interface GNTState {
+export interface ANTState {
   ticker: string;
   name: string;
   owner: string;
@@ -35,7 +35,7 @@ export interface PstResult {
   balance: number;
 }
 
-export interface GNTSubDomainResult {
+export interface ANTSubDomainResult {
   subDomain: string;
   transactionId: string;
 }
@@ -49,4 +49,4 @@ export type PstFunction =
   | "removeRecord"
   | "balance";
 
-export type ContractResult = { state: GNTState } | { result: PstResult } | { result: GNTSubDomainResult };
+export type ContractResult = { state: ANTState } | { result: PstResult } | { result: ANTSubDomainResult };

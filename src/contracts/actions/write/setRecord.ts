@@ -1,4 +1,4 @@
-import { PstAction, GNTState, ContractResult } from "../../types/types";
+import { PstAction, ANTState, ContractResult } from "../../types/types";
 
 declare const ContractError;
 const MAX_NAME_LENGTH = 20;
@@ -6,7 +6,7 @@ const TX_ID_LENGTH = 43;
 
 // Sets an existing record and if one does not exist, it cre
 export const setRecord = async (
-  state: GNTState,
+  state: ANTState,
   { caller, input: { subDomain, transactionId } }: PstAction
 ): Promise<ContractResult> => {
   const balances = state.balances;
@@ -30,7 +30,7 @@ export const setRecord = async (
     (!nameRes && subDomain !== "@") || // the name does not match our regular expression and is not the root
     subDomain === "www" // this is a reserved name
   ) {
-    throw new ContractError("Invalid GNS Record Subdomain");
+    throw new ContractError("Invalid ArNS Record Subdomain");
   }
 
   // check record arweave transaction id validity

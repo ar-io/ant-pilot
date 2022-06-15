@@ -7,25 +7,25 @@ import { keyfile } from "../constants";
 
 (async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // A short token symbol, typically with GNT- in front
-  const ticker = "GNT-BLACK-FOX";
+  // A short token symbol, typically with ANT- in front
+  const ticker = "ANT-ARDRIVE";
 
-  // A friendly name for the name of this GNT
-  const name = "Black Fox";
+  // A friendly name for the name of this ANT
+  const name = "ArDrive";
 
-  // This is the name that will be purchased in the Gateway Name System Registry
-  const nameToBuy = "black-fox";
+  // This is the name that will be purchased in the Arweave Name System Registry
+  const nameToBuy = "ardrive";
 
-  // The arweave data transaction added to the GNT that is to be proxied using the registered name
-  const dataPointer = "EbNofswLFvELjfO7FNkM3rN4Bt2KpkEtNVUvIsY27Qg";
+  // The arweave data transaction added to the ANT that is to be proxied using the registered name
+  const dataPointer = "AwyAUlP_EVbqYDmbYS1Rha4wLGUIy5CLazuUiZCnsF4";
 
-  // This is the production GNS Registry Smartweave Contract
-  const gnsRegistryContractTxId = "Wr27DYc_5cuquhvpMbnhy2idGf_vzOnn0gYHqSgTXNE";
+  // This is the production ArNS Registry Smartweave Contract
+  const arnsRegistryContractTxId = "Wr27DYc_5cuquhvpMbnhy2idGf_vzOnn0gYHqSgTXNE";
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-  // This is the GNT Smartweave Contract Source TX ID that will be used to create the new GNT
-  const gntRecordContractTxId = deployedContracts.sourceTxId;
+  // This is the ANT Smartweave Contract Source TX ID that will be used to create the new ANT
+  const antRecordContractTxId = deployedContracts.sourceTxId;
 
   // Initialize Arweave
   const arweave = Arweave.init({
@@ -46,8 +46,8 @@ import { keyfile } from "../constants";
   );
   const walletAddress = await arweave.wallets.jwkToAddress(wallet);
 
-  // Read the GNT Registry Contract
-  const pst = smartweave.pst(gnsRegistryContractTxId);
+  // Read the ANT Registry Contract
+  const pst = smartweave.pst(arnsRegistryContractTxId);
   pst.connect(wallet);
 
   // check if this name exists in the registry, if not exit the script.
@@ -72,21 +72,21 @@ import { keyfile } from "../constants";
     }
   };
 
-  // Deploy GNT Contract in order to link to the new record
+  // Deploy ANT Contract in order to link to the new record
   console.log(
-    "Creating GNT for %s using sourceTx",
+    "Creating ANT for %s using sourceTx",
     name,
-    gntRecordContractTxId
+    antRecordContractTxId
   );
   const contractTxId = await smartweave.createContract.deployFromSourceTx({
     wallet,
     initState: JSON.stringify(initialState),
-    srcTxId: gntRecordContractTxId,
+    srcTxId: antRecordContractTxId,
   });
 
-  // Buy the available record in GNS Registry
+  // Buy the available record in ArNS Registry
   console.log(
-    "Buying the record, %s using the GNT %s",
+    "Buying the record, %s using the ANT %s",
     nameToBuy,
     contractTxId
   );

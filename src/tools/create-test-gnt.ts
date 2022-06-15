@@ -7,8 +7,8 @@ import { addFunds } from "../../utils/_helpers";
 
 (async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // A short token symbol, typically with GNT- in front
-  const ticker = "GNT-Example";
+  // A short token symbol, typically with ANT- in front
+  const ticker = "ANT-Example";
 
   // A friendly name for the name of this token
   const name = "Example";
@@ -17,8 +17,8 @@ import { addFunds } from "../../utils/_helpers";
   const dataPointer = "zHpMN6UyTSSIo6WqER2527LvEvMKLlAcr3UR6ljd32Q";
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  // This is the GNT Smartweave Contract Source TX ID that will be used to create the new GNT
-  const gntRecordContractTxId = deployedTestContracts.sourceTxId;
+  // This is the ANT Smartweave Contract Source TX ID that will be used to create the new ANT
+  const antRecordContractTxId = deployedTestContracts.sourceTxId;
 
   // ~~ Initialize Arweave ~~
   const arweave = Arweave.init({
@@ -57,11 +57,11 @@ import { addFunds } from "../../utils/_helpers";
   };
 
   // ~~ Deploy contract ~~
-  console.log("Creating GNT for %s", name);
+  console.log("Creating ANT for %s", name);
   const contractTxId = await smartweave.createContract.deployFromSourceTx({
     wallet,
     initState: JSON.stringify(initialState),
-    srcTxId: gntRecordContractTxId,
+    srcTxId: antRecordContractTxId,
   });
 
   // ~~ Log contract id to the console ~~

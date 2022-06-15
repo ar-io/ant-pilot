@@ -7,8 +7,8 @@ import { keyfile } from "../constants";
 (async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const subDomainToUpdate = "@";
-  const txIdToUpdate = "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs";
-  const contractTxId = "lheofeBVyaJ8s9n7GxIyJNNc62jEVCKD7lbL3fV8kzU";
+  const txIdToUpdate = "CZP1Lh527KLYYL6LxPjYNFO-hXGvajtE8y_iAi0BDgs";
+  const contractTxId = "XJnC9jPXpwAvrNnmeYYo69I6RrSf9MNabGDGaQws8dQ";
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
   // ~~ Initialize Arweave ~~

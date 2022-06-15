@@ -13,7 +13,7 @@ import {
 } from "redstone-smartweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 
-describe("Testing the GNS NFT Contract", () => {
+describe("Testing the ANT Contract", () => {
   let contractSrc: string;
   let wallet: JWKInterface;
   let walletAddress: string;
@@ -170,13 +170,13 @@ describe("Testing the GNS NFT Contract", () => {
   it("should set ticker with correct ownership", async () => {
     await pst.writeInteraction({
       function: "setTicker",
-      ticker: "GNT-NEWONE",
+      ticker: "ANT-NEWONE",
     });
     await mineBlock(arweave);
     const currentState = await pst.currentState();
     const currentStateString = JSON.stringify(currentState);
     const currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.ticker).toEqual("GNT-NEWONE");
+    expect(currentStateJSON.ticker).toEqual("ANT-NEWONE");
   });
 
   it("should remove records with correct ownership", async () => {
@@ -400,13 +400,13 @@ describe("Testing the GNS NFT Contract", () => {
   it("should not set ticker with incorrect ownership", async () => {
     await pst.writeInteraction({
       function: "setTicker",
-      name: "GNT-HACKED",
+      name: "ANT-HACKED",
     });
     await mineBlock(arweave);
     const currentState = await pst.currentState();
     const currentStateString = JSON.stringify(currentState);
     const currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.ticker).toEqual("GNT-NEWONE");
+    expect(currentStateJSON.ticker).toEqual("ANT-NEWONE");
   });
 
   it("should not remove records with incorrect ownership", async () => {

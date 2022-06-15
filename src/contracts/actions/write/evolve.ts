@@ -1,10 +1,10 @@
-import { PstAction, GNTState, ContractResult } from "../../types/types";
+import { PstAction, ANTState, ContractResult } from "../../types/types";
 
 declare const ContractError;
 
 // Sets an existing record and if one does not exist, it cre
 export const evolve = async (
-  state: GNTState,
+  state: ANTState,
   { caller, input: { value } }: PstAction
 ): Promise<ContractResult> => {
   const balances = state.balances;

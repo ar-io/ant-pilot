@@ -1,10 +1,10 @@
-import { PstAction, GNTState, ContractResult } from "../../types/types";
+import { PstAction, ANTState, ContractResult } from "../../types/types";
 
 declare const ContractError;
 
 // Sets an existing record and if one does not exist, it cre
 export const setTicker = async (
-  state: GNTState,
+  state: ANTState,
   { caller, input: { ticker } }: PstAction
 ): Promise<ContractResult> => {
   const balances = state.balances;
@@ -23,7 +23,7 @@ export const setTicker = async (
     typeof ticker !== "string" || // must be a string
     ticker === ""
   ) {
-    throw new ContractError("Invalid GNT ticker");
+    throw new ContractError("Invalid ANT ticker");
   }
   state.ticker = ticker;
 

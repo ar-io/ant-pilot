@@ -40,7 +40,7 @@
       throw new ContractError(`Caller does not have a token balance!`);
     }
     if (typeof name !== "string" || name === "") {
-      throw new ContractError("Invalid GNT name");
+      throw new ContractError("Invalid ANT name");
     }
     state.name = name;
     return { state };
@@ -57,7 +57,7 @@
       throw new ContractError(`Caller does not have a token balance!`);
     }
     if (typeof ticker !== "string" || ticker === "") {
-      throw new ContractError("Invalid GNT ticker");
+      throw new ContractError("Invalid ANT ticker");
     }
     state.ticker = ticker;
     return { state };
@@ -80,7 +80,7 @@
     const namePattern = new RegExp("^[a-zA-Z0-9_.-]");
     const nameRes = namePattern.test(subDomain);
     if (typeof subDomain !== "string" || subDomain.length > MAX_NAME_LENGTH || !nameRes && subDomain !== "@" || subDomain === "www") {
-      throw new ContractError("Invalid GNS Record Subdomain");
+      throw new ContractError("Invalid ArNS Record Subdomain");
     }
     const pattern = new RegExp("^[a-zA-Z0-9_-]{43}$");
     const res = pattern.test(transactionId);

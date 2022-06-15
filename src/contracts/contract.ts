@@ -7,13 +7,13 @@ import { setName } from "./actions/write/setName";
 import { setTicker } from "./actions/write/setTicker";
 import { setRecord } from "./actions/write/setRecord";
 import { transferTokens } from "./actions/write/transferTokens";
-import { ContractResult, PstAction, GNTState } from "./types/types";
+import { ContractResult, PstAction, ANTState } from "./types/types";
 import { evolve } from "./actions/write/evolve";
 
 declare const ContractError;
 
 export async function handle(
-  state: GNTState,
+  state: ANTState,
   action: PstAction
 ): Promise<ContractResult> {
   const input = action.input;
