@@ -2,7 +2,6 @@ import Arweave from "arweave";
 import { LoggerFactory, SmartWeaveNodeFactory } from "redstone-smartweave";
 import * as fs from "fs";
 import { JWKInterface } from "arweave/node/lib/wallet";
-import { deployedContracts } from "../deployed-contracts";
 import { keyfile } from "../constants";
 
 (async () => {
