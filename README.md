@@ -33,7 +33,7 @@ Make sure to update the variables at the top of each tool's `.ts` file, as well 
 - `update-record` creates a new record in a ANT or updates existing one.  Requires the sub domain that is to be created or updated, the ANT Smartweave Contract ID and an Arweave Transaction.  Please note that only the `@` sub domain will work at this time.
 - `update-test-record` creates a new record in a ANT or updates existing one on Redstone Testnet.  Requires the sub domain that is to be created or updated, the ANT Smartweave Contract ID and an Arweave Transaction.  Please note that only the `@` sub domain will work at this time.
 
-The above scripts can be run like the following example
+The above scripts must have their variables updated in the script, and can be run like the following example
 `yarn ts-node .\src\tools\create-ant-and-buy-record.ts`
 
 
