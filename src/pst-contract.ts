@@ -1,5 +1,5 @@
 import Arweave from "arweave";
-import { SmartWeave, SmartWeaveWebFactory } from "redstone-smartweave";
+import { SmartWeave, SmartWeaveWebFactory } from "warp-contracts";
 
 export const arweave: Arweave = Arweave.init({
   //host: "testnet.redstone.tools",

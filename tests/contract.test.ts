@@ -8,9 +8,9 @@ import {
   LoggerFactory,
   PstContract,
   PstState,
-  SmartWeave,
-  SmartWeaveNodeFactory,
-} from "redstone-smartweave";
+  Warp,
+  WarpNodeFactory,
+} from "warp-contracts";
 import { JWKInterface } from "arweave/node/lib/wallet";
 
 describe("Testing the ANT Contract", () => {
@@ -18,7 +18,7 @@ describe("Testing the ANT Contract", () => {
   let wallet: JWKInterface;
   let walletAddress: string;
   let initialState: PstState;
-  let smartweave: SmartWeave;
+  let smartweave: Warp;
   let arweave: Arweave;
   let pst: PstContract;
   let contractTxId: string;
@@ -36,8 +36,8 @@ describe("Testing the ANT Contract", () => {
     // ~~ Initialize 'LoggerFactory' ~~
     LoggerFactory.INST.logLevel("fatal");
 
-    // ~~ Set up SmartWeave ~~
-    smartweave = SmartWeaveNodeFactory.forTesting(arweave);
+    // ~~ Set up Warp ~~
+    smartweave = WarpNodeFactory.forTesting(arweave);
 
     // ~~ Generate wallet and add funds ~~
     wallet = await arweave.wallets.generate();
@@ -283,7 +283,11 @@ describe("Testing the ANT Contract", () => {
 
     const newSource = fs.readFileSync(path.join(__dirname, '../src/tools/contract_evolve.js'), 'utf8');
 
-    const newSrcTxId = await pst.saveNewSource(newSource);
+    const newSrcTxId = await pst.save({src: newSource});
+    if (newSrcTxId === null) {
+      return 0;
+    }
+
     await mineBlock(arweave);
 
     await pst.evolve(newSrcTxId);
@@ -292,7 +296,10 @@ describe("Testing the ANT Contract", () => {
     // note: the evolved balance always returns -1
     expect((await pst.currentBalance(walletAddress)).balance).toEqual(-1);
 
-    const updatedContractTxId = await pst.saveNewSource(contractSrc);
+    const updatedContractTxId = await pst.save({src: contractSrc});
+    if (updatedContractTxId === null) {
+      return 0;
+    }
     await mineBlock(arweave);
     await pst.evolve(updatedContractTxId);
     await mineBlock(arweave);
@@ -375,7 +382,10 @@ describe("Testing the ANT Contract", () => {
 
     const newSource = fs.readFileSync(path.join(__dirname, '../src/tools/contract_evolve.js'), 'utf8');
 
-    const newSrcTxId = await pst.saveNewSource(newSource);
+    const newSrcTxId = await pst.save({src: newSource});
+    if (newSrcTxId === null) {
+      return 0;
+    }
     await mineBlock(arweave);
 
     await pst.evolve(newSrcTxId);

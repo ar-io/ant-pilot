@@ -2,8 +2,8 @@ import Arweave from "arweave";
 import {
   LoggerFactory,
   PstState,
-  SmartWeaveNodeFactory,
-} from "redstone-smartweave";
+  WarpNodeFactory,
+} from "warp-contracts";
 import * as fs from "fs";
 import path from "path";
 import { addFunds } from "../../utils/_helpers";
@@ -22,7 +22,7 @@ import { testKeyfile } from "../constants";
   LoggerFactory.INST.logLevel("error");
 
   // ~~ Initialize SmartWeave ~~
-  const smartweave = SmartWeaveNodeFactory.memCached(arweave);
+  const smartweave = WarpNodeFactory.memCached(arweave);
 
   // ~~ Generate Wallet and add funds ~~
   // const wallet = await arweave.wallets.generate();
