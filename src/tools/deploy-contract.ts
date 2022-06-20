@@ -6,7 +6,6 @@ import {
 } from "warp-contracts";
 import * as fs from "fs";
 import path from "path";
-import { addFunds } from "../../utils/_helpers";
 import { keyfile } from "../constants";
 
 (async () => {
@@ -26,7 +25,6 @@ import { keyfile } from "../constants";
   // Get the key file used for the distribution
   const wallet = JSON.parse(await fs.readFileSync(keyfile).toString());
   const walletAddress = await arweave.wallets.jwkToAddress(wallet);
-  await addFunds(arweave, wallet);
 
   // ~~ Read contract source and initial state files ~~
   const contractSrc = fs.readFileSync(

@@ -8,16 +8,16 @@ import { keyfile } from "../constants";
 (async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // A short token symbol, typically with ANT- in front
-  const ticker = "ANT-ARDRIVE";
+  const ticker = "ANT-NOSFERATU";
 
   // A friendly name for the name of this ANT
-  const name = "ArDrive";
+  const name = "Nosferatu";
 
   // This is the name that will be purchased in the Arweave Name System Registry
-  const nameToBuy = "ardrive";
+  const nameToBuy = "nosferatu";
 
   // The arweave data transaction added to the ANT that is to be proxied using the registered name
-  const dataPointer = "AwyAUlP_EVbqYDmbYS1Rha4wLGUIy5CLazuUiZCnsF4";
+  const dataPointer = "CJ-3DbCHny8rbMCi4LyBmWbYEBGOgW-XXFw7RrXz-FM";
 
   // This is the production ArNS Registry Smartweave Contract
   const arnsRegistryContractTxId = "Wr27DYc_5cuquhvpMbnhy2idGf_vzOnn0gYHqSgTXNE";
