@@ -2,10 +2,10 @@
 // from the contract source. ~~
 
 import { balance } from "./actions/read/balance";
-import { removeRecord } from "./actions/write/removeRecord";
+import { removeRecord } from "./actions/write/removeSubdomain";
 import { setName } from "./actions/write/setName";
 import { setTicker } from "./actions/write/setTicker";
-import { setRecord } from "./actions/write/setRecord";
+import { setRecord } from "./actions/write/setSubdomain";
 import { transferTokens } from "./actions/write/transferTokens";
 import { ContractResult, PstAction, ANTState } from "./types/types";
 import { evolve } from "./actions/write/evolve";
