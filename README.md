@@ -1,4 +1,4 @@
-# Gateway Name Token Proof of Concept
+# Arweave Name Token Proof of Concept
 
 ## Project setup
 Clone this repository and install the dependencies.  
