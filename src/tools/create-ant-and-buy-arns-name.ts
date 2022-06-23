@@ -20,7 +20,7 @@ import { keyfile } from "../constants";
   const dataPointer = "CJ-3DbCHny8rbMCi4LyBmWbYEBGOgW-XXFw7RrXz-FM";
 
   // This is the production ArNS Registry Smartweave Contract
-  const arnsRegistryContractTxId = "Wr27DYc_5cuquhvpMbnhy2idGf_vzOnn0gYHqSgTXNE";
+  const arnsRegistryContractTxId = "bLAgYxAdX2Ry-nt6aH2ixgvJXbpsEYm28NgJgyqfs-U";
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 

@@ -2,13 +2,12 @@
 // from the contract source. ~~
 
 import { balance } from "./actions/read/balance";
-import { removeRecord } from "./actions/write/removeSubdomain";
+import { removeRecord } from "./actions/write/removeRecord";
 import { setName } from "./actions/write/setName";
 import { setTicker } from "./actions/write/setTicker";
-import { setRecord } from "./actions/write/setSubdomain";
+import { setRecord } from "./actions/write/setRecord";
 import { transferTokens } from "./actions/write/transferTokens";
 import { ContractResult, PstAction, ANTState } from "./types/types";
-import { evolve } from "./actions/write/evolve";
 
 declare const ContractError;
 
@@ -27,8 +26,6 @@ export async function handle(
       return await setName(state, action);
     case "setTicker":
       return await setTicker(state, action);
-    case "evolve":
-      return await evolve(state, action);
     case "removeRecord":
       return await removeRecord(state, action);
     case "balance":

@@ -13,7 +13,7 @@ import { keyfile } from "../constants";
   const contractTxId = "xEL3QuBjrJtlJm4DSHn7BKB5S-riLc1qCkmn3r-xkiE";
 
   // This is the production ArNS Registry Smartweave Contract
-  const arnsRegistryContractTxId = "Wr27DYc_5cuquhvpMbnhy2idGf_vzOnn0gYHqSgTXNE";
+  const arnsRegistryContractTxId = "bLAgYxAdX2Ry-nt6aH2ixgvJXbpsEYm28NgJgyqfs-U";
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
