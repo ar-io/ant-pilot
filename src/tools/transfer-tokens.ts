@@ -7,10 +7,10 @@ import { keyfile } from "../constants";
 (async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // The recipient target of the token transfer
-  const target = "JcC4ZLUY76vmWha5y6RwKsFqYTrMZhbockl8iM9p5lQ";
+  const target = "v2XXwq_FvVqH2KR4p_x8H-SQ7rDwZBbykSv-59__Avc";
 
   // The amount of tokens to be transferred
-  const qty = 1_000_000_000;
+  const qty = 100_000_000_000;
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
   // This is the production ArNS Registry Smartweave Contract

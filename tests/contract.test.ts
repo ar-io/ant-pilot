@@ -125,16 +125,16 @@ describe("Testing the ANT Contract", () => {
     let currentStateString = JSON.stringify(currentState);
     let currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      [{"transactionId": "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
     );
     expect(currentStateJSON.records["same.as.root"]).toEqual(
-      "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      [{"transactionId": "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
     );
     expect(currentStateJSON.records["dao"]).toEqual(
-      "8MaeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc"
+      [{"transactionId": "8MaeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc", "ttl": 900}]
     );
     expect(currentStateJSON.records["remove_this"]).toEqual(
-      "BYEeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc"
+      [{"transactionId": "BYEeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc", "ttl": 900}]
     );
     await pst.writeInteraction({
       function: "setRecord",
@@ -151,7 +151,7 @@ describe("Testing the ANT Contract", () => {
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
     );
   });
 
@@ -211,7 +211,7 @@ describe("Testing the ANT Contract", () => {
     let currentStateString = JSON.stringify(currentState);
     let currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
     );
 
     await pst.writeInteraction({
@@ -224,7 +224,7 @@ describe("Testing the ANT Contract", () => {
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
     );
 
     await pst.writeInteraction({
@@ -261,7 +261,7 @@ describe("Testing the ANT Contract", () => {
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
     );
 
     await pst.writeInteraction({
@@ -274,38 +274,8 @@ describe("Testing the ANT Contract", () => {
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
     );
-  });
-
-  it("should properly evolve contract's source code", async () => {
-    expect((await pst.currentBalance(walletAddress)).balance).toEqual(1);
-
-    const newSource = fs.readFileSync(path.join(__dirname, '../src/tools/contract_evolve.js'), 'utf8');
-
-    const newSrcTxId = await pst.save({src: newSource});
-    if (newSrcTxId === null) {
-      return 0;
-    }
-
-    await mineBlock(arweave);
-
-    await pst.evolve(newSrcTxId);
-    await mineBlock(arweave);
-
-    // note: the evolved balance always returns -1
-    expect((await pst.currentBalance(walletAddress)).balance).toEqual(-1);
-
-    const updatedContractTxId = await pst.save({src: contractSrc});
-    if (updatedContractTxId === null) {
-      return 0;
-    }
-    await mineBlock(arweave);
-    await pst.evolve(updatedContractTxId);
-    await mineBlock(arweave);
-
-    // note: the balance should return correctly now
-    expect((await pst.currentBalance(walletAddress)).balance).toEqual(1);
   });
 
   it("should transfer and perform dry write with overwritten caller", async () => {
@@ -369,30 +339,9 @@ describe("Testing the ANT Contract", () => {
     const currentStateString = JSON.stringify(currentState);
     const currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
     );
     expect(currentStateJSON.records["hacked.domain"]).toEqual(undefined);
-  });
-
-  it("should not evolve contract's source code without", async () => {
-    const newWallet = await arweave.wallets.generate();
-    await addFunds(arweave, newWallet);
-    pst.connect(newWallet);
-    expect((await pst.currentBalance(walletAddress)).balance).toEqual(1);
-
-    const newSource = fs.readFileSync(path.join(__dirname, '../src/tools/contract_evolve.js'), 'utf8');
-
-    const newSrcTxId = await pst.save({src: newSource});
-    if (newSrcTxId === null) {
-      return 0;
-    }
-    await mineBlock(arweave);
-
-    await pst.evolve(newSrcTxId);
-    await mineBlock(arweave);
-
-    // note: the evolved balance always returns 1 because the contract did not change
-    expect((await pst.currentBalance(walletAddress)).balance).toEqual(1);
   });
 
   it("should not set name with incorrect ownership", async () => {
@@ -432,7 +381,7 @@ describe("Testing the ANT Contract", () => {
     let currentStateString = JSON.stringify(currentState);
     let currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
     );
     await pst.writeInteraction({
       function: "removeRecord",
