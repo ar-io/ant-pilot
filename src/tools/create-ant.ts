@@ -12,6 +12,9 @@ import { deployedContracts } from "../deployed-contracts";
   // A friendly name for the name of this token
   const name = "BT: Genesis";
 
+  // The Time To Live for this ANT to reside cached, the default and minimum is 900 seconds
+  const ttl = 900;
+
   // The arweave data transaction that is to be proxied using the registered name
   const dataPointer = "C6IyOj4yAaJPaV8KuOG2jdf4gQCmpPisuE3eAUBdcUs";
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,7 +49,10 @@ import { deployedContracts } from "../deployed-contracts";
     owner: walletAddress,
     evolve: null,
     records: {
-      ["@"]: dataPointer,
+      "@": {
+        "transactionId": dataPointer,
+        "ttl": ttl
+      }
     },
     balances: {
       [walletAddress]: 1,

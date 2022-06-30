@@ -8,16 +8,19 @@ import { keyfile } from "../constants";
 (async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // A short token symbol, typically with ANT- in front
-  const ticker = "ANT-NOSFERATU";
+  const ticker = "ANT-FEELS_GOOD";
 
   // A friendly name for the name of this ANT
-  const name = "Nosferatu";
+  const name = "Feels Good";
 
   // This is the name that will be purchased in the Arweave Name System Registry
-  const nameToBuy = "nosferatu";
+  const nameToBuy = "feels-good";
+
+  // The Time To Live for this ANT to reside cached, the default and minimum is 900 seconds
+  const ttl = 900;
 
   // The arweave data transaction added to the ANT that is to be proxied using the registered name
-  const dataPointer = "CJ-3DbCHny8rbMCi4LyBmWbYEBGOgW-XXFw7RrXz-FM";
+  const dataPointer = "hcWGJdMZCnDTUBYxNZBhpydqM3DVupLowioi3_LyrMs";
 
   // This is the production ArNS Registry Smartweave Contract
   const arnsRegistryContractTxId = "bLAgYxAdX2Ry-nt6aH2ixgvJXbpsEYm28NgJgyqfs-U";
@@ -65,7 +68,10 @@ import { keyfile } from "../constants";
     owner: walletAddress,
     evolve: null,
     records: {
-      ["@"]: dataPointer
+      "@": {
+        "transactionId": dataPointer,
+        "ttl": ttl
+      }
     },
     balances: {
       [walletAddress]: 1,
