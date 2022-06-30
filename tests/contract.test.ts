@@ -118,6 +118,7 @@ describe("Testing the ANT Contract", () => {
     await pst.writeInteraction({
       function: "setRecord",
       subDomain: "remove_this",
+      ttl: 1000,
       transactionId: "BYEeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc",
     });
     await mineBlock(arweave);
@@ -134,7 +135,7 @@ describe("Testing the ANT Contract", () => {
       [{"transactionId": "8MaeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc", "ttl": 900}]
     );
     expect(currentStateJSON.records["remove_this"]).toEqual(
-      [{"transactionId": "BYEeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc", "ttl": 900}]
+      [{"transactionId": "BYEeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc", "ttl": 1000}]
     );
     await pst.writeInteraction({
       function: "setRecord",
@@ -213,6 +214,63 @@ describe("Testing the ANT Contract", () => {
     expect(currentStateJSON.records["@"]).toEqual(
       [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
     );
+
+    await pst.writeInteraction({
+      function: "setRecord",
+      subDomain: "@",
+      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", 
+      ttl: 1 // ttl too low
+    });
+    await mineBlock(arweave);
+    currentState = await pst.currentState();
+    currentStateString = JSON.stringify(currentState);
+    currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.records["@"]).toEqual(
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+    );
+
+    await pst.writeInteraction({
+      function: "setRecord",
+      subDomain: "@",
+      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", 
+      ttl: 1_000_000_000 // ttl too high
+    });
+    await mineBlock(arweave);
+    currentState = await pst.currentState();
+    currentStateString = JSON.stringify(currentState);
+    currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.records["@"]).toEqual(
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+    );
+
+    await pst.writeInteraction({
+      function: "setRecord",
+      subDomain: "@",
+      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", 
+      ttl: 900.5 // ttl should not be a decimal
+    });
+    await mineBlock(arweave);
+    currentState = await pst.currentState();
+    currentStateString = JSON.stringify(currentState);
+    currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.records["@"]).toEqual(
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+    );
+
+    await pst.writeInteraction({
+      function: "setRecord",
+      subDomain: "@",
+      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", 
+      ttl: "500" // ttl should not be a string
+    });
+    await mineBlock(arweave);
+    currentState = await pst.currentState();
+    currentStateString = JSON.stringify(currentState);
+    currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.records["@"]).toEqual(
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+    );
+
 
     await pst.writeInteraction({
       function: "setRecord",
