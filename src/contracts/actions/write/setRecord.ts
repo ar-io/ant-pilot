@@ -1,10 +1,7 @@
+import { MAX_NAME_LENGTH, TX_ID_LENGTH, MIN_TTL_LENGTH, MAX_TTL_LENGTH } from "@/constants";
 import { PstAction, ANTState, ContractResult } from "../../types/types";
 
 declare const ContractError;
-const MIN_TTL_LENGTH = 900;
-const MAX_TTL_LENGTH = 2_592_000;
-const MAX_NAME_LENGTH = 20;
-const TX_ID_LENGTH = 43;
 
 // Sets an existing record and if one does not exist, it cre
 export const setRecord = async (
