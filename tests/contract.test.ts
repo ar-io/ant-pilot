@@ -105,7 +105,7 @@ describe("Testing the ANT Contract", () => {
     await mineBlock(arweave);
     await pst.writeInteraction({
       function: "setRecord",
-      subDomain: "same.as.root",
+      subDomain: "same_as_root",
       transactionId: "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
     });
     await mineBlock(arweave);
@@ -118,7 +118,7 @@ describe("Testing the ANT Contract", () => {
     await pst.writeInteraction({
       function: "setRecord",
       subDomain: "remove_this",
-      ttl: 1000,
+      ttlSeconds: 1000,
       transactionId: "BYEeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc",
     });
     await mineBlock(arweave);
@@ -126,16 +126,16 @@ describe("Testing the ANT Contract", () => {
     let currentStateString = JSON.stringify(currentState);
     let currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      [{"transactionId": "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+      [{"transactionId": "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}]
     );
-    expect(currentStateJSON.records["same.as.root"]).toEqual(
-      [{"transactionId": "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+    expect(currentStateJSON.records["same_as_root"]).toEqual(
+      [{"transactionId": "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}]
     );
     expect(currentStateJSON.records["dao"]).toEqual(
-      [{"transactionId": "8MaeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc", "ttl": 900}]
+      [{"transactionId": "8MaeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc", "ttlSeconds": 900}]
     );
     expect(currentStateJSON.records["remove_this"]).toEqual(
-      [{"transactionId": "BYEeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc", "ttl": 1000}]
+      [{"transactionId": "BYEeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc", "ttlSeconds": 1000}]
     );
     await pst.writeInteraction({
       function: "setRecord",
@@ -152,7 +152,7 @@ describe("Testing the ANT Contract", () => {
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}]
     );
   });
 
@@ -212,63 +212,63 @@ describe("Testing the ANT Contract", () => {
     let currentStateString = JSON.stringify(currentState);
     let currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}]
     );
 
     await pst.writeInteraction({
       function: "setRecord",
       subDomain: "@",
       transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", 
-      ttl: 1 // ttl too low
+      ttlSeconds: 1 // ttlSeconds too low
     });
     await mineBlock(arweave);
     currentState = await pst.currentState();
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}]
     );
 
     await pst.writeInteraction({
       function: "setRecord",
       subDomain: "@",
       transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", 
-      ttl: 1_000_000_000 // ttl too high
+      ttlSeconds: 1_000_000_000 // ttlSeconds too high
     });
     await mineBlock(arweave);
     currentState = await pst.currentState();
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}]
     );
 
     await pst.writeInteraction({
       function: "setRecord",
       subDomain: "@",
       transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", 
-      ttl: 900.5 // ttl should not be a decimal
+      ttlSeconds: 900.5 // ttlSeconds should not be a decimal
     });
     await mineBlock(arweave);
     currentState = await pst.currentState();
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}]
     );
 
     await pst.writeInteraction({
       function: "setRecord",
       subDomain: "@",
       transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", 
-      ttl: "500" // ttl should not be a string
+      ttlSeconds: "500" // ttlSeconds should not be a string
     });
     await mineBlock(arweave);
     currentState = await pst.currentState();
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}]
     );
 
 
@@ -282,7 +282,7 @@ describe("Testing the ANT Contract", () => {
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}]
     );
 
     await pst.writeInteraction({
@@ -319,7 +319,7 @@ describe("Testing the ANT Contract", () => {
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}]
     );
 
     await pst.writeInteraction({
@@ -332,7 +332,7 @@ describe("Testing the ANT Contract", () => {
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}]
     );
   });
 
@@ -397,7 +397,7 @@ describe("Testing the ANT Contract", () => {
     const currentStateString = JSON.stringify(currentState);
     const currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}]
     );
     expect(currentStateJSON.records["hacked.domain"]).toEqual(undefined);
   });
@@ -439,7 +439,7 @@ describe("Testing the ANT Contract", () => {
     let currentStateString = JSON.stringify(currentState);
     let currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttl": 900}]
+      [{"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}]
     );
     await pst.writeInteraction({
       function: "removeRecord",

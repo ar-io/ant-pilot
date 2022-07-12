@@ -6,7 +6,7 @@ declare const ContractError;
 // Sets an existing record and if one does not exist, it cre
 export const setRecord = async (
   state: ANTState,
-  { caller, input: { subDomain, transactionId, ttl } }: PstAction
+  { caller, input: { subDomain, transactionId, ttlSeconds } }: PstAction
 ): Promise<ContractResult> => {
   const balances = state.balances;
   const owner = state.owner;
@@ -21,7 +21,8 @@ export const setRecord = async (
   }
 
   // check subdomain validity
-  const namePattern = new RegExp("^[a-zA-Z0-9_.-]+$"); // include underscores, dashes and dots
+  const namePattern = new RegExp("^[a-zA-Z0-9_-]+$"); // include underscores and dashes
+  // NEED TO CHECK FOR LEADING DASHES
   const nameRes = namePattern.test(subDomain);
   if (
     typeof subDomain !== "string" || // must be a string
@@ -43,19 +44,19 @@ export const setRecord = async (
     throw new ContractError("Invalid Arweave Transaction ID");
   }
 
-  // set ttl to default if not provided
-  if (ttl === undefined) {
-    ttl = MIN_TTL_LENGTH;
+  // set ttlSeconds to default if not provided
+  if (ttlSeconds === undefined) {
+    ttlSeconds = MIN_TTL_LENGTH;
   }
 
-  // check subdomain ttl
-  if (!Number.isInteger(ttl) || ttl < MIN_TTL_LENGTH || ttl > MAX_TTL_LENGTH) {
-    throw new ContractError('Invalid value for "ttl". Must be an integer');
+  // check subdomain ttlSeconds
+  if (!Number.isInteger(ttlSeconds) || ttlSeconds < MIN_TTL_LENGTH || ttlSeconds > MAX_TTL_LENGTH) {
+    throw new ContractError('Invalid value for "ttlSeconds". Must be an integer');
   }
   
   state.records[subDomain] = [{
     transactionId,
-    ttl
+    ttlSeconds
   }];
 
   return { state };
