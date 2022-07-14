@@ -8,24 +8,24 @@ import { keyfile } from "../constants";
 (async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // A short token symbol, typically with ANT- in front
-  const ticker = "ANT-FEELS_GOOD";
+  const ticker = "ANT-ARDRIVE-OG-LOGO";
 
   // A friendly name for the name of this ANT
-  const name = "Feels Good";
+  const name = "ArDrive OG Logo";
 
   // This is the name that will be purchased in the Arweave Name System Registry
-  const nameToBuy = "feels-good";
+  const nameToBuy = "ardrive-og";
 
   // The Time To Live for this ANT to reside cached, the default and minimum is 900 seconds
   const ttlSeconds = 900;
 
   // The arweave data transaction added to the ANT that is to be proxied using the registered name
-  const dataPointer = "hcWGJdMZCnDTUBYxNZBhpydqM3DVupLowioi3_LyrMs";
+  const dataPointer = "xWQ7UmbP0ZHDY7OLCxJsuPCN3wSUk0jCTJvOG1etCRo";
 
   // This is the production ArNS Registry Smartweave Contract
-  const arnsRegistryContractTxId = "bLAgYxAdX2Ry-nt6aH2ixgvJXbpsEYm28NgJgyqfs-U";
+  const arnsRegistryContractTxId =
+    "bLAgYxAdX2Ry-nt6aH2ixgvJXbpsEYm28NgJgyqfs-U";
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
   // This is the ANT Smartweave Contract Source TX ID that will be used to create the new ANT
   const antRecordContractTxId = deployedContracts.sourceTxId;
@@ -58,7 +58,10 @@ import { keyfile } from "../constants";
   const currentStateString = JSON.stringify(currentState);
   const currentStateJSON = JSON.parse(currentStateString);
   if (currentStateJSON.records[nameToBuy] !== undefined) {
-    console.log("This name %s is already taken and is not available for purchase.  Exiting.", nameToBuy);
+    console.log(
+      "This name %s is already taken and is not available for purchase.  Exiting.",
+      nameToBuy
+    );
     return;
   }
   // Create the initial state
@@ -66,16 +69,17 @@ import { keyfile } from "../constants";
     ticker: ticker,
     name,
     owner: walletAddress,
+    controller: walletAddress,
     evolve: null,
     records: {
       "@": {
-        "transactionId": dataPointer,
-        "ttlSeconds": ttlSeconds
-      }
+        transactionId: dataPointer,
+        ttlSeconds: ttlSeconds,
+      },
     },
     balances: {
       [walletAddress]: 1,
-    }
+    },
   };
 
   // Deploy ANT Contract in order to link to the new record

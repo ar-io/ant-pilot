@@ -47,12 +47,13 @@ import { deployedContracts } from "../deployed-contracts";
     ticker: ticker,
     name,
     owner: walletAddress,
+    controller: walletAddress,
     evolve: null,
     records: {
       "@": {
-        "transactionId": dataPointer,
-        "ttlSeconds": ttlSeconds
-      }
+        transactionId: dataPointer,
+        ttlSeconds: ttlSeconds,
+      },
     },
     balances: {
       [walletAddress]: 1,
