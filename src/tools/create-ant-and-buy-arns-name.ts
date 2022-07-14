@@ -14,10 +14,10 @@ import { keyfile } from "../constants";
   const name = "ArDrive OG Logo";
 
   // This is the name that will be purchased in the Arweave Name System Registry
-  const nameToBuy = "ardrive-og";
+  const nameToBuy = "ardrive-og-logo";
 
   // The Time To Live for this ANT to reside cached, the default and minimum is 900 seconds
-  const ttlSeconds = 900;
+  const ttlSeconds = 1800;
 
   // The arweave data transaction added to the ANT that is to be proxied using the registered name
   const dataPointer = "xWQ7UmbP0ZHDY7OLCxJsuPCN3wSUk0jCTJvOG1etCRo";
