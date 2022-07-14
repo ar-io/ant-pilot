@@ -17,7 +17,7 @@ import { keyfile } from "../constants";
   const nameToBuy = "feels-good";
 
   // The Time To Live for this ANT to reside cached, the default and minimum is 900 seconds
-  const ttl = 900;
+  const ttlSeconds = 900;
 
   // The arweave data transaction added to the ANT that is to be proxied using the registered name
   const dataPointer = "hcWGJdMZCnDTUBYxNZBhpydqM3DVupLowioi3_LyrMs";
@@ -70,7 +70,7 @@ import { keyfile } from "../constants";
     records: {
       "@": {
         "transactionId": dataPointer,
-        "ttl": ttl
+        "ttlSeconds": ttlSeconds
       }
     },
     balances: {

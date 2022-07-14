@@ -54,7 +54,7 @@ import { addFunds } from "../../utils/_helpers";
     {
       "@": {
         "transactionId": dataPointer,
-        "ttl": ttl
+        "ttlSeconds": ttl
       }
     },
     balances: {
