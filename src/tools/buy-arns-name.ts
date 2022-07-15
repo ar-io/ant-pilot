@@ -5,7 +5,7 @@ import { JWKInterface } from "arweave/node/lib/wallet";
 import { keyfile } from "../constants";
 
 (async () => {
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // This is the name that will be purchased in the Arweave Name System Registry
   const nameToBuy = "genesis";
 
@@ -13,8 +13,14 @@ import { keyfile } from "../constants";
   const contractTxId = "xEL3QuBjrJtlJm4DSHn7BKB5S-riLc1qCkmn3r-xkiE";
 
   // This is the production ArNS Registry Smartweave Contract
-  const arnsRegistryContractTxId = "bLAgYxAdX2Ry-nt6aH2ixgvJXbpsEYm28NgJgyqfs-U";
+  const arnsRegistryContractTxId =
+    "bLAgYxAdX2Ry-nt6aH2ixgvJXbpsEYm28NgJgyqfs-U";
 
+  // The lease time for purchasing the name
+  const years = 1;
+
+  // the Tier of the name purchased.  Tier 1 = 100 subdoins, Tier 2 = 1000 subdomains, Tier 3 = 10000 subdomains
+  const tier = 1;
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   // Initialize Arweave
@@ -44,7 +50,10 @@ import { keyfile } from "../constants";
   const currentStateString = JSON.stringify(currentState);
   const currentStateJSON = JSON.parse(currentStateString);
   if (currentStateJSON.records[nameToBuy] !== undefined) {
-    console.log("This name %s is already taken and is not available for purchase.  Exiting.", nameToBuy);
+    console.log(
+      "This name %s is already taken and is not available for purchase.  Exiting.",
+      nameToBuy
+    );
     return;
   }
 
@@ -57,7 +66,9 @@ import { keyfile } from "../constants";
   const recordTxId = await pst.writeInteraction({
     function: "buyRecord",
     name: nameToBuy,
+    tier,
     contractTransactionId: contractTxId,
+    years,
   });
   console.log("Finished purchasing the record: %s", recordTxId);
 })();

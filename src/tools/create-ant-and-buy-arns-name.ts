@@ -16,6 +16,12 @@ import { keyfile } from "../constants";
   // This is the name that will be purchased in the Arweave Name System Registry
   const nameToBuy = "ardrive-og-logo";
 
+  // The lease time for purchasing the name
+  const years = 1;
+
+  // the Tier of the name purchased.  Tier 1 = 100 subdoins, Tier 2 = 1000 subdomains, Tier 3 = 10000 subdomains
+  const tier = 1;
+
   // The Time To Live for this ANT to reside cached, the default and minimum is 900 seconds
   const ttlSeconds = 1800;
 
@@ -103,7 +109,9 @@ import { keyfile } from "../constants";
   await pst.writeInteraction({
     function: "buyRecord",
     name: nameToBuy,
+    tier,
     contractTransactionId: contractTxId,
+    years,
   });
   console.log("Finished purchasing the record");
 })();
