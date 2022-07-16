@@ -7,20 +7,16 @@ export const setTicker = async (
   state: ANTState,
   { caller, input: { ticker } }: PstAction
 ): Promise<ContractResult> => {
-  const balances = state.balances;
   const owner = state.owner;
+  const controller = state.controller;
 
-  if (caller !== owner) {
-    throw new ContractError(`Caller is not the token owner!`);
-  }
-
-  if (balances[caller] < 1) {
-    throw new ContractError(`Caller does not have a token balance!`);
+  if (caller !== owner && caller !== controller) {
+    throw new ContractError(`Caller is not the token owner or controller!`);
   }
 
   // check ticker validity
   if (
-    typeof ticker !== "string" || // must be a string
+    typeof ticker !== "string" && // must be a string
     ticker === ""
   ) {
     throw new ContractError("Invalid ANT ticker");

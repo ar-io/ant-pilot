@@ -1,28 +1,24 @@
+import { MAX_NAME_LENGTH, TX_ID_LENGTH, MIN_TTL_LENGTH, MAX_TTL_LENGTH } from "@/constants";
 import { PstAction, ANTState, ContractResult } from "../../types/types";
 
 declare const ContractError;
-const MAX_NAME_LENGTH = 20;
-const TX_ID_LENGTH = 43;
 
 // Sets an existing record and if one does not exist, it cre
 export const setRecord = async (
   state: ANTState,
-  { caller, input: { subDomain, transactionId } }: PstAction
+  { caller, input: { subDomain, transactionId, ttlSeconds } }: PstAction
 ): Promise<ContractResult> => {
-  const balances = state.balances;
-  const records = state.records;
   const owner = state.owner;
+  const controller = state.controller;
 
-  if (caller !== owner) {
+  // ensure the owner owns this ANT
+  if (caller !== owner && caller !== controller) {
     throw new ContractError(`Caller is not the token owner!`);
   }
 
-  if (balances[caller] < 1) {
-    throw new ContractError(`Caller does not have a token balance!`);
-  }
-
-  // check record subdomain validity
-  const namePattern = new RegExp("^[a-zA-Z0-9_.-]"); // include dots
+  // check subdomain validity
+  const namePattern = new RegExp("^[a-zA-Z0-9_-]+$"); // include underscores and dashes
+  // NEED TO CHECK FOR LEADING DASHES
   const nameRes = namePattern.test(subDomain);
   if (
     typeof subDomain !== "string" || // must be a string
@@ -33,7 +29,7 @@ export const setRecord = async (
     throw new ContractError("Invalid ArNS Record Subdomain");
   }
 
-  // check record arweave transaction id validity
+  // check subdomain arweave transaction id validity
   const pattern = new RegExp("^[a-zA-Z0-9_-]{43}$"); // standard regex for arweave transaction ids
   const res = pattern.test(transactionId);
   if (
@@ -43,8 +39,21 @@ export const setRecord = async (
   ) {
     throw new ContractError("Invalid Arweave Transaction ID");
   }
+
+  // set ttlSeconds to default if not provided
+  if (ttlSeconds === undefined) {
+    ttlSeconds = MIN_TTL_LENGTH;
+  }
+
+  // check subdomain ttlSeconds
+  if (!Number.isInteger(ttlSeconds) || ttlSeconds < MIN_TTL_LENGTH || ttlSeconds > MAX_TTL_LENGTH) {
+    throw new ContractError('Invalid value for "ttlSeconds". Must be an integer');
+  }
   
-  records[`${subDomain}`] = transactionId;
+  state.records[subDomain] = {
+    transactionId,
+    ttlSeconds
+  };
 
   return { state };
 };

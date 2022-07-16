@@ -16,7 +16,9 @@ import { JWKInterface } from "arweave/node/lib/wallet";
 describe("Testing the ANT Contract", () => {
   let contractSrc: string;
   let wallet: JWKInterface;
+  let wallet2: JWKInterface
   let walletAddress: string;
+  let walletAddress2: string;
   let initialState: PstState;
   let smartweave: Warp;
   let arweave: Arweave;
@@ -44,6 +46,10 @@ describe("Testing the ANT Contract", () => {
     walletAddress = await arweave.wallets.jwkToAddress(wallet);
     await addFunds(arweave, wallet);
 
+    wallet2 = await arweave.wallets.generate();
+    walletAddress2 = await arweave.wallets.jwkToAddress(wallet2);
+    await addFunds(arweave, wallet2);
+
     // ~~ Read contract source and initial state files ~~
     contractSrc = fs.readFileSync(
       path.join(__dirname, "../dist/contract.js"),
@@ -61,6 +67,7 @@ describe("Testing the ANT Contract", () => {
       ...stateFromFile,
       ...{
         owner: walletAddress,
+        controller: walletAddress,
         balances: {
           [walletAddress]: 1,
         },
@@ -97,15 +104,15 @@ describe("Testing the ANT Contract", () => {
   });
 
   it("should set records with correct ownership", async () => {
-    await pst.writeInteraction({
+    await pst.writeInteraction({ // If TTL is not passed, default of 900 is used
       function: "setRecord",
       subDomain: "@",
       transactionId: "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
     });
     await mineBlock(arweave);
-    await pst.writeInteraction({
+    await pst.writeInteraction({ // If TTL is not passed, default of 900 is used
       function: "setRecord",
-      subDomain: "same.as.root",
+      subDomain: "same_as_root",
       transactionId: "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
     });
     await mineBlock(arweave);
@@ -118,6 +125,7 @@ describe("Testing the ANT Contract", () => {
     await pst.writeInteraction({
       function: "setRecord",
       subDomain: "remove_this",
+      ttlSeconds: 1000,
       transactionId: "BYEeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc",
     });
     await mineBlock(arweave);
@@ -125,16 +133,16 @@ describe("Testing the ANT Contract", () => {
     let currentStateString = JSON.stringify(currentState);
     let currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      {"transactionId": "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}
     );
-    expect(currentStateJSON.records["same.as.root"]).toEqual(
-      "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+    expect(currentStateJSON.records["same_as_root"]).toEqual(
+      {"transactionId": "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}
     );
     expect(currentStateJSON.records["dao"]).toEqual(
-      "8MaeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc"
+      {"transactionId": "8MaeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc", "ttlSeconds": 900}
     );
     expect(currentStateJSON.records["remove_this"]).toEqual(
-      "BYEeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc"
+      {"transactionId": "BYEeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc", "ttlSeconds": 1000}
     );
     await pst.writeInteraction({
       function: "setRecord",
@@ -151,7 +159,7 @@ describe("Testing the ANT Contract", () => {
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      {"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}
     );
   });
 
@@ -165,6 +173,18 @@ describe("Testing the ANT Contract", () => {
     const currentStateString = JSON.stringify(currentState);
     const currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.name).toEqual("My New Token");
+  });
+
+  it("should set controller with correct ownership", async () => {
+    await pst.writeInteraction({
+      function: "setController",
+      target: walletAddress2,
+    });
+    await mineBlock(arweave);
+    const currentState = await pst.currentState();
+    const currentStateString = JSON.stringify(currentState);
+    const currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.controller).toEqual(walletAddress2);
   });
 
   it("should set ticker with correct ownership", async () => {
@@ -211,8 +231,65 @@ describe("Testing the ANT Contract", () => {
     let currentStateString = JSON.stringify(currentState);
     let currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      {"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}
     );
+
+    await pst.writeInteraction({
+      function: "setRecord",
+      subDomain: "@",
+      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", 
+      ttlSeconds: 1 // ttlSeconds too low
+    });
+    await mineBlock(arweave);
+    currentState = await pst.currentState();
+    currentStateString = JSON.stringify(currentState);
+    currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.records["@"]).toEqual(
+      {"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}
+    );
+
+    await pst.writeInteraction({
+      function: "setRecord",
+      subDomain: "@",
+      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", 
+      ttlSeconds: 1_000_000_000 // ttlSeconds too high
+    });
+    await mineBlock(arweave);
+    currentState = await pst.currentState();
+    currentStateString = JSON.stringify(currentState);
+    currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.records["@"]).toEqual(
+      {"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}
+    );
+
+    await pst.writeInteraction({
+      function: "setRecord",
+      subDomain: "@",
+      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", 
+      ttlSeconds: 900.5 // ttlSeconds should not be a decimal
+    });
+    await mineBlock(arweave);
+    currentState = await pst.currentState();
+    currentStateString = JSON.stringify(currentState);
+    currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.records["@"]).toEqual(
+      {"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}
+    );
+
+    await pst.writeInteraction({
+      function: "setRecord",
+      subDomain: "@",
+      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", 
+      ttlSeconds: "500" // ttlSeconds should not be a string
+    });
+    await mineBlock(arweave);
+    currentState = await pst.currentState();
+    currentStateString = JSON.stringify(currentState);
+    currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.records["@"]).toEqual(
+      {"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}
+    );
+
 
     await pst.writeInteraction({
       function: "setRecord",
@@ -224,7 +301,7 @@ describe("Testing the ANT Contract", () => {
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      {"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}
     );
 
     await pst.writeInteraction({
@@ -261,7 +338,7 @@ describe("Testing the ANT Contract", () => {
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      {"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}
     );
 
     await pst.writeInteraction({
@@ -274,38 +351,8 @@ describe("Testing the ANT Contract", () => {
     currentStateString = JSON.stringify(currentState);
     currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      {"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}
     );
-  });
-
-  it("should properly evolve contract's source code", async () => {
-    expect((await pst.currentBalance(walletAddress)).balance).toEqual(1);
-
-    const newSource = fs.readFileSync(path.join(__dirname, '../src/tools/contract_evolve.js'), 'utf8');
-
-    const newSrcTxId = await pst.save({src: newSource});
-    if (newSrcTxId === null) {
-      return 0;
-    }
-
-    await mineBlock(arweave);
-
-    await pst.evolve(newSrcTxId);
-    await mineBlock(arweave);
-
-    // note: the evolved balance always returns -1
-    expect((await pst.currentBalance(walletAddress)).balance).toEqual(-1);
-
-    const updatedContractTxId = await pst.save({src: contractSrc});
-    if (updatedContractTxId === null) {
-      return 0;
-    }
-    await mineBlock(arweave);
-    await pst.evolve(updatedContractTxId);
-    await mineBlock(arweave);
-
-    // note: the balance should return correctly now
-    expect((await pst.currentBalance(walletAddress)).balance).toEqual(1);
   });
 
   it("should transfer and perform dry write with overwritten caller", async () => {
@@ -369,30 +416,9 @@ describe("Testing the ANT Contract", () => {
     const currentStateString = JSON.stringify(currentState);
     const currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      {"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}
     );
     expect(currentStateJSON.records["hacked.domain"]).toEqual(undefined);
-  });
-
-  it("should not evolve contract's source code without", async () => {
-    const newWallet = await arweave.wallets.generate();
-    await addFunds(arweave, newWallet);
-    pst.connect(newWallet);
-    expect((await pst.currentBalance(walletAddress)).balance).toEqual(1);
-
-    const newSource = fs.readFileSync(path.join(__dirname, '../src/tools/contract_evolve.js'), 'utf8');
-
-    const newSrcTxId = await pst.save({src: newSource});
-    if (newSrcTxId === null) {
-      return 0;
-    }
-    await mineBlock(arweave);
-
-    await pst.evolve(newSrcTxId);
-    await mineBlock(arweave);
-
-    // note: the evolved balance always returns 1 because the contract did not change
-    expect((await pst.currentBalance(walletAddress)).balance).toEqual(1);
   });
 
   it("should not set name with incorrect ownership", async () => {
@@ -405,6 +431,18 @@ describe("Testing the ANT Contract", () => {
     const currentStateString = JSON.stringify(currentState);
     const currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.name).toEqual("My New Token");
+  });
+
+  it("should not set controller with incorrect ownership", async () => {
+    await pst.writeInteraction({
+      function: "setController",
+      target: "HACKED",
+    });
+    await mineBlock(arweave);
+    const currentState = await pst.currentState();
+    const currentStateString = JSON.stringify(currentState);
+    const currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.controller).toEqual(walletAddress2);
   });
 
   it("should not set ticker with incorrect ownership", async () => {
@@ -432,7 +470,7 @@ describe("Testing the ANT Contract", () => {
     let currentStateString = JSON.stringify(currentState);
     let currentStateJSON = JSON.parse(currentStateString);
     expect(currentStateJSON.records["@"]).toEqual(
-      "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs"
+      {"transactionId": "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}
     );
     await pst.writeInteraction({
       function: "removeRecord",
@@ -445,7 +483,7 @@ describe("Testing the ANT Contract", () => {
     expect(currentStateJSON.records["fake.domain"]).toEqual(undefined);
   });
 
-  it("should not transfer records with incorrect ownership", async () => {
+  it("should not transfer with incorrect ownership", async () => {
     const newWallet = await arweave.wallets.generate();
     const newWalletAddress = await arweave.wallets.jwkToAddress(newWallet);
     await addFunds(arweave, newWallet);
@@ -462,4 +500,98 @@ describe("Testing the ANT Contract", () => {
     );
     expect((await pst.currentState()).balances[walletAddress]).toEqual(1);
   });
+
+  it("should not transfer with only controller ownership", async () => {
+    pst.connect(wallet2); // this wallet is only a controller
+    await pst.transfer({
+      target: walletAddress2, // this will try to promote the controller to owner
+      qty: 1,
+    });
+    await mineBlock(arweave);
+    let currentState = await pst.currentState();
+    let currentStateString = JSON.stringify(currentState);
+    let currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.owner).toEqual(walletAddress);
+  });
+ 
+  it("should set records as controller", async () => {
+    pst.connect(wallet2); // this wallet is only a controller
+    await pst.writeInteraction({ // If TTL is not passed, default of 900 is used
+      function: "setRecord",
+      subDomain: "@",
+      transactionId: "CTRLqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
+    });
+    await mineBlock(arweave);
+    await pst.writeInteraction({ // If TTL is not passed, default of 900 is used
+      function: "setRecord",
+      subDomain: "same_as_root",
+      transactionId: "CTRLqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
+    });
+    await mineBlock(arweave);
+    await pst.writeInteraction({
+      function: "setRecord",
+      subDomain: "remove_this",
+      ttlSeconds: 1000,
+      transactionId: "CTRLajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc",
+    });
+    await mineBlock(arweave);
+    let currentState = await pst.currentState();
+    let currentStateString = JSON.stringify(currentState);
+    let currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.records["@"]).toEqual(
+      {"transactionId": "CTRLqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}
+    );
+    expect(currentStateJSON.records["same_as_root"]).toEqual(
+      {"transactionId": "CTRLqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs", "ttlSeconds": 900}
+    );
+    expect(currentStateJSON.records["remove_this"]).toEqual(
+      {"transactionId": "CTRLajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc", "ttlSeconds": 1000}
+    );
+  });
+
+  it("should set name as controller", async () => {
+    await pst.writeInteraction({
+      function: "setName",
+      name: "My New Token Renamed",
+    });
+    await mineBlock(arweave);
+    const currentState = await pst.currentState();
+    const currentStateString = JSON.stringify(currentState);
+    const currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.name).toEqual("My New Token Renamed");
+  });
+
+  it("should set ticker as controller", async () => {
+    await pst.writeInteraction({
+      function: "setTicker",
+      ticker: "ANT-NEWONE-RENAME",
+    });
+    await mineBlock(arweave);
+    const currentState = await pst.currentState();
+    const currentStateString = JSON.stringify(currentState);
+    const currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.ticker).toEqual("ANT-NEWONE-RENAME");
+  });
+
+  it("should remove records as controller", async () => {
+    await pst.writeInteraction({
+      function: "removeRecord",
+      subDomain: "remove_this",
+    });
+    await mineBlock(arweave);
+    let currentState = await pst.currentState();
+    let currentStateString = JSON.stringify(currentState);
+    let currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.records["remove_this"]).toEqual(undefined)
+    await pst.writeInteraction({
+      function: "removeRecord",
+      subDomain: "fake.domain", // this doesnt exist
+    });
+    await mineBlock(arweave);
+    currentState = await pst.currentState();
+    currentStateString = JSON.stringify(currentState);
+    currentStateJSON = JSON.parse(currentStateString);
+    expect(currentStateJSON.records["fake.domain"]).toEqual(undefined)
+  });
+
 });

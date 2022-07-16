@@ -6,9 +6,10 @@ import { keyfile } from "../constants";
 
 (async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  const subDomainToUpdate = "@";
-  const txIdToUpdate = "CZP1Lh527KLYYL6LxPjYNFO-hXGvajtE8y_iAi0BDgs";
-  const contractTxId = "XJnC9jPXpwAvrNnmeYYo69I6RrSf9MNabGDGaQws8dQ";
+  const subDomainToUpdate = "shroom_sub_domain";
+  const newTtlSeconds = 900 // This is the name that will be purchased in the Arweave Name System Registry
+  const txIdToUpdate = "KmCzrswTGzRTSzNx2oyke2M_x6mSUf5jIOvyItGOnkg";
+  const contractTxId = "4FftM3u83NKE4taZcIO2Kd8O4IMrOcLmhuOzq9Kv1fk";
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
   // ~~ Initialize Arweave ~~
@@ -33,6 +34,7 @@ import { keyfile } from "../constants";
   const swTxId = await pst.writeInteraction({
     function: "setRecord",
     subDomain: subDomainToUpdate,
+    ttlSeconds: newTtlSeconds,
     transactionId: txIdToUpdate,
   });
 

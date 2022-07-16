@@ -1,10 +1,10 @@
 // ~~ Inidicate contract id ~~
 export const deployedContracts = {
-  contractTxId: "ACpV_CzOfNxh8LhPM-FMcsLNpVYcy-KyTzEQ1UD5avg",
-  sourceTxId: "JIIB01pRbNK2-UyNxwQK-6eknrjENMTpTvQmB8ZDzQg",
+  contractTxId: "tX7_OSAKLNgBkQtkl4o6KowAiToHrrp9cicMO398Ofw",
+  sourceTxId: "PEI1efYrsX08HUwvc6y-h6TSpsNlo2r6_fWL2_GdwhY",
 };
 
 export const deployedTestContracts = {
-  contractTxId: "-HxRqdZSSK9P5-jQ5Agkv6Dcw5JZ37xJE24eUn2GBZI",
-  sourceTxId: "8xv_lw8DydXAHaGjJhJrRRAODmb0eiaPk3wi_HHxxhE",
+  contractTxId: "KAfi2o_iORnDlWEJkJsKFR6Kf3qcUUoOo8VCwtsrmUQ",
+  sourceTxId: "33PxoQzxKVOhOBVaVqibWMK_xj3vgpbwfxdAlMUmtCY",
 };

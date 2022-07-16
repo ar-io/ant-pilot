@@ -7,15 +7,11 @@ export const setName = async (
   state: ANTState,
   { caller, input: { name } }: PstAction
 ): Promise<ContractResult> => {
-  const balances = state.balances;
   const owner = state.owner;
+  const controller = state.controller;
 
-  if (caller !== owner) {
-    throw new ContractError(`Caller is not the token owner!`);
-  }
-
-  if (balances[caller] < 1) {
-    throw new ContractError(`Caller does not have a token balance!`);
+  if (caller !== owner && caller !== controller) {
+    throw new ContractError(`Caller is not the token owner or controller!`);
   }
 
   // check name validity

@@ -1,9 +1,13 @@
 {
   "ticker": "ANT-SOURCE",
-  "name": "Arweave Name Token Source Contract v0.1.5",
+  "name": "Arweave Name Token Source Contract v0.1.6",
   "owner": "",
+  "controller": "",
   "records": {
-      "@": ""
+      "@": {
+        "transactionId": "",
+        "ttlSeconds": 900
+      }
   },
   "balances": {
     "": 0

@@ -7,7 +7,7 @@ import { keyfile } from "../constants";
 (async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // The recipient target of the token transfer
-  const target = "JcC4ZLUY76vmWha5y6RwKsFqYTrMZhbockl8iM9p5lQ";
+  const target = "6dQI-SiSNVhzj1gKdTt00UyxSfGGVr0qO4vynPLDJVM";
 
   // The amount of tokens to be transferred
   const qty = 1_000_000_000;

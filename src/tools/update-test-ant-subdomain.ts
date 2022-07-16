@@ -8,6 +8,7 @@ import { testKeyfile } from "../constants";
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const subDomainToUpdate = "@";
   const txIdToUpdate = "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs";
+  const newTtl = 900 // This is the name that will be purchased in the Arweave Name System Registry
   const contractTxId = "lheofeBVyaJ8s9n7GxIyJNNc62jEVCKD7lbL3fV8kzU";
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
@@ -36,6 +37,7 @@ import { testKeyfile } from "../constants";
   await pst.writeInteraction({
     function: "setRecord",
     subDomain: subDomainToUpdate,
+    ttl: newTtl,
     transactionId: txIdToUpdate,
   });
 })();
