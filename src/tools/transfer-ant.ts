@@ -41,10 +41,10 @@ import { keyfile } from "../constants";
   );
   const pst = smartweave.pst(antRecordContractTxId);
   pst.connect(wallet);
-  await pst.transfer({
+  const transferTxId = await pst.transfer({
     target,
     qty: 1,
   });
 
-  console.log("Finished transferring tokens");
+  console.log(`Finished transferring tokens via txID ${transferTxId}`);
 })();
