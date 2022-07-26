@@ -41,6 +41,7 @@ import { keyfile } from "../constants";
     ...stateFromFile,
     ...{
       owner: walletAddress,
+      controller: walletAddress,
     },
     balances: {
       [walletAddress]: 1,

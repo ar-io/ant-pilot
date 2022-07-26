@@ -8,16 +8,12 @@ export const setRecord = async (
   state: ANTState,
   { caller, input: { subDomain, transactionId, ttlSeconds } }: PstAction
 ): Promise<ContractResult> => {
-  const balances = state.balances;
   const owner = state.owner;
+  const controller = state.controller;
 
   // ensure the owner owns this ANT
-  if (caller !== owner) {
+  if (caller !== owner && caller !== controller) {
     throw new ContractError(`Caller is not the token owner!`);
-  }
-
-  if (balances[caller] < 1) {
-    throw new ContractError(`Caller does not have a token balance!`);
   }
 
   // check subdomain validity
@@ -54,10 +50,10 @@ export const setRecord = async (
     throw new ContractError('Invalid value for "ttlSeconds". Must be an integer');
   }
   
-  state.records[subDomain] = [{
+  state.records[subDomain] = {
     transactionId,
     ttlSeconds
-  }];
+  };
 
   return { state };
 };

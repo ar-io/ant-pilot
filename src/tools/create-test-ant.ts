@@ -14,7 +14,7 @@ import { addFunds } from "../../utils/_helpers";
   const name = "Example";
 
   // The Time To Live for this ANT to reside cached, the default and minimum is 900 seconds
-  const ttl = 900;
+  const ttlSeconds = 900;
 
   // The arweave data transaction that is to be proxied using the registered name
   const dataPointer = "zHpMN6UyTSSIo6WqER2527LvEvMKLlAcr3UR6ljd32Q";
@@ -43,19 +43,19 @@ import { addFunds } from "../../utils/_helpers";
   const wallet = JSON.parse(await fs.readFileSync(testKeyfile).toString());
   const walletAddress = await arweave.wallets.jwkToAddress(wallet);
   await addFunds(arweave, wallet);
-  
+
   // Create the initial state
   const initialState = {
     ticker: ticker,
     name,
     owner: walletAddress,
+    controller: walletAddress,
     evolve: null,
-    records: 
-    {
+    records: {
       "@": {
-        "transactionId": dataPointer,
-        "ttl": ttl
-      }
+        transactionId: dataPointer,
+        ttlSeconds: ttlSeconds,
+      },
     },
     balances: {
       [walletAddress]: 1,

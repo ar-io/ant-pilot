@@ -8,6 +8,7 @@ import { setTicker } from "./actions/write/setTicker";
 import { setRecord } from "./actions/write/setRecord";
 import { transferTokens } from "./actions/write/transferTokens";
 import { ContractResult, PstAction, ANTState } from "./types/types";
+import { setController } from "./actions/write/setController";
 
 declare const ContractError;
 
@@ -26,6 +27,8 @@ export async function handle(
       return await setName(state, action);
     case "setTicker":
       return await setTicker(state, action);
+    case "setController":
+      return await setController(state, action);  
     case "removeRecord":
       return await removeRecord(state, action);
     case "balance":

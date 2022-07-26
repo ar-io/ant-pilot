@@ -7,16 +7,12 @@ export const removeRecord = async (
   state: ANTState,
   { caller, input: { subDomain } }: PstAction
 ): Promise<ContractResult> => {
-  const balances = state.balances;
   const owner = state.owner;
   const records = state.records;
+  const controller = state.controller;
 
-  if (caller !== owner) {
-    throw new ContractError(`Caller is not the token owner!`);
-  }
-
-  if (balances[caller] < 1) {
-    throw new ContractError(`Caller does not have a token balance!`);
+  if (caller !== owner && caller !== controller) {
+    throw new ContractError(`Caller is not the token owner or controller!`);
   }
 
   if (subDomain in records) {

@@ -2,8 +2,8 @@ export const url = {
   redstoneGateway: "",
 };
 
-export const MIN_TTL_LENGTH = 900;
-export const MAX_TTL_LENGTH = 2_592_000;
+export const MIN_TTL_LENGTH = 900; // 15 minutes
+export const MAX_TTL_LENGTH = 2_592_000;  // 30 days
 export const MAX_NAME_LENGTH = 20;
 export const TX_ID_LENGTH = 43;
 
