@@ -26,17 +26,19 @@ import { keyfile } from "../constants";
   const smartweave = WarpNodeFactory.memCached(arweave);
 
   // Get the key file used for the distribution
-  const wallet: JWKInterface = JSON.parse(
-    await fs.readFileSync(keyfile).toString()
-  );
+  const wallet: JWKInterface = JSON.parse(fs.readFileSync(keyfile).toString());
 
   // ~~ Read contract source and initial state files ~~
   const pst = smartweave.pst(contractTxId);
   pst.connect(wallet);
-  await pst.writeInteraction({
+  const swTxId = await pst.writeInteraction({
     function: "setRecord",
     subDomain: subDomainToUpdate,
     ttlSeconds: newTtlSeconds,
     transactionId: txIdToUpdate,
   });
+
+  console.log(
+    `Updating ANT "${contractTxId}"'s subdomain "${subDomainToUpdate}" value to "${txIdToUpdate}" at txID ${swTxId}`
+  );
 })();
