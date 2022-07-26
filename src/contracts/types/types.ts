@@ -10,7 +10,8 @@ export interface ANTState {
       ttlSeconds: number // The amount of time (in seconds) this transaction is cached for, default at 900 seconds
     }
   };
-  balances: { // A list of all outstanding, positive, token balances
+  balances: {
+    // A list of all outstanding, positive, token balances
     [address: string]: number;
   };
 }
@@ -53,4 +54,7 @@ export type PstFunction =
   | "removeRecord"
   | "balance";
 
-export type ContractResult = { state: ANTState } | { result: PstResult } | { result: ANTSubDomainResult };
+export type ContractResult =
+  | { state: ANTState }
+  | { result: PstResult }
+  | { result: ANTSubDomainResult };
