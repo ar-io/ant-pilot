@@ -6415,7 +6415,16 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
-redstone-isomorphic@1.1.6, redstone-isomorphic@^1.1.0:
+redstone-isomorphic@1.1.8:
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/redstone-isomorphic/-/redstone-isomorphic-1.1.8.tgz#8870987c8f60c0155f32a2e29254faf0b460a6c8"
+  integrity sha512-8WFgGeoUx7mAStvbY/F0QMoyC7I4HO6pwRFRFxTiIrHFrtO7NYTAh4jIjLsds06ymRvXq6rrR6hev2/OuA29xw==
+  dependencies:
+    buffer "^6.0.3"
+    safe-buffer "^5.1.2"
+    undici "^5.8.0"
+
+redstone-isomorphic@^1.1.0:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/redstone-isomorphic/-/redstone-isomorphic-1.1.6.tgz#513eaf38a7ce14b7e1e84a973aa111066be43f9c"
   integrity sha512-q9N6/B1KHFBxeRsaqMZUelLorp7BLh50R4fUTf9LNkZPTMZ+sRRVWVE0aZT7lyKbXTLiEdk8kSOHPY4yQu//7Q==
@@ -7579,6 +7588,11 @@ undici@^4.16.0:
   resolved "https://registry.yarnpkg.com/undici/-/undici-4.16.0.tgz#469bb87b3b918818d3d7843d91a1d08da357d5ff"
   integrity sha512-tkZSECUYi+/T1i4u+4+lwZmQgLXd4BLGlrc7KZPcLIW7Jpq99+Xpc30ONv7nS6F5UNOxp/HBZSSL9MafUrvJbw==
 
+undici@^5.8.0:
+  version "5.8.0"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-5.8.0.tgz#dec9a8ccd90e5a1d81d43c0eab6503146d649a4f"
+  integrity sha512-1F7Vtcez5w/LwH2G2tGnFIihuWUlc58YidwLiCv+jR2Z50x0tNXpRRw7eOIJ+GvqCqIkg9SB7NWAJ/T9TLfv8Q==
+
 universalify@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/universalify/-/universalify-0.1.2.tgz#b646f69be3942dabcecc9d6639c80dc105efaa66"
@@ -7735,10 +7749,10 @@ walker@^1.0.7:
   dependencies:
     makeerror "1.0.12"
 
-warp-contracts@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/warp-contracts/-/warp-contracts-1.1.2.tgz#8894124c9ffed850af3e29d0fa6b38c06b7c9f60"
-  integrity sha512-cooTJ0gGCot/OBsMAwknYAyC2F/Ct2fbG4LSoaYrWuv2se517V/1bswwZNAiN1tk/0tz3klJcmnYas/yTmc0/Q==
+warp-contracts@^1.1.14:
+  version "1.1.14"
+  resolved "https://registry.yarnpkg.com/warp-contracts/-/warp-contracts-1.1.14.tgz#403b7a01710de64463526c5eb228dfd9cc8a84a5"
+  integrity sha512-b/o1o7z3G1qJ0qlyT3ALkln9v4lkM/KvZtIU0EYn71jKUTvYceaUaRpmmIfvlEfQCG6+Lrc8W/Z99RF8P3NJlw==
   dependencies:
     "@assemblyscript/loader" "^0.19.23"
     "@idena/vrf-js" "^1.0.1"
@@ -7749,7 +7763,7 @@ warp-contracts@^1.1.2:
     fast-copy "^2.1.1"
     knex "^0.95.14"
     lodash "^4.17.21"
-    redstone-isomorphic "1.1.6"
+    redstone-isomorphic "1.1.8"
     redstone-wasm-metering "1.0.0"
     safe-stable-stringify "2.3.1"
     stream-buffers "^3.0.2"
