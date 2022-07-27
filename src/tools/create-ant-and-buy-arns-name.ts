@@ -94,7 +94,7 @@ import { keyfile } from "../constants";
     name,
     antRecordContractTxId
   );
-  const contractTxId = await smartweave.createContract.deployFromSourceTx({
+  const deployedContract = await smartweave.createContract.deployFromSourceTx({
     wallet,
     initState: JSON.stringify(initialState),
     srcTxId: antRecordContractTxId,
@@ -104,13 +104,13 @@ import { keyfile } from "../constants";
   console.log(
     "Buying the record, %s using the ANT %s",
     nameToBuy,
-    contractTxId
+    deployedContract.contractTxId
   );
   await pst.writeInteraction({
     function: "buyRecord",
     name: nameToBuy,
     tier,
-    contractTxId,
+    contractTxId: deployedContract.contractTxId,
     years,
   });
   console.log("Finished purchasing the record");
