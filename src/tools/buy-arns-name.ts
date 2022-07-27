@@ -15,12 +15,6 @@ import { keyfile } from "../constants";
   // This is the production ArNS Registry Smartweave Contract
   const arnsRegistryContractTxId =
     "bLAgYxAdX2Ry-nt6aH2ixgvJXbpsEYm28NgJgyqfs-U";
-
-  // The lease time for purchasing the name
-  const years = 1;
-
-  // the Tier of the name purchased.  Tier 1 = 100 subdoins, Tier 2 = 1000 subdomains, Tier 3 = 10000 subdomains
-  const tier = 1;
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   // Initialize Arweave
@@ -66,9 +60,7 @@ import { keyfile } from "../constants";
   const recordTxId = await pst.writeInteraction({
     function: "buyRecord",
     name: nameToBuy,
-    tier,
     contractTxId,
-    years,
   });
   console.log("Finished purchasing the record: %s", recordTxId);
 })();
