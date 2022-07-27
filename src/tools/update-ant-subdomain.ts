@@ -6,12 +6,19 @@ import { keyfile } from "../constants";
 
 (async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // The subdomain to add or update
   const subDomainToUpdate = "shroom_sub_domain";
-  const newTtlSeconds = 900 // This is the name that will be purchased in the Arweave Name System Registry
+
+  // The Time To Live for this ANT to reside cached, the default and minimum is 900 seconds
+  const newTtlSeconds = 3600;
+
+  // The arweave data transaction that is to be proxied using this subdomain
   const txIdToUpdate = "KmCzrswTGzRTSzNx2oyke2M_x6mSUf5jIOvyItGOnkg";
+
+  // This is the Arweave Name Token Contract TX ID that will have a subdomain added/modified
   const contractTxId = "4FftM3u83NKE4taZcIO2Kd8O4IMrOcLmhuOzq9Kv1fk";
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
+
   // ~~ Initialize Arweave ~~
   const arweave = Arweave.init({
     host: "arweave.net",
