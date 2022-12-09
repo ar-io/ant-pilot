@@ -20,6 +20,15 @@ export const transferTokens = async (
     throw new ContractError(`Caller is not the token owner!`);
   }
 
+  if (
+    !balances[caller] ||
+    balances[caller] == undefined ||
+    balances[caller] == null ||
+    isNaN(balances[caller])
+  ) {
+    throw new ContractError(`Caller balance is not defined!`);
+  }
+
   if (balances[caller] < 1) {
     throw new ContractError(`Caller does not have a token balance!`);
   }
