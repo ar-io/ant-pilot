@@ -1,5 +1,9 @@
 import Arweave from "arweave";
-import { LoggerFactory, WarpNodeFactory } from "warp-contracts";
+import {
+  defaultCacheOptions,
+  LoggerFactory,
+  WarpFactory,
+} from "warp-contracts";
 import * as fs from "fs";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { keyfile } from "../constants";
@@ -12,9 +16,10 @@ import { keyfile } from "../constants";
   // The amount of tokens to be transferred
   const qty = 1_000_000_000;
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
+
   // This is the production ArNS Registry Smartweave Contract
-  const arnsRegistryContractTxId = "bLAgYxAdX2Ry-nt6aH2ixgvJXbpsEYm28NgJgyqfs-U";
+  const arnsRegistryContractTxId =
+    "bLAgYxAdX2Ry-nt6aH2ixgvJXbpsEYm28NgJgyqfs-U";
 
   // Initialize Arweave
   const arweave = Arweave.init({
@@ -26,8 +31,14 @@ import { keyfile } from "../constants";
   // Initialize `LoggerFactory`
   LoggerFactory.INST.logLevel("error");
 
-  // Initialize SmartWeave
-  const smartweave = WarpNodeFactory.memCached(arweave);
+  // Initialize Warp
+  const warp = WarpFactory.forMainnet(
+    {
+      ...defaultCacheOptions,
+      inMemory: true,
+    },
+    true
+  );
 
   // Get the key file used for the distribution
   const wallet: JWKInterface = JSON.parse(
@@ -42,7 +53,7 @@ import { keyfile } from "../constants";
     walletAddress,
     target
   );
-  const pst = smartweave.pst(arnsRegistryContractTxId);
+  const pst = warp.pst(arnsRegistryContractTxId);
   pst.connect(wallet);
   const transferTxId = await pst.transfer({
     target,

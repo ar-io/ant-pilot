@@ -1,5 +1,5 @@
 import Arweave from "arweave";
-import { LoggerFactory, WarpNodeFactory } from "warp-contracts";
+import { LoggerFactory, WarpFactory } from "warp-contracts";
 import * as fs from "fs";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { testKeyfile } from "../constants";
@@ -24,8 +24,8 @@ import { testKeyfile } from "../constants";
   // Initialize `LoggerFactory`
   LoggerFactory.INST.logLevel("error");
 
-  // Initialize SmartWeave
-  const smartweave = WarpNodeFactory.memCached(arweave);
+  // Initialize Warp
+  const warp = WarpFactory.forTestnet();
 
   // Get the key file used for the distribution
   const wallet: JWKInterface = JSON.parse(
@@ -40,7 +40,7 @@ import { testKeyfile } from "../constants";
     walletAddress,
     target
   );
-  const pst = smartweave.pst(antRecordContractTxId);
+  const pst = warp.pst(antRecordContractTxId);
   pst.connect(wallet);
   await pst.transfer({
     target,
