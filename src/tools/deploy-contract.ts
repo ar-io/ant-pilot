@@ -1,8 +1,9 @@
 import Arweave from "arweave";
 import {
+  defaultCacheOptions,
   LoggerFactory,
   PstState,
-  WarpNodeFactory,
+  WarpFactory,
 } from "warp-contracts";
 import * as fs from "fs";
 import path from "path";
@@ -19,8 +20,14 @@ import { keyfile } from "../constants";
   // ~~ Initialize `LoggerFactory` ~~
   LoggerFactory.INST.logLevel("error");
 
-  // ~~ Initialize SmartWeave ~~
-  const smartweave = WarpNodeFactory.memCached(arweave);
+  // ~~ Initialize Warp ~~
+  const warp = WarpFactory.forMainnet(
+    {
+      ...defaultCacheOptions,
+      inMemory: true,
+    },
+    true
+  );
 
   // Get the key file used for the distribution
   const wallet = JSON.parse(await fs.readFileSync(keyfile).toString());
@@ -49,7 +56,7 @@ import { keyfile } from "../constants";
   };
 
   // ~~ Deploy contract ~~
-  const contractTxId = await smartweave.createContract.deploy({
+  const contractTxId = await warp.deploy({
     wallet,
     initState: JSON.stringify(initialState),
     src: contractSrc,

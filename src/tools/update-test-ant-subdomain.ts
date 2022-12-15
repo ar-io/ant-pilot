@@ -1,5 +1,5 @@
 import Arweave from "arweave";
-import { LoggerFactory, WarpNodeFactory } from "warp-contracts";
+import { LoggerFactory, WarpFactory } from "warp-contracts";
 import * as fs from "fs";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { testKeyfile } from "../constants";
@@ -8,10 +8,10 @@ import { testKeyfile } from "../constants";
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const subDomainToUpdate = "@";
   const txIdToUpdate = "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs";
-  const newTtl = 900 // This is the name that will be purchased in the Arweave Name System Registry
+  const newTtl = 900; // This is the name that will be purchased in the Arweave Name System Registry
   const contractTxId = "lheofeBVyaJ8s9n7GxIyJNNc62jEVCKD7lbL3fV8kzU";
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
+
   // ~~ Initialize Arweave ~~
   const arweave = Arweave.init({
     host: "testnet.redstone.tools",
@@ -23,8 +23,8 @@ import { testKeyfile } from "../constants";
   // ~~ Initialize `LoggerFactory` ~~
   LoggerFactory.INST.logLevel("error");
 
-  // ~~ Initialize SmartWeave ~~
-  const smartweave = WarpNodeFactory.memCached(arweave);
+  // ~~ Initialize Warp ~~
+  const warp = WarpFactory.forTestnet();
 
   // Get the key file used for the distribution
   const wallet: JWKInterface = JSON.parse(
@@ -32,7 +32,7 @@ import { testKeyfile } from "../constants";
   );
 
   // ~~ Read contract source and initial state files ~~
-  const pst = smartweave.pst(contractTxId);
+  const pst = warp.pst(contractTxId);
   pst.connect(wallet);
   await pst.writeInteraction({
     function: "setRecord",

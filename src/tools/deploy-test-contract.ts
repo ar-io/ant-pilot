@@ -1,9 +1,5 @@
 import Arweave from "arweave";
-import {
-  LoggerFactory,
-  PstState,
-  WarpNodeFactory,
-} from "warp-contracts";
+import { LoggerFactory, PstState, WarpFactory } from "warp-contracts";
 import * as fs from "fs";
 import path from "path";
 import { addFunds } from "../../utils/_helpers";
@@ -21,8 +17,8 @@ import { testKeyfile } from "../constants";
   // ~~ Initialize `LoggerFactory` ~~
   LoggerFactory.INST.logLevel("error");
 
-  // ~~ Initialize SmartWeave ~~
-  const smartweave = WarpNodeFactory.memCached(arweave);
+  // ~~ Initialize Warp ~~
+  const warp = WarpFactory.forTestnet();
 
   // ~~ Generate Wallet and add funds ~~
   // const wallet = await arweave.wallets.generate();
@@ -53,7 +49,7 @@ import { testKeyfile } from "../constants";
   };
 
   // ~~ Deploy contract ~~
-  const contractTxId = await smartweave.createContract.deploy({
+  const contractTxId = await warp.deploy({
     wallet,
     initState: JSON.stringify(initialState),
     src: contractSrc,
