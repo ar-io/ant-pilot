@@ -9,8 +9,7 @@ import {
   LoggerFactory,
   PstContract,
   PstState,
-  Warp,
-  WarpNodeFactory,
+  WarpFactory,
 } from "warp-contracts";
 import { JWKInterface } from "arweave/node/lib/wallet";
 
@@ -21,7 +20,6 @@ describe("Testing the ANT Contract", () => {
   let walletAddress: string;
   let walletAddress2: string;
   let initialState: PstState;
-  let smartweave: Warp;
   let arweave: Arweave;
   let pst: PstContract;
   let deployedContract: ContractDeploy;
@@ -36,11 +34,11 @@ describe("Testing the ANT Contract", () => {
       protocol: "http",
     });
 
-    // ~~ Initialize 'LoggerFactory' ~~
+    // ~~ Initialize `LoggerFactory` ~~
     LoggerFactory.INST.logLevel("fatal");
 
-    // ~~ Set up Warp ~~
-    smartweave = WarpNodeFactory.forTesting(arweave);
+    // ~~ Initialize Warp ~~
+    const warp = WarpFactory.forTestnet();
 
     // ~~ Generate wallet and add funds ~~
     wallet = await arweave.wallets.generate();
@@ -76,14 +74,14 @@ describe("Testing the ANT Contract", () => {
     };
 
     // ~~ Deploy contract ~~
-    deployedContract = await smartweave.createContract.deploy({
+    deployedContract = await warp.deploy({
       wallet,
       initState: JSON.stringify(initialState),
       src: contractSrc,
     });
 
     // ~~ Connect to the pst contract ~~
-    pst = smartweave.pst(deployedContract.contractTxId);
+    pst = warp.pst(deployedContract.contractTxId);
     pst.connect(wallet);
 
     // ~~ Mine block ~~
