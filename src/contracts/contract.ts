@@ -9,6 +9,7 @@ import { setRecord } from "./actions/write/setRecord";
 import { transferTokens } from "./actions/write/transferTokens";
 import { ContractResult, PstAction, ANTState } from "./types/types";
 import { setController } from "./actions/write/setController";
+import { evolve } from "./actions/write/evolve";
 
 declare const ContractError;
 
@@ -28,11 +29,13 @@ export async function handle(
     case "setTicker":
       return await setTicker(state, action);
     case "setController":
-      return await setController(state, action);  
+      return await setController(state, action);
     case "removeRecord":
       return await removeRecord(state, action);
     case "balance":
       return await balance(state, action);
+    case "evolve":
+      return await evolve(state, action);
     default:
       throw new ContractError(
         `No function supplied or function not recognised: "${input.function}"`
