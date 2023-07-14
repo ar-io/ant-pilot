@@ -1,18 +1,26 @@
 import { MAX_NAME_LENGTH, TX_ID_LENGTH, MIN_TTL_LENGTH, MAX_TTL_LENGTH } from "@/constants";
 import { PstAction, ANTState, ContractResult } from "../../types/types";
+// composed by ajv at build
+import { validateSetRecord } from '../../../validations.mjs';
+import { INVALID_INPUT_MESSAGE } from "@/constants";
 
 declare const ContractError;
 
 // Sets an existing record and if one does not exist, it cre
 export const setRecord = async (
   state: ANTState,
-  { caller, input: { subDomain, transactionId, ttlSeconds } }: PstAction
+  { caller, input}: PstAction
 ): Promise<ContractResult> => {
+  const {subDomain, transactionId, ttlSeconds} = input;
   const owner = state.owner;
-  const controller = state.controller;
+  const controllers = state.controllers;
+
+  if (!validateSetRecord(input)) {
+    throw new ContractError(INVALID_INPUT_MESSAGE);
+  }
 
   // ensure the owner owns this ANT
-  if (caller !== owner && caller !== controller) {
+  if (caller !== owner && !controllers.includes(caller)) {
     throw new ContractError(`Caller is not the token owner!`);
   }
 
@@ -38,16 +46,6 @@ export const setRecord = async (
     !res
   ) {
     throw new ContractError("Invalid Arweave Transaction ID");
-  }
-
-  // set ttlSeconds to default if not provided
-  if (ttlSeconds === undefined) {
-    ttlSeconds = MIN_TTL_LENGTH;
-  }
-
-  // check subdomain ttlSeconds
-  if (!Number.isInteger(ttlSeconds) || ttlSeconds < MIN_TTL_LENGTH || ttlSeconds > MAX_TTL_LENGTH) {
-    throw new ContractError('Invalid value for "ttlSeconds". Must be an integer');
   }
   
   state.records[subDomain] = {

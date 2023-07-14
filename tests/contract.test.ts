@@ -66,7 +66,7 @@ describe("Testing the ANT Contract", () => {
       ...stateFromFile,
       ...{
         owner: walletAddress,
-        controller: walletAddress,
+        controllers: [walletAddress],
         balances: {
           [walletAddress]: 1,
         },

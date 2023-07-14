@@ -1,7 +1,52 @@
+const fs = require('fs');
+const path = require('path');
 const { build } = require('esbuild');
 const replace = require('replace-in-file');
-
+const Ajv = require('ajv');
+const standaloneCode = require('ajv/dist/standalone').default;
 const contracts = ['/contracts/contract.ts'];
+const {
+  balanceSchema,
+  removeControllerSchema,
+  setControllerSchema,
+  setNameSchema,
+  setTickerSchema,
+  setRecordSchema,
+  removeRecordSchema,
+  transferTokensSchema,
+} = require("./schemas");
+
+
+
+// build our validation source code
+console.log(typeof balanceSchema)
+const ajv = new Ajv({
+  schemas: [
+    balanceSchema, 
+    removeControllerSchema, 
+    setControllerSchema, 
+    setNameSchema, 
+    setTickerSchema, 
+    setRecordSchema, 
+    removeRecordSchema, 
+    transferTokensSchema
+  ],
+  code: { source: true, esm: true },
+});
+
+const moduleCode = standaloneCode(ajv, {
+  validateSetRecord: '#/definitions/setRecord',
+  validateRemoveRecord: '#/definitions/removeRecord',
+  validateSetController: '#/definitions/setController',
+  validateRemoveController: '#/definitions/removeController',
+  validateSetName: '#/definitions/setName',
+  validateSetTicker: '#/definitions/setTicker',
+  validateBalance: '#/definitions/balance',
+  validateTransferTokens: '#/definitions/transferTokens',
+});
+
+// Now you can write the module code to file
+fs.writeFileSync(path.join(__dirname, '/src/validations.mjs'), moduleCode);
 
 build({
   entryPoints: contracts.map((source) => {

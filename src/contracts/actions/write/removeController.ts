@@ -5,45 +5,30 @@ import { INVALID_INPUT_MESSAGE } from "@/constants";
 
 declare const ContractError;
 
-export const transferTokens = async (
+export const removeController = async (
   state: ANTState,
   { caller, input }: PstAction
 ): Promise<ContractResult> => {
-  const owner = state.owner;
-  const balances = state.balances;
-  const { target } = input;
+  const {target} = input;
 
   if (!validateRemoveController(input)) {
     throw new ContractError(INVALID_INPUT_MESSAGE);
   }
 
+  const owner = state.owner;
   if (!target) {
     throw new ContractError("No target specified");
-  }
-
-  if (caller === target) {
-    throw new ContractError("Invalid token transfer");
   }
 
   if (caller !== owner) {
     throw new ContractError(`Caller is not the token owner!`);
   }
 
-  if (
-    !balances[caller] ||
-    balances[caller] == undefined ||
-    balances[caller] == null ||
-    isNaN(balances[caller])
-  ) {
-    throw new ContractError(`Caller balance is not defined!`);
+  if (!state.controllers.includes(target)) {
+    throw new ContractError(`Target address ${target} is not a controller`);
   }
 
-  if (balances[caller] < 1) {
-    throw new ContractError(`Caller does not have a token balance!`);
-  }
+  state.controllers = state.controllers.filter((controller) => controller !== target);
 
-  state.owner = target;
-  delete balances[caller];
-  balances[target] = 1;
   return { state };
 };
