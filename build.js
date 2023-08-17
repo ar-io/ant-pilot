@@ -19,7 +19,6 @@ const {
 
 
 // build our validation source code
-console.log(typeof balanceSchema)
 const ajv = new Ajv({
   schemas: [
     balanceSchema, 
