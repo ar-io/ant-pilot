@@ -1,6 +1,6 @@
 {
   "name": "ant-pilot",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "private": true,
   "scripts": {
     "build": "yarn run clean && yarn run build-ts && npm run cp",
@@ -13,6 +13,8 @@
     "arbundles": "^0.6.18",
     "arlocal": "1.1.30",
     "arweave": "1.11.4",
+    "axios": "^0.26.0",
+    "axios-retry": "^3.2.4",
     "babel-jest": "^27.5.0",
     "core-js": "^3.6.5",
     "sass-loader": "^10",
