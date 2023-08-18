@@ -1,17 +1,24 @@
 import { PstAction, ANTState, ContractResult } from "../../types/types";
-
+// composed by ajv at build
+import { validateRemoveRecord } from '../../../validations.mjs';
+import { INVALID_INPUT_MESSAGE } from "@/constants";
 declare const ContractError;
 
 // Sets an existing record and if one does not exist, it cre
 export const removeRecord = async (
   state: ANTState,
-  { caller, input: { subDomain } }: PstAction
+  { caller, input}: PstAction
 ): Promise<ContractResult> => {
+  const {subDomain} = input;
   const owner = state.owner;
   const records = state.records;
-  const controller = state.controller;
+  const controllers = state.controllers;
 
-  if (caller !== owner && caller !== controller) {
+  if (!validateRemoveRecord(input)) {
+    throw new ContractError(INVALID_INPUT_MESSAGE);
+  }
+
+  if (caller !== owner && !controllers.includes(caller)) {
     throw new ContractError(`Caller is not the token owner or controller!`);
   }
 

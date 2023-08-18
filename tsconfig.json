@@ -2,7 +2,6 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
-    "jsx": "preserve",
     "importHelpers": true,
     "moduleResolution": "node",
     "skipLibCheck": true,
@@ -12,11 +11,11 @@
     "sourceMap": true,
     "allowJs": true,
     "baseUrl": ".",
-    "types": ["webpack-env", "jest"],
+    "types": ["jest"],
     "paths": {
       "@/*": ["src/*"]
     },
-    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+    "lib": ["esnext"]
   },
   "include": [
     "src/**/*.ts",

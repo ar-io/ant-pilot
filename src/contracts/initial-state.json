@@ -2,7 +2,7 @@
   "ticker": "ANT-SOURCE",
   "name": "Arweave Name Token Source Contract v0.1.6",
   "owner": "",
-  "controller": "",
+  "controllers": [],
   "records": {
       "@": {
         "transactionId": "",
