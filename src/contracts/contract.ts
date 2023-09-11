@@ -1,3 +1,5 @@
+import { AddPair, CancelOrder, CreateOrder, Halt } from "@verto/flex";
+
 // ~~ Put all the interactions from '../actions/` together to write the final handle function which will be exported
 // from the contract source. ~~
 
@@ -10,6 +12,8 @@ import { transferTokens } from "./actions/write/transferTokens";
 import { ContractResult, PstAction, ANTState } from "./types/types";
 import { setController } from "./actions/write/setController";
 import { removeController } from "./actions/write/removeController";
+import { allow } from "./actions/write/allow";
+import { claim } from "./actions/write/claim";
 
 declare const ContractError;
 
@@ -36,6 +40,18 @@ export async function handle(
       return await removeRecord(state, action);
     case "balance":
       return await balance(state, action);
+    case "createOrder":
+      return await CreateOrder(state, action);
+    case "cancelOrder":
+      return await CancelOrder(state, action);
+    case "addPair":
+      return await AddPair(state, action);
+    case "halt":
+      return await Halt(state, action);
+    case "allow": 
+      return await allow(state, action);
+    case "claim":
+      return await claim(state, action);
     default:
       throw new ContractError(
         `No function supplied or function not recognised: "${input.function}"`
