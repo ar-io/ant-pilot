@@ -1,6 +1,6 @@
 import { PstAction, ANTState, ContractResult } from "../../types/types";
 // composed by ajv at build
-import { validateRemoveController } from '../../../validations.mjs';
+import { validateRemoveControllers } from "../../../validations.mjs";
 import { INVALID_INPUT_MESSAGE } from "@/constants";
 
 declare const ContractError;
@@ -13,7 +13,7 @@ export const transferTokens = async (
   const balances = state.balances;
   const { target } = input;
 
-  if (!validateRemoveController(input)) {
+  if (!validateRemoveControllers(input)) {
     throw new ContractError(INVALID_INPUT_MESSAGE);
   }
 
