@@ -53,8 +53,8 @@ export type PstFunction =
   | "setRecord"
   | "setName"
   | "setTicker"
-  | "setController"
-  | "removeController"
+  | "setControllers"
+  | "removeControllers"
   | "removeRecord"
   | "balance";
 

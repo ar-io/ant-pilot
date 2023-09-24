@@ -14,7 +14,7 @@ const setControllersSchema = {
       },
     },
   },
-  required: ["target"],
+  required: ["targets"],
   additionalProperties: false,
 };
 

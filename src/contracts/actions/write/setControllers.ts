@@ -31,6 +31,6 @@ export const setControllers = async (
     }
   });
 
-  state.controllers.concat(targets);
+  state.controllers = [...state.controllers, ...targets];
   return { state };
 };
