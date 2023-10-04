@@ -1,6 +1,5 @@
 // ~~ Put all the interactions from '../actions/` together to write the final handle function which will be exported
 // from the contract source. ~~
-
 import { balance } from "./actions/read/balance";
 import { removeRecord } from "./actions/write/removeRecord";
 import { setName } from "./actions/write/setName";
