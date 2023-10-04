@@ -54,7 +54,8 @@ export type PstFunction =
   | "setController"
   | "removeController"
   | "removeRecord"
-  | "balance";
+  | "balance"
+  | "evolve";
 
 export type ContractResult =
   | { state: ANTState }
