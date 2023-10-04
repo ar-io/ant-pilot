@@ -1,6 +1,6 @@
-import { PstAction, ANTState, ContractResult } from "../../contracts/types";
+import { PstAction, ANTState, ContractResult } from "../../types";
 import { validateSetController } from '../../validations.mjs';
-import { INVALID_INPUT_MESSAGE } from '../../contracts/constants';
+import { INVALID_INPUT_MESSAGE, NON_CONTRACT_OWNER_MESSAGE } from '../../constants';
 
 declare const ContractError;
 
@@ -21,7 +21,7 @@ export const setController = async (
   }
 
   if (caller !== owner) {
-    throw new ContractError(`Caller is not the token owner!`);
+    throw new ContractError(NON_CONTRACT_OWNER_MESSAGE);
   }
 
   if (state.controllers.includes(target)) {

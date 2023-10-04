@@ -1,7 +1,6 @@
-import { PstAction, ANTState, ContractResult } from "../../contracts/types";
-// composed by ajv at build
+import { PstAction, ANTState, ContractResult } from "../../types";
 import { validateRemoveRecord } from '../../validations.mjs';
-import { INVALID_INPUT_MESSAGE } from '../../contracts/constants';
+import { INVALID_INPUT_MESSAGE } from '../../constants';
 declare const ContractError;
 
 // Sets an existing record and if one does not exist, it cre

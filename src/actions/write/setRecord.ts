@@ -1,11 +1,10 @@
-import { MAX_NAME_LENGTH, TX_ID_LENGTH, INVALID_INPUT_MESSAGE, MIN_TTL_LENGTH, MAX_TTL_LENGTH } from '../../contracts/constants';
-import { PstAction, ANTState, ContractResult } from "../../contracts/types";
-// composed by ajv at build
+import { MAX_NAME_LENGTH, TX_ID_LENGTH, INVALID_INPUT_MESSAGE, NON_CONTRACT_OWNER_MESSAGE } from '../../constants';
+import { PstAction, ANTState, ContractResult } from "../../types";
 import { validateSetRecord } from '../../validations.mjs';
 
 declare const ContractError;
 
-// Sets an existing record and if one does not exist, it cre
+// Sets an existing record and if one does not exist, it creates it
 export const setRecord = async (
   state: ANTState,
   { caller, input}: PstAction
@@ -20,7 +19,7 @@ export const setRecord = async (
 
   // ensure the owner owns this ANT
   if (caller !== owner && !controllers.includes(caller)) {
-    throw new ContractError(`Caller is not the token owner!`);
+    throw new ContractError(NON_CONTRACT_OWNER_MESSAGE);
   }
 
   // check subdomain validity
