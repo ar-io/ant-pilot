@@ -2,7 +2,7 @@ import Arweave from "arweave";
 import { LoggerFactory, WarpFactory } from "warp-contracts";
 import * as fs from "fs";
 import { JWKInterface } from "arweave/node/lib/wallet";
-import { testKeyfile } from "../constants";
+import { testKeyfile } from "./constants";
 
 (async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

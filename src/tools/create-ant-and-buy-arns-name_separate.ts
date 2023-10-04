@@ -7,7 +7,7 @@ import {
 import * as fs from "fs";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { deployedContracts } from "../deployed-contracts";
-import { keyfile } from "../constants";
+import { keyfile } from "./constants";
 
 (async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

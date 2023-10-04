@@ -1,8 +1,7 @@
 import Arweave from "arweave";
 import { LoggerFactory, WarpFactory } from "warp-contracts";
 import * as fs from "fs";
-import { testKeyfile } from "../constants";
-import { deployedTestContracts } from "../deployed-contracts";
+import { deployedTestContracts, testKeyfile } from "./constants";
 import { addFunds } from "../../utils/_helpers";
 
 (async () => {

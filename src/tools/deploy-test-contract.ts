@@ -3,7 +3,7 @@ import { LoggerFactory, PstState, WarpFactory } from "warp-contracts";
 import * as fs from "fs";
 import path from "path";
 import { addFunds } from "../../utils/_helpers";
-import { testKeyfile } from "../constants";
+import { testKeyfile } from "./constants";
 
 (async () => {
   // ~~ Initialize Arweave ~~

@@ -7,7 +7,7 @@ import {
 } from "warp-contracts";
 import * as fs from "fs";
 import path from "path";
-import { keyfile } from "../constants";
+import { keyfile } from "./constants";
 
 (async () => {
   // ~~ Initialize Arweave ~~

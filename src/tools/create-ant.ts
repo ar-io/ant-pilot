@@ -5,8 +5,8 @@ import {
   WarpFactory,
 } from "warp-contracts";
 import * as fs from "fs";
-import { keyfile } from "../constants";
-import { deployedContracts } from "../deployed-contracts";
+import { keyfile } from "./constants";
+import { deployedContracts } from "./constants";
 
 (async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
