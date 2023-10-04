@@ -1,7 +1,7 @@
-import { PstAction, ANTState, ContractResult } from "../../types/types";
+import { PstAction, ANTState, ContractResult } from "../../contracts/types";
 // composed by ajv at build
-import { validateRemoveController } from '../../../validations.mjs';
-import { INVALID_INPUT_MESSAGE } from "@/constants";
+import { validateRemoveController } from '../../validations.mjs';
+import { INVALID_INPUT_MESSAGE } from '../../contracts/constants';
 
 declare const ContractError;
 

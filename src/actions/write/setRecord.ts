@@ -1,8 +1,7 @@
-import { MAX_NAME_LENGTH, TX_ID_LENGTH, MIN_TTL_LENGTH, MAX_TTL_LENGTH } from "@/constants";
-import { PstAction, ANTState, ContractResult } from "../../types/types";
+import { MAX_NAME_LENGTH, TX_ID_LENGTH, INVALID_INPUT_MESSAGE, MIN_TTL_LENGTH, MAX_TTL_LENGTH } from '../../contracts/constants';
+import { PstAction, ANTState, ContractResult } from "../../contracts/types";
 // composed by ajv at build
-import { validateSetRecord } from '../../../validations.mjs';
-import { INVALID_INPUT_MESSAGE } from "@/constants";
+import { validateSetRecord } from '../../validations.mjs';
 
 declare const ContractError;
 

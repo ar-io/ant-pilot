@@ -1,6 +1,6 @@
-import { PstAction, ANTState, ContractResult } from "../../types/types";
-import { validateSetController } from '../../../validations.mjs';
-import { INVALID_INPUT_MESSAGE } from "@/constants";
+import { PstAction, ANTState, ContractResult } from "../../contracts/types";
+import { validateSetController } from '../../validations.mjs';
+import { INVALID_INPUT_MESSAGE } from '../../contracts/constants';
 
 declare const ContractError;
 
