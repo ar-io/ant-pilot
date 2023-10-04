@@ -1,13 +1,13 @@
 {
-  "name": "ant-pilot",
-  "version": "0.1.6",
+  "name": "ANT-Contract",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
-    "build": "yarn run clean && yarn run build-ts && npm run cp",
+    "build": "yarn clean && node build.js",
     "build-ts": "node build.js",
     "clean": "rimraf ./dist",
     "cp": "copyfiles -u 1 ./src/**/*.json dist",
-    "test": "jest tests"
+    "test": "yarn build && jest tests --runInBand"
   },
   "dependencies": {
     "ajv": "^8.12.0",
@@ -16,9 +16,11 @@
     "arweave": "1.13.7",
     "babel-jest": "^27.5.0",
     "core-js": "^3.6.5",
+    "dotenv": "^16.3.1",
     "sass-loader": "^10",
     "typescript": "4.3.5",
-    "warp-contracts": "^1.2.35"
+    "warp-contracts": "^1.4.18",
+    "warp-contracts-plugin-deploy": "^1.0.1"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.16.7",

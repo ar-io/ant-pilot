@@ -4,7 +4,7 @@ const { build } = require('esbuild');
 const replace = require('replace-in-file');
 const Ajv = require('ajv');
 const standaloneCode = require('ajv/dist/standalone').default;
-const contracts = ['/contracts/contract.ts'];
+const contracts = ['/contract.ts'];
 const {
   balanceSchema,
   removeControllerSchema,
