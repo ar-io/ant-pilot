@@ -36,8 +36,8 @@ export async function handle(
       return await removeRecord(state, action);
     case "balance":
       return await balance(state, action);
-      case "evolve":
-        return await evolve(state, action);
+    case "evolve":
+      return await evolve(state, action);
     default:
       throw new ContractError(
         `No function supplied or function not recognised: "${input.function}"`
