@@ -13,12 +13,15 @@ export const setTicker = async (
   const { ticker } = input;
 
   if (!validateSetTicker(input)) {
+    console.log (input)
     throw new ContractError(INVALID_INPUT_MESSAGE);
   }
 
-  if (caller !== owner && controllers.includes(caller)) {
+  if (caller !== owner && !controllers.includes(caller)) {
     throw new ContractError(`Caller is not the token owner or controller!`);
   }
+
+
 
   // check ticker validity
   if (

@@ -1,4 +1,4 @@
-import { MAX_NAME_LENGTH, TX_ID_LENGTH, INVALID_INPUT_MESSAGE, NON_CONTRACT_OWNER_MESSAGE } from '../../constants';
+import { MAX_NAME_LENGTH, TX_ID_LENGTH, INVALID_INPUT_MESSAGE, NON_CONTRACT_OWNER_MESSAGE, MIN_TTL_LENGTH } from '../../constants';
 import { PstAction, ANTState, ContractResult } from "../../types";
 import { validateSetRecord } from '../../validations.mjs';
 
