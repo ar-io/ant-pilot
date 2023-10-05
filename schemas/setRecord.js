@@ -8,11 +8,11 @@ const setRecordSchema = {
       },
       subDomain: {
         type: 'string',
-        pattern: "^[a-zA-Z0-9_-]+$",
+        pattern: '^(?:[a-zA-Z0-9_-]+|@)$',
       },
       transactionId: {
         type: 'string',
-        pattern: "^[a-zA-Z0-9_-]{43}$",
+        pattern: '^[a-zA-Z0-9_-]{43}$',
       },
       ttlSeconds: {
         type: 'integer',
