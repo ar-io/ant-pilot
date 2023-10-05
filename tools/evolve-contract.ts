@@ -21,15 +21,15 @@ import { initialize, warp } from './utilities';
   );
 
   // load state of contract
-  const arnsContractTxId =
-    process.env.ARNS_CONTRACT_TX_ID ??
-    'bLAgYxAdX2Ry-nt6aH2ixgvJXbpsEYm28NgJgyqfs-U';
+  const antContractTxId =
+    process.env.ANT_CONTRACT_TX_ID ??
+    'YOUR ANT CONTRACT';
 
   // ~~ Initialize SmartWeave ~~
   const warpWithDeploy = warp.use(new DeployPlugin());
 
   // Read the ArNS Registry Contract
-  const contract = warpWithDeploy.pst(arnsContractTxId);
+  const contract = warpWithDeploy.pst(antContractTxId);
   contract.connect(wallet);
 
   // ~~ Read contract source and initial state files ~~
@@ -57,6 +57,7 @@ import { initialize, warp } from './utilities';
     },
   );
 
+  console.log ("Evolve Interaction Tx Id: ", evolveInteractionTXId?.originalTxId)
   // DO NOT CHANGE THIS - it's used by github actions
   console.log(evolveSrcTxId);
 })();
