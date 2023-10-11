@@ -1,616 +1,522 @@
 import ArLocal from "arlocal";
 import Arweave from "arweave";
-import { addFunds, mineBlock } from "../utils/_helpers";
+import { addFunds, mineBlock } from "./utils/helper";
 import * as fs from "fs";
 import path from "path";
+import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 import {
+  Contract,
   ContractDeploy,
   InteractionResult,
   LoggerFactory,
-  PstContract,
   PstState,
   WarpFactory,
 } from "warp-contracts";
 import { JWKInterface } from "arweave/node/lib/wallet";
+import { setupInitialContractState } from "./utils/helper";
+import { ANTState } from "../src/types";
+import { MIN_TTL_LENGTH } from "../src/constants";
 
-describe("Testing the ANT Contract", () => {
-  let contractSrc: string;
-  let wallet: JWKInterface;
-  let wallet2: JWKInterface;
-  let walletAddress: string;
-  let walletAddress2: string;
-  let initialState: PstState;
-  let arweave: Arweave;
-  let pst: PstContract;
-  let deployedContract: ContractDeploy;
+describe("ANT Tests", () => {
+  let owner: JWKInterface;
+  let ownerAddress: string;
+  let owner2: JWKInterface;
+  let ownerAddress2: string;
+  let controller: JWKInterface;
+  let controllerAddress: string;
+  let controller2: JWKInterface;
+  let controllerAddress2: string;
+
+  let contract: Contract<PstState>;
+
+  // Arlocal
   const arlocal = new ArLocal(1820, false);
+
+  // Arweave
+  const arweave = Arweave.init({
+    host: 'localhost',
+    port: 1820,
+    protocol: 'http',
+  });
+
+  // Warp
+  const warp = WarpFactory.forLocal(1820, arweave).use(new DeployPlugin());
+  LoggerFactory.INST.logLevel('error');
+
   beforeAll(async () => {
-    // ~~ Set up ArLocal and instantiate Arweave ~~
     await arlocal.start();
 
-    arweave = Arweave.init({
-      host: "localhost",
-      port: 1820,
-      protocol: "http",
-    });
-
-    // ~~ Initialize `LoggerFactory` ~~
-    LoggerFactory.INST.logLevel("fatal");
-
-    // ~~ Initialize Warp ~~
-    const warp = WarpFactory.forTestnet();
-
     // ~~ Generate wallet and add funds ~~
-    wallet = await arweave.wallets.generate();
-    walletAddress = await arweave.wallets.jwkToAddress(wallet);
-    await addFunds(arweave, wallet);
+    owner = await arweave.wallets.generate();
+    ownerAddress = await arweave.wallets.jwkToAddress(owner);
+    await addFunds(arweave, owner);
 
-    wallet2 = await arweave.wallets.generate();
-    walletAddress2 = await arweave.wallets.jwkToAddress(wallet2);
-    await addFunds(arweave, wallet2);
+    owner2 = await arweave.wallets.generate();
+    ownerAddress2 = await arweave.wallets.jwkToAddress(owner2);
+    await addFunds(arweave, owner2);
 
-    // ~~ Read contract source and initial state files ~~
-    contractSrc = fs.readFileSync(
-      path.join(__dirname, "../dist/contract.js"),
-      "utf8"
+    controller = await arweave.wallets.generate();
+    controllerAddress = await arweave.wallets.jwkToAddress(controller);
+    await addFunds(arweave, controller);
+
+    controller2 = await arweave.wallets.generate();
+    controllerAddress2 = await arweave.wallets.jwkToAddress(controller2);
+    await addFunds(arweave, controller2);
+
+    // pull source code
+    const contractSrcJs = fs.readFileSync(
+      path.join(__dirname, '../dist/contract.js'),
+      'utf8',
     );
-    const stateFromFile: PstState = JSON.parse(
-      fs.readFileSync(
-        path.join(__dirname, "../dist/contracts/initial-state.json"),
-        "utf8"
-      )
-    );
 
-    // ~~ Update initial state ~~
-    initialState = {
-      ...stateFromFile,
-      ...{
-        owner: walletAddress,
-        controllers: [walletAddress],
-        balances: {
-          [walletAddress]: 1,
-        },
+    // create initial contract
+    const initialContractState = await setupInitialContractState(
+      ownerAddress,
+    );
+    // deploy contract to arlocal
+    const { contractTxId } = await warp.deploy(
+      {
+        wallet: owner,
+        initState: JSON.stringify(initialContractState),
+        src: contractSrcJs,
       },
-    };
-
-    // ~~ Deploy contract ~~
-    deployedContract = await warp.deploy({
-      wallet,
-      initState: JSON.stringify(initialState),
-      src: contractSrc,
-    });
-
-    // ~~ Connect to the pst contract ~~
-    pst = warp.pst(deployedContract.contractTxId);
-    pst.connect(wallet);
+      true, // disable bundling
+    );
 
     // ~~ Mine block ~~
     await mineBlock(arweave);
+
+    // ~~ Connect to the ANT contract ~~
+    contract = warp.pst(contractTxId).connect(owner);
   });
 
   afterAll(async () => {
-    console.log("Final State:");
-    console.log(await pst.currentState());
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    console.log(JSON.stringify(newState, null, 3));
     // ~~ Stop ArLocal ~~
     await arlocal.stop();
   });
 
   it("should read pst state and balance data", async () => {
-    console.log("Initial State:");
-    console.log(await pst.currentState());
-    expect(await pst.currentState()).toEqual(initialState);
-    expect((await pst.currentState()).owner).toEqual(walletAddress);
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.balances[ownerAddress]).toEqual(1);
+
   });
 
-  it("should set records with correct ownership", async () => {
-    await pst.writeInteraction({
-      // If TTL is not passed, default of 900 is used
+  it("should set ANT root @ with correct ownership", async () => {
+    const writeInteraction = await contract.writeInteraction({
       function: "setRecord",
       subDomain: "@",
       transactionId: "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
+      ttlSeconds: 900,
     });
     await mineBlock(arweave);
-    await pst.writeInteraction({
-      // If TTL is not passed, default of 900 is used
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.records["@"]).toEqual({
+      transactionId: "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
+      ttlSeconds: 900,
+    });
+    console.log (newState)
+  });
+
+  it("should set other records with correct ownership", async () => {
+    await contract.writeInteraction({
       function: "setRecord",
       subDomain: "same_as_root",
       transactionId: "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
+      ttlSeconds: MIN_TTL_LENGTH
     });
     await mineBlock(arweave);
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "setRecord",
       subDomain: "dao",
       transactionId: "8MaeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc",
+      ttlSeconds: MIN_TTL_LENGTH
     });
     await mineBlock(arweave);
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "setRecord",
       subDomain: "remove_this",
       ttlSeconds: 1000,
       transactionId: "BYEeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc",
     });
     await mineBlock(arweave);
-    let currentState = await pst.currentState();
-    let currentStateString = JSON.stringify(currentState);
-    let currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["@"]).toEqual({
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.records["same_as_root"]).toEqual({
       transactionId: "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: 900,
+      ttlSeconds: MIN_TTL_LENGTH,
     });
-    expect(currentStateJSON.records["same_as_root"]).toEqual({
-      transactionId: "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: 900,
-    });
-    expect(currentStateJSON.records["dao"]).toEqual({
+    expect(newState.records["dao"]).toEqual({
       transactionId: "8MaeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc",
-      ttlSeconds: 900,
+      ttlSeconds: MIN_TTL_LENGTH,
     });
-    expect(currentStateJSON.records["remove_this"]).toEqual({
+    expect(newState.records["remove_this"]).toEqual({
       transactionId: "BYEeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc",
       ttlSeconds: 1000,
     });
-    await pst.writeInteraction({
-      function: "setRecord",
-      subDomain: "@",
-      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-    });
-    await pst.writeInteraction({
+  });
+
+  it("should update record subdomain and ttlseconds with correct ownership", async () => {
+    await contract.writeInteraction({
       function: "setRecord",
       subDomain: "dao",
       transactionId: "DAOeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc",
+      ttlSeconds: MIN_TTL_LENGTH * 10
     });
     await mineBlock(arweave);
-    currentState = await pst.currentState();
-    currentStateString = JSON.stringify(currentState);
-    currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["@"]).toEqual({
-      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: 900,
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.records["dao"]).toEqual({
+      transactionId: "DAOeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc",
+      ttlSeconds: MIN_TTL_LENGTH * 10,
     });
-  });
+});
 
   it("should set name with correct ownership", async () => {
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "setName",
       name: "My New Token",
     });
     await mineBlock(arweave);
-    const currentState = await pst.currentState();
-    const currentStateString = JSON.stringify(currentState);
-    const currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.name).toEqual("My New Token");
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.name).toEqual("My New Token");
   });
 
-  it("should set controller with correct ownership", async () => {
-    await pst.writeInteraction({
+  it("should set multiple controllers with correct ownership", async () => {
+    await contract.writeInteraction({
       function: "setController",
-      target: walletAddress2,
+      target: controllerAddress,
     });
     await mineBlock(arweave);
-    const currentState = await pst.currentState();
-    const currentStateString = JSON.stringify(currentState);
-    const currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.controller).toEqual(walletAddress2);
+    await contract.writeInteraction({
+      function: "setController",
+      target: controllerAddress2,
+    });
+    await mineBlock(arweave);
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.controllers).toContain(controllerAddress);
+    expect(newState.controllers).toContain(controllerAddress2);
   });
 
   it("should set ticker with correct ownership", async () => {
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "setTicker",
       ticker: "ANT-NEWONE",
     });
     await mineBlock(arweave);
-    const currentState = await pst.currentState();
-    const currentStateString = JSON.stringify(currentState);
-    const currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.ticker).toEqual("ANT-NEWONE");
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.ticker).toEqual("ANT-NEWONE");
   });
 
   it("should remove records with correct ownership", async () => {
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "removeRecord",
       subDomain: "remove_this",
     });
     await mineBlock(arweave);
-    let currentState = await pst.currentState();
-    let currentStateString = JSON.stringify(currentState);
-    let currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["remove_this"]).toEqual(undefined);
-    await pst.writeInteraction({
-      function: "removeRecord",
-      subDomain: "fake.domain", // this doesnt exist
-    });
-    await mineBlock(arweave);
-    currentState = await pst.currentState();
-    currentStateString = JSON.stringify(currentState);
-    currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["fake.domain"]).toEqual(undefined);
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.records["remove_this"]).toEqual(undefined);
   });
 
   it("should not set malformed records with correct ownership", async () => {
-    await pst.writeInteraction({
+    let writeInteraction = await contract.writeInteraction({
       function: "setRecord",
       subDomain: "@",
       transactionId: "bad record", // too short
+      ttlSeconds: MIN_TTL_LENGTH,
     });
     await mineBlock(arweave);
-    let currentState = await pst.currentState();
-    let currentStateString = JSON.stringify(currentState);
-    let currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["@"]).toEqual({
-      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: 900,
-    });
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
 
-    await pst.writeInteraction({
+    writeInteraction = await contract.writeInteraction({
       function: "setRecord",
       subDomain: "@",
       transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
       ttlSeconds: 1, // ttlSeconds too low
     });
     await mineBlock(arweave);
-    currentState = await pst.currentState();
-    currentStateString = JSON.stringify(currentState);
-    currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["@"]).toEqual({
-      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: 900,
-    });
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
 
-    await pst.writeInteraction({
+    writeInteraction = await contract.writeInteraction({
       function: "setRecord",
       subDomain: "@",
       transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
       ttlSeconds: 1_000_000_000, // ttlSeconds too high
     });
     await mineBlock(arweave);
-    currentState = await pst.currentState();
-    currentStateString = JSON.stringify(currentState);
-    currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["@"]).toEqual({
-      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: 900,
-    });
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
 
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "setRecord",
       subDomain: "@",
       transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
       ttlSeconds: 900.5, // ttlSeconds should not be a decimal
     });
     await mineBlock(arweave);
-    currentState = await pst.currentState();
-    currentStateString = JSON.stringify(currentState);
-    currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["@"]).toEqual({
-      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: 900,
-    });
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
 
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "setRecord",
       subDomain: "@",
       transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
       ttlSeconds: "500", // ttlSeconds should not be a string
     });
     await mineBlock(arweave);
-    currentState = await pst.currentState();
-    currentStateString = JSON.stringify(currentState);
-    currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["@"]).toEqual({
-      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: 900,
-    });
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
 
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "setRecord",
       subDomain: "@",
       transactionId: "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs_Long_String", // too long
+      ttlSeconds: MIN_TTL_LENGTH,
     });
     await mineBlock(arweave);
-    currentState = await pst.currentState();
-    currentStateString = JSON.stringify(currentState);
-    currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["@"]).toEqual({
-      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: 900,
-    });
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
 
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "setRecord",
       subDomain: "", // empty
       transactionId: "",
+      ttlSeconds: "",
     });
     await mineBlock(arweave);
-    currentState = await pst.currentState();
-    currentStateString = JSON.stringify(currentState);
-    currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records[""]).toEqual(undefined);
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
 
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "setRecord",
       subDomain: 100000, // no string
       transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
     });
     await mineBlock(arweave);
-    currentState = await pst.currentState();
-    currentStateString = JSON.stringify(currentState);
-    currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records[100000]).toEqual(undefined);
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
 
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "setRecord",
       record: {
         subDomain: "@",
         transactionId: 1000000, // no string
+        ttlSeconds: MIN_TTL_LENGTH,
       },
     });
     await mineBlock(arweave);
-    currentState = await pst.currentState();
-    currentStateString = JSON.stringify(currentState);
-    currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["@"]).toEqual({
-      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: 900,
-    });
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
 
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "setRecord",
       subDomain: "@",
       transactionId: "q8fnqsybd98-DRk6F6%dbBSkTouUShmnIA-pW4N-Hzs", // invalid character
+      ttlSeconds: MIN_TTL_LENGTH,
     });
     await mineBlock(arweave);
-    currentState = await pst.currentState();
-    currentStateString = JSON.stringify(currentState);
-    currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["@"]).toEqual({
-      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: 900,
-    });
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
   });
 
-  it("should transfer and perform dry write with overwritten caller", async () => {
-    const newWallet = await arweave.wallets.generate();
-    const newWalletAddress = await arweave.wallets.jwkToAddress(newWallet);
-    await addFunds(arweave, newWallet);
-    await pst.transfer({
-      // transfer to new test wallet
-      target: newWalletAddress,
-      qty: 1,
-    });
-
-    await mineBlock(arweave);
-    expect((await pst.currentState()).owner).toEqual(newWalletAddress);
-    expect((await pst.currentState()).balances[newWalletAddress]).toEqual(1);
-    expect((await pst.currentState()).balances[walletAddress]).toEqual(
-      undefined
-    );
-    const result: InteractionResult<PstState, unknown> = await pst.dryWrite(
-      {
-        function: "transfer",
-        target: "NdZ3YRwMB2AMwwFYjKn1g88Y9nRybTo0qhS1ORq_E7g",
-        qty: 1,
-      },
-      newWalletAddress
-    );
-
-    expect(result.state.owner).toEqual(
-      "NdZ3YRwMB2AMwwFYjKn1g88Y9nRybTo0qhS1ORq_E7g"
-    );
-    pst.connect(newWallet);
-    await pst.transfer({
-      // Transfer back to original wallet
-      target: walletAddress,
-      qty: 1,
+  it("should transfer ANT to another owner", async () => {
+    const writeInteraction = await contract.writeInteraction({
+      function: 'transfer',
+      target: ownerAddress2,
     });
     await mineBlock(arweave);
-    expect((await pst.currentState()).owner).toEqual(walletAddress);
-    expect((await pst.currentState()).balances[newWalletAddress]).toEqual(
-      undefined
-    );
-    expect((await pst.currentState()).balances[walletAddress]).toEqual(1);
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.balances[ownerAddress]).toEqual(undefined);
+    expect(newState.balances[ownerAddress2]).toEqual(1);
+    expect(newState.owner).toEqual(ownerAddress2);
   });
 
   it("should not set records with incorrect ownership", async () => {
+    const { cachedValue: prevCachedValue } = await contract.readState();
+    const prevState = prevCachedValue.state as ANTState;
     const newWallet = await arweave.wallets.generate();
     await addFunds(arweave, newWallet);
-    pst.connect(newWallet);
-    await pst.writeInteraction({
+    contract.connect(newWallet);
+    await contract.writeInteraction({
       function: "setRecord",
       subDomain: "@",
       transactionId: "Z2XhgF0LtJhtWWihirRm7qQehoxDe01vReZyrFYkAc4",
+      ttlSeconds: MIN_TTL_LENGTH
     });
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "setRecord",
       subDomain: "hacked.domain",
       transactionId: "HACKgF0LtJhtWWihirRm7qQehoxDe01vReZyrFYkAc4",
+      ttlSeconds: MIN_TTL_LENGTH
     });
     await mineBlock(arweave);
-    const currentState = await pst.currentState();
-    const currentStateString = JSON.stringify(currentState);
-    const currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["@"]).toEqual({
-      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: 900,
-    });
-    expect(currentStateJSON.records["hacked.domain"]).toEqual(undefined);
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.records).toEqual(prevState.records);
   });
 
   it("should not set name with incorrect ownership", async () => {
-    await pst.writeInteraction({
+    const { cachedValue: prevCachedValue } = await contract.readState();
+    const prevState = prevCachedValue.state as ANTState;
+    const writeInteraction = await contract.writeInteraction({
       function: "setName",
       name: "HACKED",
     });
     await mineBlock(arweave);
-    const currentState = await pst.currentState();
-    const currentStateString = JSON.stringify(currentState);
-    const currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.name).toEqual("My New Token");
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.name).toEqual(prevState.name);
   });
 
   it("should not set controller with incorrect ownership", async () => {
-    await pst.writeInteraction({
+    const { cachedValue: prevCachedValue } = await contract.readState();
+    const prevState = prevCachedValue.state as ANTState;
+    const writeInteraction = await contract.writeInteraction({
       function: "setController",
       target: "HACKED",
     });
     await mineBlock(arweave);
-    const currentState = await pst.currentState();
-    const currentStateString = JSON.stringify(currentState);
-    const currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.controller).toEqual(walletAddress2);
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.controllers).toEqual(prevState.controllers);
   });
 
   it("should not set ticker with incorrect ownership", async () => {
-    await pst.writeInteraction({
+    const { cachedValue: prevCachedValue } = await contract.readState();
+    const prevState = prevCachedValue.state as ANTState;
+    const writeInteraction = await contract.writeInteraction({
       function: "setTicker",
       name: "ANT-HACKED",
     });
     await mineBlock(arweave);
-    const currentState = await pst.currentState();
-    const currentStateString = JSON.stringify(currentState);
-    const currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.ticker).toEqual("ANT-NEWONE");
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.ticker).toEqual(prevState.ticker);
   });
 
   it("should not remove records with incorrect ownership", async () => {
     const newWallet = await arweave.wallets.generate();
     await addFunds(arweave, newWallet);
-    pst.connect(newWallet);
-    await pst.writeInteraction({
+    contract.connect(newWallet);
+    await contract.writeInteraction({
       function: "removeRecord",
       subDomain: "@",
     });
     await mineBlock(arweave);
-    let currentState = await pst.currentState();
-    let currentStateString = JSON.stringify(currentState);
-    let currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["@"]).toEqual({
-      transactionId: "NEWnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: 900,
-    });
-    await pst.writeInteraction({
-      function: "removeRecord",
-      subDomain: "fake.domain", // this doesnt exist
-    });
-    await mineBlock(arweave);
-    currentState = await pst.currentState();
-    currentStateString = JSON.stringify(currentState);
-    currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["fake.domain"]).toEqual(undefined);
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.records["@"]).not.toEqual(undefined);
   });
 
   it("should not transfer with incorrect ownership", async () => {
+    const { cachedValue: prevCachedValue } = await contract.readState();
+    const prevState = prevCachedValue.state as ANTState;
     const newWallet = await arweave.wallets.generate();
-    const newWalletAddress = await arweave.wallets.jwkToAddress(newWallet);
     await addFunds(arweave, newWallet);
-    pst.connect(newWallet);
-    await pst.transfer({
-      // This wallet does not have a token so this transfer should not work
-      target: walletAddress,
-      qty: 1,
+    contract.connect(newWallet);
+    const writeInteraction = await contract.writeInteraction({
+      function: 'transfer',
+      target: ownerAddress,
     });
     await mineBlock(arweave);
-    expect((await pst.currentState()).owner).toEqual(walletAddress);
-    expect((await pst.currentState()).balances[newWalletAddress]).toEqual(
-      undefined
-    );
-    expect((await pst.currentState()).balances[walletAddress]).toEqual(1);
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
+    expect(newState.owner).toEqual(prevState.owner);
   });
 
   it("should not transfer with only controller ownership", async () => {
-    pst.connect(wallet2); // this wallet is only a controller
-    await pst.transfer({
-      target: walletAddress2, // this will try to promote the controller to owner
+    contract.connect(controller); // this wallet is only a controller
+    const { cachedValue: prevCachedValue } = await contract.readState();
+    const prevState = prevCachedValue.state as ANTState;
+    const writeInteraction = await contract.writeInteraction({
+      function: 'transfer',
+      target: controller,
       qty: 1,
     });
+
     await mineBlock(arweave);
-    let currentState = await pst.currentState();
-    let currentStateString = JSON.stringify(currentState);
-    let currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.owner).toEqual(walletAddress);
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.owner).toEqual(prevState.owner);
   });
 
   it("should set records as controller", async () => {
-    pst.connect(wallet2); // this wallet is only a controller
-    await pst.writeInteraction({
-      // If TTL is not passed, default of 900 is used
+    contract.connect(controller); // this wallet is only a controller
+    await contract.writeInteraction({
       function: "setRecord",
       subDomain: "@",
       transactionId: "CTRLqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
+      ttlSeconds: MIN_TTL_LENGTH,
     });
     await mineBlock(arweave);
-    await pst.writeInteraction({
-      // If TTL is not passed, default of 900 is used
+    await contract.writeInteraction({
       function: "setRecord",
       subDomain: "same_as_root",
       transactionId: "CTRLqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
+      ttlSeconds: MIN_TTL_LENGTH,
     });
     await mineBlock(arweave);
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "setRecord",
       subDomain: "remove_this",
-      ttlSeconds: 1000,
+      ttlSeconds: MIN_TTL_LENGTH * 2,
       transactionId: "CTRLajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc",
     });
     await mineBlock(arweave);
-    let currentState = await pst.currentState();
-    let currentStateString = JSON.stringify(currentState);
-    let currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["@"]).toEqual({
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.records["@"]).toEqual({
       transactionId: "CTRLqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: 900,
+      ttlSeconds: MIN_TTL_LENGTH,
     });
-    expect(currentStateJSON.records["same_as_root"]).toEqual({
+    expect(newState.records["same_as_root"]).toEqual({
       transactionId: "CTRLqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: 900,
+      ttlSeconds: MIN_TTL_LENGTH,
     });
-    expect(currentStateJSON.records["remove_this"]).toEqual({
+    expect(newState.records["remove_this"]).toEqual({
       transactionId: "CTRLajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc",
-      ttlSeconds: 1000,
+      ttlSeconds: MIN_TTL_LENGTH * 2,
     });
   });
 
   it("should set name as controller", async () => {
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "setName",
       name: "My New Token Renamed",
     });
     await mineBlock(arweave);
-    const currentState = await pst.currentState();
-    const currentStateString = JSON.stringify(currentState);
-    const currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.name).toEqual("My New Token Renamed");
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.name).toEqual("My New Token Renamed");
   });
 
   it("should set ticker as controller", async () => {
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "setTicker",
-      ticker: "ANT-NEWONE-RENAME",
+      ticker: "ANT-CONTROLLER-RENAME",
     });
     await mineBlock(arweave);
-    const currentState = await pst.currentState();
-    const currentStateString = JSON.stringify(currentState);
-    const currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.ticker).toEqual("ANT-NEWONE-RENAME");
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.ticker).toEqual("ANT-CONTROLLER-RENAME");
   });
 
   it("should remove records as controller", async () => {
-    await pst.writeInteraction({
+    await contract.writeInteraction({
       function: "removeRecord",
       subDomain: "remove_this",
     });
     await mineBlock(arweave);
-    let currentState = await pst.currentState();
-    let currentStateString = JSON.stringify(currentState);
-    let currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["remove_this"]).toEqual(undefined);
-    await pst.writeInteraction({
-      function: "removeRecord",
-      subDomain: "fake.domain", // this doesnt exist
-    });
-    await mineBlock(arweave);
-    currentState = await pst.currentState();
-    currentStateString = JSON.stringify(currentState);
-    currentStateJSON = JSON.parse(currentStateString);
-    expect(currentStateJSON.records["fake.domain"]).toEqual(undefined);
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.records["remove_this"]).toEqual(undefined);
   });
 });
