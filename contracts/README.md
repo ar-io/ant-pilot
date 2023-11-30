@@ -146,13 +146,11 @@ Explain how this contract integrates with other contracts and provides links to 
 
 ### Documentation
 
-Arweave Name System: https://ar.io/docs/arns/
-Permaweb Cookbook: https://cookbook.arweave.dev/concepts/arns.html
+- [Arweave Name System Documentation](https://ar.io/docs/arns/)
+- [Permaweb Cookbook](https://cookbook.arweave.dev/concepts/arns.html)
 
 ### Support channels & mentorship
 
-<iframe src="https://discord.com/widget?id=908759493943394334&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
-
-[arweave-dev](https://discord.gg/VEfJVuuUfx) [![arweave-dev](https://discordapp.com/api/guilds/VEfJVuuUfx/widget.png)](https://discord.gg/VEfJVuuUfx)
-
-[permaweb](https://discord.gg/NPgK8vpQkw) [![permaweb](https://discordapp.com/api/guilds/NPgK8vpQkw/widget.png)](https://discord.gg/NPgK8vpQkw)
+- [ar.io Discord](https://discord.gg/7aQMHyY5FF)
+- [arweave-dev Discord](https://discord.gg/VEfJVuuUfx)
+- [permaweb Discord](https://discord.gg/NPgK8vpQkw)
