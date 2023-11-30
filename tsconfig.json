@@ -23,7 +23,8 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "utils/_helpers.ts"
+    "utils/_helpers.ts",
+    "contracts/ANT-1/tests/contract.test.ts"
   ],
   "exclude": ["node_modules", "tests"]
 }

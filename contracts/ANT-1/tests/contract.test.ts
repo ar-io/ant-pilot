@@ -3,7 +3,7 @@ import Arweave from "arweave";
 import { addFunds, mineBlock } from "./utils/helper";
 import * as fs from "fs";
 import path from "path";
-import { DeployPlugin } from 'warp-contracts-plugin-deploy';
+import { DeployPlugin } from "warp-contracts-plugin-deploy";
 import {
   Contract,
   ContractDeploy,
@@ -14,8 +14,8 @@ import {
 } from "warp-contracts";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { setupInitialContractState } from "./utils/helper";
-import { ANTState } from "../src/types";
-import { MIN_TTL_LENGTH } from "../src/constants";
+import { ANTState } from "../types";
+import { MIN_TTL_LENGTH } from "../constants";
 
 describe("ANT Tests", () => {
   let owner: JWKInterface;
@@ -34,14 +34,14 @@ describe("ANT Tests", () => {
 
   // Arweave
   const arweave = Arweave.init({
-    host: 'localhost',
+    host: "localhost",
     port: 1820,
-    protocol: 'http',
+    protocol: "http",
   });
 
   // Warp
   const warp = WarpFactory.forLocal(1820, arweave).use(new DeployPlugin());
-  LoggerFactory.INST.logLevel('error');
+  LoggerFactory.INST.logLevel("error");
 
   beforeAll(async () => {
     await arlocal.start();
@@ -65,14 +65,12 @@ describe("ANT Tests", () => {
 
     // pull source code
     const contractSrcJs = fs.readFileSync(
-      path.join(__dirname, '../dist/contract.js'),
-      'utf8',
+      path.join(__dirname, "../dist/contract.js"),
+      "utf8"
     );
 
     // create initial contract
-    const initialContractState = await setupInitialContractState(
-      ownerAddress,
-    );
+    const initialContractState = await setupInitialContractState(ownerAddress);
     // deploy contract to arlocal
     const { contractTxId } = await warp.deploy(
       {
@@ -80,7 +78,7 @@ describe("ANT Tests", () => {
         initState: JSON.stringify(initialContractState),
         src: contractSrcJs,
       },
-      true, // disable bundling
+      true // disable bundling
     );
 
     // ~~ Mine block ~~
@@ -102,7 +100,6 @@ describe("ANT Tests", () => {
     const { cachedValue: newCachedValue } = await contract.readState();
     const newState = newCachedValue.state as ANTState;
     expect(newState.balances[ownerAddress]).toEqual(1);
-
   });
 
   it("should set ANT root @ with correct ownership", async () => {
@@ -120,7 +117,7 @@ describe("ANT Tests", () => {
       transactionId: "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
       ttlSeconds: 900,
     });
-    console.log (newState)
+    console.log(newState);
   });
 
   it("should set other records with correct ownership", async () => {
@@ -128,14 +125,14 @@ describe("ANT Tests", () => {
       function: "setRecord",
       subDomain: "same_as_root",
       transactionId: "q8fnqsybd98-DRk6F6wdbBSkTouUShmnIA-pW4N-Hzs",
-      ttlSeconds: MIN_TTL_LENGTH
+      ttlSeconds: MIN_TTL_LENGTH,
     });
     await mineBlock(arweave);
     await contract.writeInteraction({
       function: "setRecord",
       subDomain: "dao",
       transactionId: "8MaeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc",
-      ttlSeconds: MIN_TTL_LENGTH
+      ttlSeconds: MIN_TTL_LENGTH,
     });
     await mineBlock(arweave);
     await contract.writeInteraction({
@@ -166,7 +163,7 @@ describe("ANT Tests", () => {
       function: "setRecord",
       subDomain: "dao",
       transactionId: "DAOeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc",
-      ttlSeconds: MIN_TTL_LENGTH * 10
+      ttlSeconds: MIN_TTL_LENGTH * 10,
     });
     await mineBlock(arweave);
     const { cachedValue: newCachedValue } = await contract.readState();
@@ -175,7 +172,7 @@ describe("ANT Tests", () => {
       transactionId: "DAOeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc",
       ttlSeconds: MIN_TTL_LENGTH * 10,
     });
-});
+  });
 
   it("should set name with correct ownership", async () => {
     await contract.writeInteraction({
@@ -322,7 +319,7 @@ describe("ANT Tests", () => {
 
   it("should transfer ANT to another owner", async () => {
     const writeInteraction = await contract.writeInteraction({
-      function: 'transfer',
+      function: "transfer",
       target: ownerAddress2,
     });
     await mineBlock(arweave);
@@ -344,13 +341,13 @@ describe("ANT Tests", () => {
       function: "setRecord",
       subDomain: "@",
       transactionId: "Z2XhgF0LtJhtWWihirRm7qQehoxDe01vReZyrFYkAc4",
-      ttlSeconds: MIN_TTL_LENGTH
+      ttlSeconds: MIN_TTL_LENGTH,
     });
     await contract.writeInteraction({
       function: "setRecord",
       subDomain: "hacked.domain",
       transactionId: "HACKgF0LtJhtWWihirRm7qQehoxDe01vReZyrFYkAc4",
-      ttlSeconds: MIN_TTL_LENGTH
+      ttlSeconds: MIN_TTL_LENGTH,
     });
     await mineBlock(arweave);
     const { cachedValue: newCachedValue } = await contract.readState();
@@ -421,7 +418,7 @@ describe("ANT Tests", () => {
     await addFunds(arweave, newWallet);
     contract.connect(newWallet);
     const writeInteraction = await contract.writeInteraction({
-      function: 'transfer',
+      function: "transfer",
       target: ownerAddress,
     });
     await mineBlock(arweave);
@@ -436,7 +433,7 @@ describe("ANT Tests", () => {
     const { cachedValue: prevCachedValue } = await contract.readState();
     const prevState = prevCachedValue.state as ANTState;
     const writeInteraction = await contract.writeInteraction({
-      function: 'transfer',
+      function: "transfer",
       target: controller,
       qty: 1,
     });

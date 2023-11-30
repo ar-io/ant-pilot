@@ -29,9 +29,9 @@ export async function handle(
     case "setTicker":
       return await setTicker(state, action);
     case "setController":
-      return await setController(state, action);  
-      case "removeController":
-        return await removeController(state, action);  
+      return await setController(state, action);
+    case "removeController":
+      return await removeController(state, action);
     case "removeRecord":
       return await removeRecord(state, action);
     case "balance":

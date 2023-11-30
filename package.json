@@ -3,11 +3,12 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
-    "build": "yarn clean && node build.js",
+    "build:spec": "yarn clean && node build-spec.js",
     "build-ts": "node build.js",
     "clean": "rimraf ./dist",
     "cp": "copyfiles -u 1 ./src/**/*.json dist",
-    "test": "yarn build && jest tests --runInBand"
+    "test": "jest tests --runInBand",
+    "test:spec": "node test-spec.js"
   },
   "dependencies": {
     "ajv": "^8.12.0",

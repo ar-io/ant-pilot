@@ -1,0 +1,16 @@
+{
+  "ticker": "ANT-1",
+  "name": "Arweave Name Token v0.0.0",
+  "owner": "",
+  "controllers": [],
+  "records": {
+    "@": {
+      "transactionId": "",
+      "ttlSeconds": 900
+    }
+  },
+  "balances": {
+    "": 0
+  },
+  "evolve": null
+}
