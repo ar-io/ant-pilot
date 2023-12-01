@@ -2,7 +2,7 @@ import Arweave from "arweave";
 import { LoggerFactory, WarpFactory } from "warp-contracts";
 import * as fs from "fs";
 import { deployedTestContracts, testKeyfile } from "./constants";
-import { addFunds } from "../tests/utils/helper";
+import { addFunds } from "./common/helpers";
 
 (async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

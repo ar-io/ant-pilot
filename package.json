@@ -3,12 +3,13 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
-    "build:spec": "yarn clean && node build-spec.js",
-    "build-ts": "node build.js",
+    "build:spec": "yarn clean && ts-node ./tools/scripts/build-spec.ts",
+    "build-ts": "node ./tools/scripts/build-spec.js",
+    "update:external:contracts": "ts-node ./tools/scripts/update-external-contracts.ts",
     "clean": "rimraf ./dist",
     "cp": "copyfiles -u 1 ./src/**/*.json dist",
     "test": "jest tests --runInBand",
-    "test:spec": "node test-spec.js"
+    "test:spec": "node ./tools/scripts/test-spec.js"
   },
   "dependencies": {
     "ajv": "^8.12.0",
