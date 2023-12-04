@@ -4,7 +4,7 @@ node_modules
 /lib
 .secrets
 logs
-
+cache
 
 # local env files
 .env.local
