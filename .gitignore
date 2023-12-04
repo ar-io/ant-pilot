@@ -6,6 +6,7 @@ node_modules
 logs
 /cache
 /contracts/*/dist
+/contracts/*/validations
 
 
 # local env files
