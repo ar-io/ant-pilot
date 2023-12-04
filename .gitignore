@@ -5,6 +5,7 @@ node_modules
 .secrets
 logs
 /cache
+/contracts/*/dist
 
 
 # local env files
