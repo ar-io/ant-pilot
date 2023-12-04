@@ -7,7 +7,9 @@ async function main() {
     console.log("Usage: build:spec 'spec name'");
     process.exit(1);
   }
-  const specPath = path.join(__dirname, "contracts", `${specName}`);
+  const specPath = path.join(__dirname, "../../contracts", `${specName}`);
+  console.log(specPath);
+  console.log(`Building ${specName} contracts...`);
 
   // Replace "your_build_script.js" with the name of the build file you want to execute.
   const buildScript = "build.js";

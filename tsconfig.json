@@ -11,11 +11,11 @@
     "sourceMap": true,
     "allowJs": true,
     "baseUrl": ".",
-    "types": ["jest"],
+    "types": ["jest", "node"],
     "paths": {
       "@/*": ["src/*"]
     },
-    "lib": ["esnext"]
+    "lib": ["ESNext"]
   },
   "include": [
     "src/**/*.ts",

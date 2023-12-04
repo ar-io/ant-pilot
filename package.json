@@ -8,8 +8,7 @@
     "update:external:contracts": "ts-node ./tools/scripts/update-external-contracts.ts",
     "clean": "rimraf ./dist",
     "cp": "copyfiles -u 1 ./src/**/*.json dist",
-    "test": "jest tests --runInBand",
-    "test:spec": "node ./tools/scripts/test-spec.js"
+    "test": "jest tests --runInBand"
   },
   "dependencies": {
     "ajv": "^8.12.0",
@@ -26,6 +25,7 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.16.7",
     "@types/jest": "^27.4.0",
+    "@types/node": "^20.10.3",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "copyfiles": "^2.4.0",
