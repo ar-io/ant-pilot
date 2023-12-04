@@ -7,6 +7,7 @@ logs
 /cache
 /contracts/*/dist
 /contracts/*/validations
+/coverage
 
 
 # local env files
