@@ -4,18 +4,18 @@ import { ANTState } from "../types";
 import { ANTDeployer } from "../utils";
 
 describe("Testing read balance...", () => {
-  const _arweave: Arweave = global.arweave;
-  const _warp: Warp = global.warp;
-  const _wallets: Record<string, JWKInterface> = global.wallets;
-  const defaultOwner = Object.entries(_wallets)[0];
+  const arweave: Arweave = global.arweave;
+  const warp: Warp = global.warp;
+  const wallets: Record<string, JWKInterface> = global.wallets;
+  const defaultOwner = Object.entries(wallets)[0];
 
   it("Should retrieve balance of the owner", async () => {
-    const ANT = await ANTDeployer(_warp, {
+    const ANT = await ANTDeployer(warp, {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
 
-    const contract = _warp.contract<ANTState>(ANT);
+    const contract = warp.contract<ANTState>(ANT);
     const { cachedValue } = await contract.readState();
     const { result } = (await contract.viewState({
       function: "balance",

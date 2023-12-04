@@ -7,10 +7,10 @@ import { ANTState } from "../types";
 import { ANTDeployer } from "../utils";
 
 describe("Testing evolve...", () => {
-  const _arweave: Arweave = global.arweave;
-  const _wallets: Record<string, JWKInterface> = global.wallets;
-  const _warp: Warp = global.warp;
-  const defaultOwner = Object.entries(_wallets)[0];
+  const arweave: Arweave = global.arweave;
+  const wallets: Record<string, JWKInterface> = global.wallets;
+  const warp: Warp = global.warp;
+  const defaultOwner = Object.entries(wallets)[0];
 
   let _srcTxId: string;
 
@@ -19,25 +19,25 @@ describe("Testing evolve...", () => {
       path.join(__dirname, "../dist/contract.js"),
       "utf8"
     );
-    const srcTx = await _warp.createSource(
+    const srcTx = await warp.createSource(
       { src: contractSource },
-      Object.values(_wallets)[0],
+      Object.values(wallets)[0],
       true
     );
-    _srcTxId = await _warp.saveSource(srcTx, true);
-    await mineBlock(_arweave);
+    _srcTxId = await warp.saveSource(srcTx, true);
+    await mineBlock(arweave);
   });
 
   it("Should evolve the ANT", async () => {
-    const ANT = await ANTDeployer(_warp, {
+    const ANT = await ANTDeployer(warp, {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    await mineBlock(_arweave);
+    await mineBlock(arweave);
 
-    const contract = _warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
+    const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
     const evolveResult = await contract.evolve(_srcTxId);
-    await mineBlock(_arweave);
+    await mineBlock(arweave);
     const { cachedValue } = await contract.readState();
 
     expect(evolveResult?.originalTxId).toBeDefined();
