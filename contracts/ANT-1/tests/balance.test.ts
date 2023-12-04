@@ -1,5 +1,4 @@
 import { JWKInterface, PstState, Warp } from "warp-contracts";
-import { mineBlock } from "../../../tools/common/helpers";
 import Arweave from "arweave";
 import { ANTState } from "../types";
 import { ANTDeployer } from "../utils";
@@ -15,7 +14,6 @@ describe("Testing read balance...", () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    await mineBlock(_arweave);
 
     const contract = _warp.contract<ANTState>(ANT);
     const { cachedValue } = await contract.readState();
