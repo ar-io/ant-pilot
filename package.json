@@ -5,12 +5,17 @@
   "scripts": {
     "build:spec": "yarn clean && ts-node ./tools/scripts/build-spec.ts",
     "build-ts": "node ./tools/scripts/build-spec.js",
+    "format:check": "prettier . --check --cache",
+    "format:fix": "prettier . --write",
+    "lint:check": "eslint .",
+    "lint:fix": "eslint . --fix",
     "update:external:contracts": "ts-node ./tools/scripts/update-external-contracts.ts",
-    "clean": "rimraf ./dist",
+    "clean": "rimraf [ dist cache ]",
     "cp": "copyfiles -u 1 ./src/**/*.json dist",
     "test": "jest tests --runInBand"
   },
   "dependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "ajv": "^8.12.0",
     "arbundles": "^0.6.18",
     "arlocal": "1.1.60",

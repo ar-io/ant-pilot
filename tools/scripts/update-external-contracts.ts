@@ -1,18 +1,19 @@
+import Arweave from 'arweave';
+import fs from 'fs';
+import path from 'path';
 import {
   PstState,
   Tag,
   WarpFactory,
   defaultCacheOptions,
-} from "warp-contracts";
-import { EXTERNAL_CONTRACTS } from "../../contracts/external";
-import Arweave from "arweave";
-import fs from "fs";
-import path from "path";
+} from 'warp-contracts';
+
+import { EXTERNAL_CONTRACTS } from '../../contracts/external';
 
 const arweave = Arweave.init({
-  host: "arweave.net",
+  host: 'arweave.net',
   port: 443,
-  protocol: "https",
+  protocol: 'https',
 });
 const warp = WarpFactory.forMainnet(defaultCacheOptions, true);
 
@@ -33,7 +34,7 @@ async function main() {
     console.dir(`Getting src tx id for ${name} [${contractTxId}]...`);
     if (state?.evolve) {
       console.dir(
-        `Using evolve tx id for ${name} [${contractTxId}] of ${state.evolve}...`
+        `Using evolve tx id for ${name} [${contractTxId}] of ${state.evolve}...`,
       );
       srcTxId = state.evolve;
     } else {
@@ -43,10 +44,10 @@ async function main() {
 
       const tags = tagsRes.map(
         (tag: { name: string; value: string }) =>
-          new Tag(tag.name, tag.value, true)
+          new Tag(tag.name, tag.value, true),
       );
 
-      const srcTag = tags.find((tag: Tag) => tag.name === "Contract-Src");
+      const srcTag = tags.find((tag: Tag) => tag.name === 'Contract-Src');
       if (!srcTag) {
         console.log(`No Contract-Src tag found for ${name}`);
         continue;
@@ -65,11 +66,11 @@ async function main() {
 
     const externalContractPath = path.join(
       __dirname,
-      `../../contracts/external/${name}`
+      `../../contracts/external/${name}`,
     );
     fs.writeFileSync(
       `${externalContractPath}/state.json`,
-      JSON.stringify(state)
+      JSON.stringify(state),
     );
     fs.writeFileSync(`${externalContractPath}/source.js`, contractSrc);
   }

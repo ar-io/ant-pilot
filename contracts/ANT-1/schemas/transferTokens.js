@@ -1,21 +1,20 @@
-
 const transferTokensSchema = {
-    $id: '#/definitions/transferTokens',
-    type: 'object',
-    properties: {
-      function: {
-        type: 'string',
-        const: 'transfer',
-      },
-      target: {
-        type: 'string',
-        pattern: "^[a-zA-Z0-9_-]{43}$",
-      }
+  $id: '#/definitions/transferTokens',
+  type: 'object',
+  properties: {
+    function: {
+      type: 'string',
+      const: 'transfer',
     },
-    required: ['target'],
-    additionalProperties: false,
-  };
+    target: {
+      type: 'string',
+      pattern: '^[a-zA-Z0-9_-]{43}$',
+    },
+  },
+  required: ['target'],
+  additionalProperties: false,
+};
 
-  module.exports = {
-    transferTokensSchema
-  }
+module.exports = {
+  transferTokensSchema,
+};

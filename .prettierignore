@@ -1,0 +1,6 @@
+node_modules
+build
+public
+dist
+coverage
+src/validations.js

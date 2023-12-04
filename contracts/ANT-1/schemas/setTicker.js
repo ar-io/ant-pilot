@@ -1,20 +1,19 @@
 const setTickerSchema = {
-    $id: '#/definitions/setTicker',
-    type: 'object',
-    properties: {
-      function: {
-        type: 'string',
-        const: 'setTicker',
-      },
-      ticker: {
-        type: 'string',
-      }
+  $id: '#/definitions/setTicker',
+  type: 'object',
+  properties: {
+    function: {
+      type: 'string',
+      const: 'setTicker',
     },
-    required: ['ticker'],
-    additionalProperties: false,
-  };
+    ticker: {
+      type: 'string',
+    },
+  },
+  required: ['ticker'],
+  additionalProperties: false,
+};
 
-
-  module.exports = {
-    setTickerSchema
-  }
+module.exports = {
+  setTickerSchema,
+};

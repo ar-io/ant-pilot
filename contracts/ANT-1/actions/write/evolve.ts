@@ -1,5 +1,5 @@
 import { NON_CONTRACT_OWNER_MESSAGE } from '../../constants';
-import { ContractResult, ANTState, PstAction } from '../../types';
+import { ANTState, ContractResult, PstAction } from '../../types';
 
 declare const ContractError;
 

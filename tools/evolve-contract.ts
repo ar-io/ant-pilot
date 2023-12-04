@@ -21,9 +21,7 @@ import { initialize, warp } from './utilities';
   );
 
   // load state of contract
-  const antContractTxId =
-    process.env.ANT_CONTRACT_TX_ID ??
-    'YOUR ANT CONTRACT';
+  const antContractTxId = process.env.ANT_CONTRACT_TX_ID ?? 'YOUR ANT CONTRACT';
 
   // ~~ Initialize SmartWeave ~~
   const warpWithDeploy = warp.use(new DeployPlugin());
@@ -57,7 +55,10 @@ import { initialize, warp } from './utilities';
     },
   );
 
-  console.log ("Evolve Interaction Tx Id: ", evolveInteractionTXId?.originalTxId)
+  console.log(
+    'Evolve Interaction Tx Id: ',
+    evolveInteractionTXId?.originalTxId,
+  );
   // DO NOT CHANGE THIS - it's used by github actions
   console.log(evolveSrcTxId);
 })();

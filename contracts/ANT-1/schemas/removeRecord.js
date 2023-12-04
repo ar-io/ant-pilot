@@ -1,4 +1,3 @@
-
 const removeRecordSchema = {
   $id: '#/definitions/removeRecord',
   type: 'object',
@@ -9,7 +8,7 @@ const removeRecordSchema = {
     },
     subDomain: {
       type: 'string',
-      pattern: "^[a-zA-Z0-9_-]+$",
+      pattern: '^[a-zA-Z0-9_-]+$',
     },
   },
   required: ['subDomain'],
@@ -18,4 +17,4 @@ const removeRecordSchema = {
 
 module.exports = {
   removeRecordSchema,
-}
+};

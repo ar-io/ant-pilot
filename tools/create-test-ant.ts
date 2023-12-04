@@ -1,22 +1,23 @@
-import Arweave from "arweave";
-import { LoggerFactory, WarpFactory } from "warp-contracts";
-import * as fs from "fs";
-import { deployedTestContracts, testKeyfile } from "./constants";
-import { addFunds } from "./common/helpers";
+import Arweave from 'arweave';
+import * as fs from 'fs';
+import { LoggerFactory, WarpFactory } from 'warp-contracts';
+
+import { addFunds } from './common/helpers';
+import { deployedTestContracts, testKeyfile } from './constants';
 
 (async () => {
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // A short token symbol, typically with ANT- in front
-  const ticker = "ANT-Example";
+  const ticker = 'ANT-Example';
 
   // A friendly name for the name of this token
-  const name = "Example";
+  const name = 'Example';
 
   // The Time To Live for this ANT to reside cached, the default and minimum is 900 seconds
   const ttlSeconds = 900;
 
   // The arweave data transaction that is to be proxied using the registered name
-  const dataPointer = "zHpMN6UyTSSIo6WqER2527LvEvMKLlAcr3UR6ljd32Q";
+  const dataPointer = 'zHpMN6UyTSSIo6WqER2527LvEvMKLlAcr3UR6ljd32Q';
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   // This is the ANT Smartweave Contract Source TX ID that will be used to create the new ANT
@@ -24,14 +25,14 @@ import { addFunds } from "./common/helpers";
 
   // ~~ Initialize Arweave ~~
   const arweave = Arweave.init({
-    host: "testnet.redstone.tools",
+    host: 'testnet.redstone.tools',
     timeout: 600000,
     port: 443,
-    protocol: "https",
+    protocol: 'https',
   });
 
   // ~~ Initialize `LoggerFactory` ~~
-  LoggerFactory.INST.logLevel("error");
+  LoggerFactory.INST.logLevel('error');
 
   // ~~ Initialize Warp ~~
   const warp = WarpFactory.forTestnet();
@@ -51,7 +52,7 @@ import { addFunds } from "./common/helpers";
     controller: walletAddress,
     evolve: null,
     records: {
-      "@": {
+      '@': {
         transactionId: dataPointer,
         ttlSeconds: ttlSeconds,
       },
@@ -62,7 +63,7 @@ import { addFunds } from "./common/helpers";
   };
 
   // ~~ Deploy contract ~~
-  console.log("Creating ANT for %s", name);
+  console.log('Creating ANT for %s', name);
   const contractTxId = await warp.deployFromSourceTx({
     wallet,
     initState: JSON.stringify(initialState),
@@ -70,5 +71,5 @@ import { addFunds } from "./common/helpers";
   });
 
   // ~~ Log contract id to the console ~~
-  console.log("Mainnet Contract id %s", contractTxId);
+  console.log('Mainnet Contract id %s', contractTxId);
 })();

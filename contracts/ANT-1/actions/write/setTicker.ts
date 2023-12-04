@@ -1,19 +1,20 @@
-import { PstAction, ANTState, ContractResult } from "../../types";
+import { INVALID_INPUT_MESSAGE } from '../../constants';
+import { ANTState, ContractResult, PstAction } from '../../types';
 import { validateSetTicker } from '../../validations.mjs';
-import { INVALID_INPUT_MESSAGE } from "../../constants";
+
 declare const ContractError;
 
 // Sets the ticker for the ANT
 export const setTicker = async (
   state: ANTState,
-  { caller, input }: PstAction
+  { caller, input }: PstAction,
 ): Promise<ContractResult> => {
   const owner = state.owner;
   const controllers = state.controllers;
   const { ticker } = input;
 
   if (!validateSetTicker(input)) {
-    console.log (input)
+    console.log(input);
     throw new ContractError(INVALID_INPUT_MESSAGE);
   }
 
@@ -21,14 +22,12 @@ export const setTicker = async (
     throw new ContractError(`Caller is not the token owner or controller!`);
   }
 
-
-
   // check ticker validity
   if (
-    typeof ticker !== "string" && // must be a string
-    ticker === ""
+    typeof ticker !== 'string' && // must be a string
+    ticker === ''
   ) {
-    throw new ContractError("Invalid ANT ticker");
+    throw new ContractError('Invalid ANT ticker');
   }
   state.ticker = ticker;
 

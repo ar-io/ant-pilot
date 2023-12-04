@@ -1,18 +1,19 @@
-import { JWKInterface, Warp } from "warp-contracts";
-import { mineBlock } from "../../../tools/common/helpers";
-import Arweave from "arweave";
-import { ANTState } from "../types";
-import { ANTDeployer } from "../utils";
-import def from "ajv/dist/vocabularies/discriminator";
+import def from 'ajv/dist/vocabularies/discriminator';
+import Arweave from 'arweave';
+import { JWKInterface, Warp } from 'warp-contracts';
 
-describe("Testing setController...", () => {
+import { mineBlock } from '../../../tools/common/helpers';
+import { ANTState } from '../types';
+import { ANTDeployer } from '../utils';
+
+describe('Testing setController...', () => {
   const arweave: Arweave = global.arweave;
   const wallets: Record<string, JWKInterface> = global.wallets;
   const warp: Warp = global.warp;
   const defaultOwner = Object.entries(wallets)[0];
   const defaultOwner2 = Object.entries(wallets)[1];
 
-  it("Should add controller to the ANT", async () => {
+  it('Should add controller to the ANT', async () => {
     const ANT = await ANTDeployer(warp, {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
@@ -22,7 +23,7 @@ describe("Testing setController...", () => {
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
 
     const result = await contract.writeInteraction({
-      function: "setController",
+      function: 'setController',
       target: defaultOwner2[0],
     });
 
@@ -35,7 +36,7 @@ describe("Testing setController...", () => {
     expect(state.controllers).toContain(defaultOwner2[0]);
   });
 
-  it("should not set controller with incorrect ownership", async () => {
+  it('should not set controller with incorrect ownership', async () => {
     const ANT = await ANTDeployer(warp, {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
@@ -47,8 +48,8 @@ describe("Testing setController...", () => {
     const { cachedValue: prevCachedValue } = await contract.readState();
     const prevState = prevCachedValue.state as ANTState;
     const writeInteraction = await contract.writeInteraction({
-      function: "setController",
-      target: "HACKED",
+      function: 'setController',
+      target: 'HACKED',
     });
     await mineBlock(arweave);
     expect(writeInteraction?.originalTxId).not.toBe(undefined);

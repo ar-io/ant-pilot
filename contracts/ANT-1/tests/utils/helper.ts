@@ -1,16 +1,16 @@
-import Arweave from "arweave";
-import { JWKInterface } from "arweave/node/lib/wallet";
-import * as fs from "fs";
-import path from "path";
+import Arweave from 'arweave';
+import { JWKInterface } from 'arweave/node/lib/wallet';
+import * as fs from 'fs';
+import path from 'path';
 
-import { ANTState } from "../../types";
-import { INITIAL_STATE, WALLET_FUND_AMOUNT } from "./constants";
+import { ANTState } from '../../types';
+import { INITIAL_STATE, WALLET_FUND_AMOUNT } from './constants';
 
 // ~~ Write function responsible for adding funds to the generated wallet ~~
 export async function addFunds(
   arweave: Arweave,
   wallet: JWKInterface,
-  amount: number = WALLET_FUND_AMOUNT
+  amount: number = WALLET_FUND_AMOUNT,
 ): Promise<boolean> {
   const walletAddress = await arweave.wallets.getAddress(wallet);
   await arweave.api.get(`/mint/${walletAddress}/${amount}`);
@@ -19,7 +19,7 @@ export async function addFunds(
 
 // ~~ Write function responsible for mining block on the Arweave testnet ~~
 export async function mineBlock(arweave: Arweave): Promise<boolean> {
-  await arweave.api.get("mine");
+  await arweave.api.get('mine');
   return true;
 }
 
@@ -29,7 +29,7 @@ export async function getCurrentBlock(arweave: Arweave): Promise<number> {
 
 export async function mineBlocks(
   arweave: Arweave,
-  blocks: number
+  blocks: number,
 ): Promise<void> {
   for (let i = 0; i < blocks; i++) {
     await mineBlock(arweave);
@@ -37,7 +37,7 @@ export async function mineBlocks(
 }
 
 export async function createLocalWallet(
-  arweave: Arweave
+  arweave: Arweave,
 ): Promise<{ wallet: JWKInterface; address: string }> {
   // ~~ Generate wallet and add funds ~~
   const wallet = await arweave.wallets.generate();
@@ -51,7 +51,7 @@ export async function createLocalWallet(
 }
 
 export async function setupInitialContractState(
-  owner: string
+  owner: string,
 ): Promise<ANTState> {
   const state: ANTState = INITIAL_STATE as unknown as ANTState;
 
@@ -69,14 +69,14 @@ export async function setupInitialContractState(
 
 export function getLocalWallet(index = 0): JWKInterface {
   const wallet = JSON.parse(
-    fs.readFileSync(path.join(__dirname, `../wallets/${index}.json`), "utf8")
+    fs.readFileSync(path.join(__dirname, `../wallets/${index}.json`), 'utf8'),
   ) as unknown as JWKInterface;
   return wallet;
 }
 
 export function getLocalANTContractId(): string {
   const contract = JSON.parse(
-    fs.readFileSync(path.join(__dirname, "../dist/contract.js"), "utf8")
+    fs.readFileSync(path.join(__dirname, '../dist/contract.js'), 'utf8'),
   ) as unknown as ANTState & { id: string };
   return contract.id;
 }

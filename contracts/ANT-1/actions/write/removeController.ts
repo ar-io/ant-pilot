@@ -1,15 +1,15 @@
-import { PstAction, ANTState, ContractResult } from "../../types";
+import { INVALID_INPUT_MESSAGE } from '../../constants';
+import { ANTState, ContractResult, PstAction } from '../../types';
 // composed by ajv at build
 import { validateRemoveController } from '../../validations.mjs';
-import { INVALID_INPUT_MESSAGE } from '../../constants';
 
 declare const ContractError;
 
 export const removeController = async (
   state: ANTState,
-  { caller, input }: PstAction
+  { caller, input }: PstAction,
 ): Promise<ContractResult> => {
-  const {target} = input;
+  const { target } = input;
 
   if (!validateRemoveController(input)) {
     throw new ContractError(INVALID_INPUT_MESSAGE);
@@ -17,7 +17,7 @@ export const removeController = async (
 
   const owner = state.owner;
   if (!target) {
-    throw new ContractError("No target specified");
+    throw new ContractError('No target specified');
   }
 
   if (caller !== owner) {
@@ -28,7 +28,9 @@ export const removeController = async (
     throw new ContractError(`Target address ${target} is not a controller`);
   }
 
-  state.controllers = state.controllers.filter((controller) => controller !== target);
+  state.controllers = state.controllers.filter(
+    (controller) => controller !== target,
+  );
 
   return { state };
 };

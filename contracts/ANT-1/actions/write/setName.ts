@@ -1,13 +1,14 @@
-import { PstAction, ANTState, ContractResult } from "../../types";
+import { INVALID_INPUT_MESSAGE } from '../../constants';
+import { ANTState, ContractResult, PstAction } from '../../types';
 // composed by ajv at build
 import { validateSetName } from '../../validations.mjs';
-import { INVALID_INPUT_MESSAGE } from "../../constants";;
+
 declare const ContractError;
 
 // Sets an existing record and if one does not exist, it creates it
 export const setName = async (
   state: ANTState,
-  { caller, input }: PstAction
+  { caller, input }: PstAction,
 ): Promise<ContractResult> => {
   const { name } = input;
   const owner = state.owner;
@@ -23,10 +24,10 @@ export const setName = async (
 
   // check name validity
   if (
-    typeof name !== "string" || // must be a string
-    name === ""
+    typeof name !== 'string' || // must be a string
+    name === ''
   ) {
-    throw new ContractError("Invalid ANT name");
+    throw new ContractError('Invalid ANT name');
   }
   state.name = name;
 

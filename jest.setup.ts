@@ -1,6 +1,7 @@
-import ArLocal from "arlocal";
-import { ANTDeployer } from "./contracts/ANT-1/utils";
-import { initializeArLocalTestVariables } from "./tools/common/helpers";
+import ArLocal from 'arlocal';
+
+import { ANTDeployer } from './contracts/ANT-1/utils';
+import { initializeArLocalTestVariables } from './tools/common/helpers';
 
 module.exports = async function (globalConfig, projectConfig) {
   // Set reference to mongod in order to close the server during teardown.

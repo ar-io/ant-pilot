@@ -1,18 +1,18 @@
-import Arweave from "arweave";
-import * as fs from "fs";
-import path from "path";
+import { JWKInterface } from 'arbundles/src/interface-jwk';
+import Arweave from 'arweave';
+import * as fs from 'fs';
+import path from 'path';
+import { LoggerFactory, PstState, WarpFactory } from 'warp-contracts';
+import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 
-import { INITIAL_STATE, WALLET_FUND_AMOUNT } from "./constants";
-import { LoggerFactory, PstState, WarpFactory } from "warp-contracts";
-import { DeployPlugin } from "warp-contracts-plugin-deploy";
-import { ContractDeployer } from "./types";
-import { JWKInterface } from "arbundles/src/interface-jwk";
+import { INITIAL_STATE, WALLET_FUND_AMOUNT } from './constants';
+import { ContractDeployer } from './types';
 
 // ~~ Write function responsible for adding funds to the generated wallet ~~
 export async function addFunds(
   arweave: Arweave,
   wallet: JWKInterface,
-  amount: number = WALLET_FUND_AMOUNT
+  amount: number = WALLET_FUND_AMOUNT,
 ): Promise<boolean> {
   const walletAddress = await arweave.wallets.getAddress(wallet);
   await arweave.api.get(`/mint/${walletAddress}/${amount}`);
@@ -21,7 +21,7 @@ export async function addFunds(
 
 // ~~ Write function responsible for mining block on the Arweave testnet ~~
 export async function mineBlock(arweave: Arweave): Promise<boolean> {
-  await arweave.api.get("mine");
+  await arweave.api.get('mine');
   return true;
 }
 
@@ -31,7 +31,7 @@ export async function getCurrentBlock(arweave: Arweave): Promise<number> {
 
 export async function mineBlocks(
   arweave: Arweave,
-  blocks: number
+  blocks: number,
 ): Promise<void> {
   for (let i = 0; i < blocks; i++) {
     await mineBlock(arweave);
@@ -39,7 +39,7 @@ export async function mineBlocks(
 }
 
 export async function createLocalWallet(
-  arweave: Arweave
+  arweave: Arweave,
 ): Promise<{ wallet: JWKInterface; address: string }> {
   // ~~ Generate wallet and add funds ~~
   const wallet = await arweave.wallets.generate();
@@ -53,7 +53,7 @@ export async function createLocalWallet(
 }
 
 export async function setupInitialANTContractState<T extends PstState>(
-  owner: string
+  owner: string,
 ): Promise<T> {
   const state = INITIAL_STATE as unknown as T;
 
@@ -70,7 +70,7 @@ export async function setupInitialANTContractState<T extends PstState>(
 }
 
 export async function setupInitialArNSContractState<T extends PstState>(
-  holders: string[]
+  holders: string[],
 ): Promise<T> {
   const state = INITIAL_STATE as unknown as T;
 
@@ -91,14 +91,14 @@ export async function setupInitialArNSContractState<T extends PstState>(
 
 export function getLocalWallet(index = 0): JWKInterface {
   const wallet = JSON.parse(
-    fs.readFileSync(path.join(__dirname, `../wallets/${index}.json`), "utf8")
+    fs.readFileSync(path.join(__dirname, `../wallets/${index}.json`), 'utf8'),
   ) as unknown as JWKInterface;
   return wallet;
 }
 
 export function getLocalANTContractId<T extends Record<string, any>>(): string {
   const contract = JSON.parse(
-    fs.readFileSync(path.join(__dirname, "../dist/contract.js"), "utf8")
+    fs.readFileSync(path.join(__dirname, '../dist/contract.js'), 'utf8'),
   ) as unknown as T & { id: string };
   return contract.id;
 }
@@ -116,14 +116,14 @@ export async function initializeArLocalTestVariables({
   warp;
 }> {
   const arweave = Arweave.init({
-    host: "localhost",
+    host: 'localhost',
     port: 1820,
-    protocol: "http",
+    protocol: 'http',
   });
 
   const warp = WarpFactory.forLocal(1820, arweave).use(new DeployPlugin());
 
-  LoggerFactory.INST.logLevel("error");
+  LoggerFactory.INST.logLevel('error');
 
   const wallets: Record<string, JWKInterface> = {};
 
@@ -144,18 +144,18 @@ export async function initializeArLocalTestVariables({
             name,
             ids: contractIds,
           };
-        }
-      )
+        },
+      ),
     )
   ).reduce(
     (
       acc,
-      contractDeployResults: { name: string; ids: { [x: string]: string[] }[] }
+      contractDeployResults: { name: string; ids: { [x: string]: string[] }[] },
     ) => {
       acc[contractDeployResults.name] = contractDeployResults.ids;
       return acc;
     },
-    {} as Record<string, Record<string, string[]>[]>
+    {} as Record<string, Record<string, string[]>[]>,
   );
 
   return {

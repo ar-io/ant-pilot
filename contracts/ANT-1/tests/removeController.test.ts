@@ -1,16 +1,17 @@
-import { JWKInterface, Warp } from "warp-contracts";
-import { mineBlock } from "../../../tools/common/helpers";
-import Arweave from "arweave";
-import { ANTState } from "../types";
-import { ANTDeployer } from "../utils";
+import Arweave from 'arweave';
+import { JWKInterface, Warp } from 'warp-contracts';
 
-describe("Testing removeController...", () => {
+import { mineBlock } from '../../../tools/common/helpers';
+import { ANTState } from '../types';
+import { ANTDeployer } from '../utils';
+
+describe('Testing removeController...', () => {
   const arweave: Arweave = global.arweave;
   const wallets: Record<string, JWKInterface> = global.wallets;
   const warp: Warp = global.warp;
   const defaultOwner = Object.entries(wallets)[0];
 
-  it("Should remove controller from the ANT", async () => {
+  it('Should remove controller from the ANT', async () => {
     const ANT = await ANTDeployer(warp, {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
@@ -19,7 +20,7 @@ describe("Testing removeController...", () => {
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
     const result = await contract.writeInteraction({
-      function: "removeController",
+      function: 'removeController',
       target: defaultOwner[0],
     });
 

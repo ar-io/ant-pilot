@@ -1,20 +1,20 @@
 const removeControllerSchema = {
-    $id: '#/definitions/removeController',
-    type: 'object',
-    properties: {
-      function: {
-        type: 'string',
-        const: 'removeController',
-      },
-      target: {
-        type: 'string',
-        pattern: "^[a-zA-Z0-9_-]{43}$",
-      },
+  $id: '#/definitions/removeController',
+  type: 'object',
+  properties: {
+    function: {
+      type: 'string',
+      const: 'removeController',
     },
-    required: ['target'],
-    additionalProperties: false,
-  };
+    target: {
+      type: 'string',
+      pattern: '^[a-zA-Z0-9_-]{43}$',
+    },
+  },
+  required: ['target'],
+  additionalProperties: false,
+};
 
-  module.exports = {
-    removeControllerSchema
-  }
+module.exports = {
+  removeControllerSchema,
+};

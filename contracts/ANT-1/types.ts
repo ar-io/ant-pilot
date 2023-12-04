@@ -1,4 +1,4 @@
-import { PstState } from "warp-contracts";
+import { PstState } from 'warp-contracts';
 
 export type ANTState = PstState & {
   ticker: string; // A short token symbol, shown in block explorers and marketplaces
@@ -49,15 +49,15 @@ export interface ANTSubDomainResult {
 }
 
 export type PstFunction =
-  | "transfer"
-  | "setRecord"
-  | "setName"
-  | "setTicker"
-  | "setController"
-  | "removeController"
-  | "removeRecord"
-  | "balance"
-  | "evolve";
+  | 'transfer'
+  | 'setRecord'
+  | 'setName'
+  | 'setTicker'
+  | 'setController'
+  | 'removeController'
+  | 'removeRecord'
+  | 'balance'
+  | 'evolve';
 
 export type ContractResult =
   | { state: ANTState }

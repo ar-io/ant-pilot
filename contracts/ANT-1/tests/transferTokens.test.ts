@@ -1,10 +1,11 @@
-import { JWKInterface, Warp } from "warp-contracts";
-import { mineBlock } from "../../../tools/common/helpers";
-import Arweave from "arweave";
-import { ANTState } from "../types";
-import { ANTDeployer } from "../utils";
+import Arweave from 'arweave';
+import { JWKInterface, Warp } from 'warp-contracts';
 
-describe("Testing transfer...", () => {
+import { mineBlock } from '../../../tools/common/helpers';
+import { ANTState } from '../types';
+import { ANTDeployer } from '../utils';
+
+describe('Testing transfer...', () => {
   const arweave: Arweave = global.arweave;
   const wallets: Record<string, JWKInterface> = global.wallets;
   const defaultOwner = Object.entries(wallets)[0];
@@ -12,7 +13,7 @@ describe("Testing transfer...", () => {
 
   const warp: Warp = global.warp;
 
-  it("Should transfer balance to the correct address of the ANT", async () => {
+  it('Should transfer balance to the correct address of the ANT', async () => {
     const ANT = await ANTDeployer(warp, {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
@@ -22,7 +23,7 @@ describe("Testing transfer...", () => {
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
 
     const writeInteraction = await contract.writeInteraction({
-      function: "transfer",
+      function: 'transfer',
       target: defaultOwner2[0],
     });
     await mineBlock(arweave);
@@ -34,7 +35,7 @@ describe("Testing transfer...", () => {
     expect(newState.owner).toEqual(defaultOwner2[0]);
   });
 
-  it("should not transfer with incorrect ownership", async () => {
+  it('should not transfer with incorrect ownership', async () => {
     const ANT = await ANTDeployer(warp, {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
@@ -46,7 +47,7 @@ describe("Testing transfer...", () => {
     const prevState = prevCachedValue.state as ANTState;
 
     const writeInteraction = await contract.writeInteraction({
-      function: "transfer",
+      function: 'transfer',
       target: defaultOwner[0],
     });
     await mineBlock(arweave);
@@ -56,7 +57,7 @@ describe("Testing transfer...", () => {
     expect(newState.owner).toEqual(prevState.owner);
   });
 
-  it("should not transfer with only controller ownership", async () => {
+  it('should not transfer with only controller ownership', async () => {
     const ANT = await ANTDeployer(warp, {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
@@ -66,7 +67,7 @@ describe("Testing transfer...", () => {
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
 
     await contract.writeInteraction({
-      function: "setController",
+      function: 'setController',
       target: defaultOwner2[0],
     });
     await mineBlock(arweave);
@@ -74,7 +75,7 @@ describe("Testing transfer...", () => {
     const { cachedValue: prevCachedValue } = await contract.readState();
     const prevState = prevCachedValue.state as ANTState;
     const writeInteraction = await contract.writeInteraction({
-      function: "transfer",
+      function: 'transfer',
       target: defaultOwner[0],
       qty: 1,
     });

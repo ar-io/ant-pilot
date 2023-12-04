@@ -1,19 +1,19 @@
 const setNameSchema = {
-    $id: '#/definitions/setName',
-    type: 'object',
-    properties: {
-      function: {
-        type: 'string',
-        const: 'setName',
-      },
-      name: {
-        type: 'string',
-      },
+  $id: '#/definitions/setName',
+  type: 'object',
+  properties: {
+    function: {
+      type: 'string',
+      const: 'setName',
     },
-    required: ['name'],
-    additionalProperties: false,
-  };
+    name: {
+      type: 'string',
+    },
+  },
+  required: ['name'],
+  additionalProperties: false,
+};
 
-  module.exports = {
-    setNameSchema
-  }
+module.exports = {
+  setNameSchema,
+};

@@ -1,17 +1,18 @@
-import { JWKInterface, Warp } from "warp-contracts";
-import { mineBlock } from "../../../tools/common/helpers";
-import Arweave from "arweave";
-import { ANTState } from "../types";
-import { ANTDeployer } from "../utils";
+import Arweave from 'arweave';
+import { JWKInterface, Warp } from 'warp-contracts';
 
-describe("Testing setTicker...", () => {
+import { mineBlock } from '../../../tools/common/helpers';
+import { ANTState } from '../types';
+import { ANTDeployer } from '../utils';
+
+describe('Testing setTicker...', () => {
   const arweave: Arweave = global.arweave;
   const wallets: Record<string, JWKInterface> = global.wallets;
   const defaultOwner = Object.entries(wallets)[0];
   const defaultOwner2 = Object.entries(wallets)[1];
   const warp: Warp = global.warp;
 
-  it("Should set the ticker of the ANT", async () => {
+  it('Should set the ticker of the ANT', async () => {
     const ANT = await ANTDeployer(warp, {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
@@ -19,10 +20,10 @@ describe("Testing setTicker...", () => {
     await mineBlock(arweave);
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
-    const ticker = "my-new-ticker";
+    const ticker = 'my-new-ticker';
 
     const result = await contract.writeInteraction({
-      function: "setTicker",
+      function: 'setTicker',
       ticker,
     });
 
@@ -35,7 +36,7 @@ describe("Testing setTicker...", () => {
     expect(state.ticker).toEqual(ticker);
   });
 
-  it("should not set ticker with incorrect ownership", async () => {
+  it('should not set ticker with incorrect ownership', async () => {
     const ANT = await ANTDeployer(warp, {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
@@ -46,8 +47,8 @@ describe("Testing setTicker...", () => {
     const { cachedValue: prevCachedValue } = await contract.readState();
     const prevState = prevCachedValue.state as ANTState;
     const writeInteraction = await contract.writeInteraction({
-      function: "setTicker",
-      name: "ANT-HACKED",
+      function: 'setTicker',
+      name: 'ANT-HACKED',
     });
     await mineBlock(arweave);
     expect(writeInteraction?.originalTxId).not.toBe(undefined);
@@ -56,8 +57,8 @@ describe("Testing setTicker...", () => {
     expect(newState.ticker).toEqual(prevState.ticker);
   });
 
-  it("should set ticker as controller", async () => {
-    const ticker = "BIGFANCYTICKER";
+  it('should set ticker as controller', async () => {
+    const ticker = 'BIGFANCYTICKER';
     const ANT = await ANTDeployer(warp, {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
@@ -67,13 +68,13 @@ describe("Testing setTicker...", () => {
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
 
     await contract.writeInteraction({
-      function: "setController",
+      function: 'setController',
       target: defaultOwner2[0],
     });
     await mineBlock(arweave);
     contract.connect(defaultOwner2[1]);
     await contract.writeInteraction({
-      function: "setTicker",
+      function: 'setTicker',
       ticker,
     });
     await mineBlock(arweave);

@@ -1,14 +1,17 @@
-import { PstAction, ANTState, ContractResult } from "../../types";
+import { INVALID_INPUT_MESSAGE } from '../../constants';
+import { ANTState, ContractResult, PstAction } from '../../types';
 // composed by ajv at build
-import { validateRemoveController, validateTransferTokens } from '../../validations.mjs';
-import { INVALID_INPUT_MESSAGE } from "../../constants";;
+import {
+  validateRemoveController,
+  validateTransferTokens,
+} from '../../validations.mjs';
 
 declare const ContractError;
 
 // Transfers the ANT token to another owner
 export const transferTokens = async (
   state: ANTState,
-  { caller, input }: PstAction
+  { caller, input }: PstAction,
 ): Promise<ContractResult> => {
   const owner = state.owner;
   const balances = state.balances;
@@ -19,11 +22,11 @@ export const transferTokens = async (
   }
 
   if (!target) {
-    throw new ContractError("No target specified");
+    throw new ContractError('No target specified');
   }
 
   if (caller === target) {
-    throw new ContractError("Invalid token transfer");
+    throw new ContractError('Invalid token transfer');
   }
 
   if (caller !== owner) {

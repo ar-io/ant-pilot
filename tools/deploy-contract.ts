@@ -1,24 +1,25 @@
-import Arweave from "arweave";
+import Arweave from 'arweave';
+import * as fs from 'fs';
+import path from 'path';
 import {
-  defaultCacheOptions,
   LoggerFactory,
   PstState,
   WarpFactory,
-} from "warp-contracts";
-import * as fs from "fs";
-import path from "path";
-import { keyfile } from "./constants";
+  defaultCacheOptions,
+} from 'warp-contracts';
+
+import { keyfile } from './constants';
 
 (async () => {
   // ~~ Initialize Arweave ~~
   const arweave = Arweave.init({
-    host: "arweave.net",
+    host: 'arweave.net',
     port: 443,
-    protocol: "https",
+    protocol: 'https',
   });
 
   // ~~ Initialize `LoggerFactory` ~~
-  LoggerFactory.INST.logLevel("error");
+  LoggerFactory.INST.logLevel('error');
 
   // ~~ Initialize Warp ~~
   const warp = WarpFactory.forMainnet(
@@ -26,7 +27,7 @@ import { keyfile } from "./constants";
       ...defaultCacheOptions,
       inMemory: true,
     },
-    true
+    true,
   );
 
   // Get the key file used for the distribution
@@ -35,14 +36,14 @@ import { keyfile } from "./constants";
 
   // ~~ Read contract source and initial state files ~~
   const contractSrc = fs.readFileSync(
-    path.join(__dirname, "../../dist/contract.js"),
-    "utf8"
+    path.join(__dirname, '../../dist/contract.js'),
+    'utf8',
   );
   const stateFromFile: PstState = JSON.parse(
     fs.readFileSync(
-      path.join(__dirname, "../../dist/contracts/initial-state.json"),
-      "utf8"
-    )
+      path.join(__dirname, '../../dist/contracts/initial-state.json'),
+      'utf8',
+    ),
   );
   const initialState: PstState = {
     ...stateFromFile,
@@ -63,5 +64,5 @@ import { keyfile } from "./constants";
   });
 
   // ~~ Log contract id to the console ~~
-  console.log("Mainnet Contract TxId %s", contractTxId);
+  console.log('Mainnet Contract TxId %s', contractTxId);
 })();

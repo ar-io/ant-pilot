@@ -1,6 +1,6 @@
-import { JWKInterface, Warp } from "warp-contracts";
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
+import path from 'path';
+import { JWKInterface, Warp } from 'warp-contracts';
 
 // deploys a single ANT contract
 export async function ANTDeployer(
@@ -8,18 +8,18 @@ export async function ANTDeployer(
   deployer: {
     address: string;
     wallet: JWKInterface;
-  }
+  },
 ): Promise<string> {
   const { address, wallet } = deployer;
   const sourceCode = fs.readFileSync(
-    path.join(__dirname, "../dist/contract.js"),
-    "utf8"
+    path.join(__dirname, '../dist/contract.js'),
+    'utf8',
   );
   const initState = fs.readFileSync(
-    path.join(__dirname, "../state.json"),
-    "utf8"
+    path.join(__dirname, '../state.json'),
+    'utf8',
   );
-  let contractId = "";
+  let contractId = '';
   try {
     const ownerState = {
       ...JSON.parse(initState),
@@ -37,7 +37,7 @@ export async function ANTDeployer(
         initState: JSON.stringify(ownerState),
         wallet,
       },
-      true
+      true,
     );
     contractId = contractTxId;
   } catch (error) {

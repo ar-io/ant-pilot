@@ -1,15 +1,16 @@
-import { JWKInterface, PstState, Warp } from "warp-contracts";
-import Arweave from "arweave";
-import { ANTState } from "../types";
-import { ANTDeployer } from "../utils";
+import Arweave from 'arweave';
+import { JWKInterface, PstState, Warp } from 'warp-contracts';
 
-describe("Testing read balance...", () => {
+import { ANTState } from '../types';
+import { ANTDeployer } from '../utils';
+
+describe('Testing read balance...', () => {
   const arweave: Arweave = global.arweave;
   const warp: Warp = global.warp;
   const wallets: Record<string, JWKInterface> = global.wallets;
   const defaultOwner = Object.entries(wallets)[0];
 
-  it("Should retrieve balance of the owner", async () => {
+  it('Should retrieve balance of the owner', async () => {
     const ANT = await ANTDeployer(warp, {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
@@ -18,7 +19,7 @@ describe("Testing read balance...", () => {
     const contract = warp.contract<ANTState>(ANT);
     const { cachedValue } = await contract.readState();
     const { result } = (await contract.viewState({
-      function: "balance",
+      function: 'balance',
       target: defaultOwner[0],
     })) as {
       result: { balance: number; target: string; ticker: string };

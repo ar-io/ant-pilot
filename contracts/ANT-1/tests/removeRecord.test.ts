@@ -1,18 +1,19 @@
-import { JWKInterface, Warp } from "warp-contracts";
-import { mineBlock } from "../../../tools/common/helpers";
-import Arweave from "arweave";
-import { ANTState } from "../types";
-import { MIN_TTL_LENGTH } from "../constants";
-import { ANTDeployer } from "../utils";
+import Arweave from 'arweave';
+import { JWKInterface, Warp } from 'warp-contracts';
 
-describe("Testing removeRecord...", () => {
+import { mineBlock } from '../../../tools/common/helpers';
+import { MIN_TTL_LENGTH } from '../constants';
+import { ANTState } from '../types';
+import { ANTDeployer } from '../utils';
+
+describe('Testing removeRecord...', () => {
   const arweave: Arweave = global.arweave;
   const wallets: Record<string, JWKInterface> = global.wallets;
   const warp: Warp = global.warp;
   const defaultOwner = Object.entries(wallets)[0];
   const defaultOwner2 = Object.entries(wallets)[1];
 
-  it("Should remove test record from the ANT", async () => {
+  it('Should remove test record from the ANT', async () => {
     const ANT = await ANTDeployer(warp, {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
@@ -20,10 +21,10 @@ describe("Testing removeRecord...", () => {
     await mineBlock(arweave);
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
-    const subDomain = "test";
+    const subDomain = 'test';
 
     const setResult = await contract.writeInteraction({
-      function: "setRecord",
+      function: 'setRecord',
       subDomain,
       transactionId: defaultOwner[0],
       ttlSeconds: MIN_TTL_LENGTH + 1,
@@ -35,7 +36,7 @@ describe("Testing removeRecord...", () => {
     await mineBlock(arweave);
 
     const result = await contract.writeInteraction({
-      function: "removeRecord",
+      function: 'removeRecord',
       subDomain,
     });
 
@@ -48,7 +49,7 @@ describe("Testing removeRecord...", () => {
     expect(Object.keys(state.records)).not.toContain(subDomain);
   });
 
-  it("should not remove records with incorrect ownership", async () => {
+  it('should not remove records with incorrect ownership', async () => {
     const ANT = await ANTDeployer(warp, {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
@@ -57,8 +58,8 @@ describe("Testing removeRecord...", () => {
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
     await contract.writeInteraction({
-      function: "setRecord",
-      subDomain: "test",
+      function: 'setRecord',
+      subDomain: 'test',
       transactionId: defaultOwner[0],
       ttlSeconds: MIN_TTL_LENGTH,
     });
@@ -66,18 +67,18 @@ describe("Testing removeRecord...", () => {
 
     contract.connect(defaultOwner2[1]);
     await contract.writeInteraction({
-      function: "removeRecord",
-      subDomain: "test",
+      function: 'removeRecord',
+      subDomain: 'test',
     });
     await mineBlock(arweave);
     const { cachedValue: newCachedValue } = await contract.readState();
     const newState = newCachedValue.state as ANTState;
-    expect(newState.records["test"]).not.toEqual(undefined);
+    expect(newState.records['test']).not.toEqual(undefined);
   });
 
-  it("should remove record as controller", async () => {
-    const subDomain = "BIGFANCYTICKER";
-    const transactionId = "8MaeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc";
+  it('should remove record as controller', async () => {
+    const subDomain = 'BIGFANCYTICKER';
+    const transactionId = '8MaeajVdPOhf3fCFDbrRuZXVRhhgNOJjbmgp8kjl2Jc';
     const ttlSeconds = 1000;
 
     const ANT = await ANTDeployer(warp, {
@@ -89,14 +90,14 @@ describe("Testing removeRecord...", () => {
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
 
     await contract.writeInteraction({
-      function: "setController",
+      function: 'setController',
       target: defaultOwner2[0],
     });
     await mineBlock(arweave);
 
     contract.connect(defaultOwner2[1]);
     await contract.writeInteraction({
-      function: "setRecord",
+      function: 'setRecord',
       subDomain,
       transactionId,
       ttlSeconds,
@@ -104,7 +105,7 @@ describe("Testing removeRecord...", () => {
     await mineBlock(arweave);
 
     await contract.writeInteraction({
-      function: "removeRecord",
+      function: 'removeRecord',
       subDomain,
     });
     await mineBlock(arweave);
