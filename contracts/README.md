@@ -151,6 +151,7 @@ Explain how this contract integrates with other contracts and provides links to 
 
 ### Support channels & mentorship
 
-- [ar.io Discord](https://discord.gg/7aQMHyY5FF)
-- [arweave-dev Discord](https://discord.gg/VEfJVuuUfx)
-- [permaweb Discord](https://discord.gg/NPgK8vpQkw)
+- [Ar.IO Discord](https://discord.gg/7aQMHyY5FF)
+- [Arweave-Dev Discord](https://discord.gg/VEfJVuuUfx)
+- [Permaweb Discord](https://discord.gg/NPgK8vpQkw)
+- [Warp Discord](https://discord.gg/8EvRD38dk5)

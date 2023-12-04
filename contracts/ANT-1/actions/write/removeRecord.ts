@@ -1,14 +1,14 @@
 import { PstAction, ANTState, ContractResult } from "../../types";
-import { validateRemoveRecord } from '../../validations.mjs';
-import { INVALID_INPUT_MESSAGE } from '../../constants';
+import { validateRemoveRecord } from "../../validations.mjs";
+import { INVALID_INPUT_MESSAGE } from "../../constants";
 declare const ContractError;
 
 // Sets an existing record and if one does not exist, it cre
 export const removeRecord = async (
   state: ANTState,
-  { caller, input}: PstAction
+  { caller, input }: PstAction
 ): Promise<ContractResult> => {
-  const {subDomain} = input;
+  const { subDomain } = input;
   const owner = state.owner;
   const records = state.records;
   const controllers = state.controllers;

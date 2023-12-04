@@ -1,13 +1,12 @@
 import Arweave from "arweave";
-import { JWKInterface } from "arweave/node/lib/wallet";
 import * as fs from "fs";
 import path from "path";
 
 import { INITIAL_STATE, WALLET_FUND_AMOUNT } from "./constants";
-import { LoggerFactory, PstState, Warp, WarpFactory } from "warp-contracts";
-import ArLocal from "arlocal";
+import { LoggerFactory, PstState, WarpFactory } from "warp-contracts";
 import { DeployPlugin } from "warp-contracts-plugin-deploy";
 import { ContractDeployer } from "./types";
+import { JWKInterface } from "arbundles/src/interface-jwk";
 
 // ~~ Write function responsible for adding funds to the generated wallet ~~
 export async function addFunds(
@@ -109,21 +108,18 @@ export async function initializeArLocalTestVariables({
   contractInitializations,
 }: {
   walletCount: number;
-  contractInitializations: Record<string, ContractDeployer>; //
+  contractInitializations?: Record<string, ContractDeployer>; //
 }): Promise<{
   wallets: Record<string, JWKInterface>;
   arweave: Arweave;
-  arlocal: ArLocal;
-  contractIds: Record<string, string[]>;
+  contractIds: Record<string, Record<string, string[]>[]>;
+  warp;
 }> {
   const arweave = Arweave.init({
     host: "localhost",
     port: 1820,
     protocol: "http",
   });
-  const arlocal = new ArLocal(1820);
-  // note that this returns the arlocal instance running - the service must be stopped when finished
-  await arlocal.start();
 
   const warp = WarpFactory.forLocal(1820, arweave).use(new DeployPlugin());
 
@@ -139,25 +135,33 @@ export async function initializeArLocalTestVariables({
     }
     await addFunds(arweave, wallet, 1_000_000);
   }
-  const contractIds: Record<string, string[]> = (
+  const contractIds: Record<string, Record<string, string[]>[]> = (
     await Promise.all(
-      Object.entries(contractInitializations).map(async ([name, deployer]) => {
-        const contractIds = await deployer(warp, wallets);
-        return {
-          name,
-          ids: contractIds,
-        };
-      })
+      Object.entries(contractInitializations ?? {}).map(
+        async ([name, deployer]) => {
+          const contractIds = await deployer(warp, wallets);
+          return {
+            name,
+            ids: contractIds,
+          };
+        }
+      )
     )
-  ).reduce((acc, contractDeployResults: { name: string; ids: string[] }) => {
-    acc[contractDeployResults.name] = contractDeployResults.ids;
-    return acc;
-  }, {} as Record<string, string[]>);
+  ).reduce(
+    (
+      acc,
+      contractDeployResults: { name: string; ids: { [x: string]: string[] }[] }
+    ) => {
+      acc[contractDeployResults.name] = contractDeployResults.ids;
+      return acc;
+    },
+    {} as Record<string, Record<string, string[]>[]>
+  );
 
   return {
     wallets,
     arweave,
-    arlocal,
     contractIds,
+    warp,
   };
 }

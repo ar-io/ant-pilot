@@ -4,4 +4,5 @@ import { Warp } from "warp-contracts";
 export type ContractDeployer = (
   warp: Warp,
   wallets: Record<string, JWKInterface>
-) => Promise<string[]>;
+  // returns a string array of deployed contract IDs
+) => Promise<Record<string, string[]>[]>;

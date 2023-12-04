@@ -24,7 +24,7 @@
     "tests/**/*.ts",
     "tests/**/*.tsx",
     "utils/_helpers.ts",
-    "contracts/ANT-1/tests/contract.test.ts"
+    "contracts/ANT-1/tests/contract.ts"
   ],
   "exclude": ["node_modules", "tests"]
 }
