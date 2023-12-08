@@ -50,7 +50,7 @@ export async function mineBlocks(
   blocks: number,
 ): Promise<void> {
   for (let i = 0; i < blocks; i++) {
-    await mineBlock(arweave);
+    
   }
 }
 

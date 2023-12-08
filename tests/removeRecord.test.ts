@@ -19,7 +19,7 @@ import { JWKInterface, Warp } from 'warp-contracts';
 
 import { MIN_TTL_LENGTH } from '../src/constants';
 import { ANTState } from '../src/types';
-import { ANTDeployer, mineBlock } from '../tools/common/helpers';
+import { ANTDeployer } from '../tools/common/helpers';
 
 describe('Testing removeRecord...', () => {
   const arweave: Arweave = global.arweave;
@@ -33,7 +33,7 @@ describe('Testing removeRecord...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    await mineBlock(arweave);
+    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
     const subDomain = 'test';
@@ -48,7 +48,7 @@ describe('Testing removeRecord...', () => {
     expect(setResult).toBeDefined();
     expect(setResult?.originalTxId).toBeDefined();
 
-    await mineBlock(arweave);
+    
 
     const result = await contract.writeInteraction({
       function: 'removeRecord',
@@ -58,7 +58,7 @@ describe('Testing removeRecord...', () => {
     expect(result).toBeDefined();
     expect(result?.originalTxId).toBeDefined();
 
-    await mineBlock(arweave);
+    
     const { cachedValue } = await contract.readState();
     const state = cachedValue.state;
     expect(Object.keys(state.records)).not.toContain(subDomain);
@@ -69,7 +69,7 @@ describe('Testing removeRecord...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    await mineBlock(arweave);
+    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
     await contract.writeInteraction({
@@ -78,14 +78,14 @@ describe('Testing removeRecord...', () => {
       transactionId: defaultOwner[0],
       ttlSeconds: MIN_TTL_LENGTH,
     });
-    await mineBlock(arweave);
+    
 
     contract.connect(defaultOwner2[1]);
     await contract.writeInteraction({
       function: 'removeRecord',
       subDomain: 'test',
     });
-    await mineBlock(arweave);
+    
     const { cachedValue: newCachedValue } = await contract.readState();
     const newState = newCachedValue.state as ANTState;
     expect(newState.records['test']).not.toEqual(undefined);
@@ -100,7 +100,7 @@ describe('Testing removeRecord...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    await mineBlock(arweave);
+    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
 
@@ -108,7 +108,7 @@ describe('Testing removeRecord...', () => {
       function: 'setController',
       target: defaultOwner2[0],
     });
-    await mineBlock(arweave);
+    
 
     contract.connect(defaultOwner2[1]);
     await contract.writeInteraction({
@@ -117,13 +117,13 @@ describe('Testing removeRecord...', () => {
       transactionId,
       ttlSeconds,
     });
-    await mineBlock(arweave);
+    
 
     await contract.writeInteraction({
       function: 'removeRecord',
       subDomain,
     });
-    await mineBlock(arweave);
+    
     const { cachedValue: newCachedValue } = await contract.readState();
     const newState = newCachedValue.state as ANTState;
     expect(newState.records[subDomain]).toEqual(undefined);

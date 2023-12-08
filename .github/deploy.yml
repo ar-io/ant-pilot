@@ -2,10 +2,10 @@ name: Build / Test / Deploy
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - develop
-      - main
+  # push:
+  #   branches:
+  #     - develop
+  #     - main
     paths:
       - src/**
       - schemas/**

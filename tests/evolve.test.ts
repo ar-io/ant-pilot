@@ -20,7 +20,7 @@ import path from 'path';
 import { JWKInterface, Warp } from 'warp-contracts';
 
 import { ANTState } from '../src/types';
-import { ANTDeployer, mineBlock } from '../tools/common/helpers';
+import { ANTDeployer } from '../tools/common/helpers';
 
 describe('Testing evolve...', () => {
   const arweave: Arweave = global.arweave;
@@ -41,7 +41,7 @@ describe('Testing evolve...', () => {
       true,
     );
     _srcTxId = await warp.saveSource(srcTx, true);
-    await mineBlock(arweave);
+    
   });
 
   it('Should evolve the ANT', async () => {
@@ -49,11 +49,11 @@ describe('Testing evolve...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    await mineBlock(arweave);
+    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
     const evolveResult = await contract.evolve(_srcTxId);
-    await mineBlock(arweave);
+    
     const { cachedValue } = await contract.readState();
 
     expect(evolveResult?.originalTxId).toBeDefined();

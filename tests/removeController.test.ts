@@ -18,7 +18,7 @@ import Arweave from 'arweave';
 import { JWKInterface, Warp } from 'warp-contracts';
 
 import { ANTState } from '../src/types';
-import { ANTDeployer, mineBlock } from '../tools/common/helpers';
+import { ANTDeployer } from '../tools/common/helpers';
 
 describe('Testing removeController...', () => {
   const arweave: Arweave = global.arweave;
@@ -31,7 +31,7 @@ describe('Testing removeController...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    await mineBlock(arweave);
+    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
     const result = await contract.writeInteraction({
@@ -42,7 +42,7 @@ describe('Testing removeController...', () => {
     expect(result).toBeDefined();
     expect(result?.originalTxId).toBeDefined();
 
-    await mineBlock(arweave);
+    
     const { cachedValue } = await contract.readState();
     const state = cachedValue.state;
     expect(state.controllers).not.toContain(defaultOwner[0]);

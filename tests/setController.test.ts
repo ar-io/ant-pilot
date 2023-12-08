@@ -18,7 +18,7 @@ import Arweave from 'arweave';
 import { JWKInterface, Warp } from 'warp-contracts';
 
 import { ANTState } from '../src/types';
-import { ANTDeployer, mineBlock } from '../tools/common/helpers';
+import { ANTDeployer } from '../tools/common/helpers';
 
 describe('Testing setController...', () => {
   const arweave: Arweave = global.arweave;
@@ -32,7 +32,7 @@ describe('Testing setController...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    await mineBlock(arweave);
+    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
 
@@ -44,7 +44,7 @@ describe('Testing setController...', () => {
     expect(result).toBeDefined();
     expect(result?.originalTxId).toBeDefined();
 
-    await mineBlock(arweave);
+    
     const { cachedValue } = await contract.readState();
     const state = cachedValue.state;
     expect(state.controllers).toContain(defaultOwner2[0]);
@@ -55,7 +55,7 @@ describe('Testing setController...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    await mineBlock(arweave);
+    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner2[1]);
 
@@ -65,7 +65,7 @@ describe('Testing setController...', () => {
       function: 'setController',
       target: 'HACKED',
     });
-    await mineBlock(arweave);
+    
     expect(writeInteraction?.originalTxId).not.toBe(undefined);
     const { cachedValue: newCachedValue } = await contract.readState();
     const newState = newCachedValue.state as ANTState;

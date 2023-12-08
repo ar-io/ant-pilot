@@ -18,7 +18,7 @@ import Arweave from 'arweave';
 import { JWKInterface, Warp } from 'warp-contracts';
 
 import { ANTState } from '../src/types';
-import { ANTDeployer, mineBlock } from '../tools/common/helpers';
+import { ANTDeployer } from '../tools/common/helpers';
 
 describe('Testing setTicker...', () => {
   const arweave: Arweave = global.arweave;
@@ -32,7 +32,7 @@ describe('Testing setTicker...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    await mineBlock(arweave);
+    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
     const ticker = 'my-new-ticker';
@@ -45,7 +45,7 @@ describe('Testing setTicker...', () => {
     expect(result).toBeDefined();
     expect(result?.originalTxId).toBeDefined();
 
-    await mineBlock(arweave);
+    
     const { cachedValue } = await contract.readState();
     const state = cachedValue.state;
     expect(state.ticker).toEqual(ticker);
@@ -56,7 +56,7 @@ describe('Testing setTicker...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    await mineBlock(arweave);
+    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner2[1]);
     const { cachedValue: prevCachedValue } = await contract.readState();
@@ -65,7 +65,7 @@ describe('Testing setTicker...', () => {
       function: 'setTicker',
       name: 'ANT-HACKED',
     });
-    await mineBlock(arweave);
+    
     expect(writeInteraction?.originalTxId).not.toBe(undefined);
     const { cachedValue: newCachedValue } = await contract.readState();
     const newState = newCachedValue.state as ANTState;
@@ -78,7 +78,7 @@ describe('Testing setTicker...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    await mineBlock(arweave);
+    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
 
@@ -86,13 +86,13 @@ describe('Testing setTicker...', () => {
       function: 'setController',
       target: defaultOwner2[0],
     });
-    await mineBlock(arweave);
+    
     contract.connect(defaultOwner2[1]);
     await contract.writeInteraction({
       function: 'setTicker',
       ticker,
     });
-    await mineBlock(arweave);
+    
     const { cachedValue: newCachedValue } = await contract.readState();
     const newState = newCachedValue.state as ANTState;
     expect(newState.ticker).toEqual(ticker);
