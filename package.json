@@ -4,14 +4,13 @@
   "private": true,
   "scripts": {
     "build": "yarn clean && node build.js && tsc --noEmit",
-    "build:spec": "yarn clean && ts-node ./tools/scripts/build-spec.ts",
-    "build-ts": "node ./tools/scripts/build-spec.js",
     "format:check": "prettier . --check --cache",
     "format:fix": "prettier . --write",
     "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
     "clean": "rimraf [ dist cache ]",
-    "test": "jest tests --runInBand",
+    "test:unit": "yarn build && jest --testPathPattern=src --coverage --passWithNoTests",
+    "test:integration": "yarn build && jest --testPathPattern=tests --globalSetup=./tests/setup.jest.ts --globalTeardown=./tests/teardown.jest.ts --runInBand",
     "deploy": "ts-node ./tools"
   },
   "devDependencies": {

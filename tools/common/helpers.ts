@@ -1,8 +1,24 @@
+/**
+ * Copyright (C) 2022-2024 Permanent Data Solutions, Inc. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 import { JWKInterface } from 'arbundles/src/interface-jwk';
 import Arweave from 'arweave';
 import * as fs from 'fs';
 import path from 'path';
-import { LoggerFactory, PstState, WarpFactory } from 'warp-contracts';
+import { LoggerFactory, PstState, WarpFactory, Warp } from 'warp-contracts';
 import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 
 import { INITIAL_STATE, WALLET_FUND_AMOUNT } from './constants';
@@ -101,7 +117,7 @@ export function getLocalWallet(index = 0): JWKInterface {
 
 export function getLocalANTContractId<T extends Record<string, any>>(): string {
   const contract = JSON.parse(
-    fs.readFileSync(path.join(__dirname, '../dist/contract.js'), 'utf8'),
+    fs.readFileSync(path.join(__dirname, '../../dist/contract.js'), 'utf8'),
   ) as unknown as T & { id: string };
   return contract.id;
 }
@@ -167,4 +183,48 @@ export async function initializeArLocalTestVariables({
     contractIds,
     warp,
   };
+}
+
+// deploys a single ANT contract
+export async function ANTDeployer(
+  warp: Warp,
+  deployer: {
+    address: string;
+    wallet: JWKInterface;
+  },
+): Promise<string> {
+  const { address, wallet } = deployer;
+  const sourceCode = fs.readFileSync(
+    path.join(__dirname, '../../dist/contract.js'),
+    'utf8',
+  );
+  const initState = fs.readFileSync(
+    path.join(__dirname, '../../initial-state.json'),
+    'utf8',
+  );
+  let contractId = '';
+  try {
+    const ownerState = {
+      ...JSON.parse(initState),
+      owner: address,
+      controllers: [address],
+      balances: {
+        ...JSON.parse(initState).balances,
+        [address]: 1,
+      },
+    };
+    const { contractTxId } = await warp.deploy(
+      {
+        src: sourceCode,
+        initState: JSON.stringify(ownerState),
+        wallet,
+      },
+      true,
+    );
+    contractId = contractTxId;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+  }
+  return contractId;
 }

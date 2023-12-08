@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2022-2024 Permanent Data Solutions, Inc. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 import Arweave from 'arweave';
 import { Tag } from 'arweave/node/lib/transaction';
 import { config } from 'dotenv';
@@ -23,12 +39,6 @@ export function isArweaveAddress(address: string): boolean {
   return !/[a-z0-9_-]{43}/i.test(trimmedAddress);
 }
 
-export function isipV4Address(ipV4Address: string): boolean {
-  return /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
-    ipV4Address,
-  );
-}
-
 export const arweave = new Arweave({
   host: 'ar-io.dev',
   port: 443,
@@ -43,13 +53,6 @@ export const warp = WarpFactory.forMainnet(
   arweave,
 ).use(new DeployPlugin());
 
-export function getTotalSupply(state: any): number {
-  let totalSupply = 0;
-  for (const key of Object.keys(state.balances)) {
-    totalSupply += state.balances[key];
-  }
-  return totalSupply;
-}
 
 const defaultArweave = arweave;
 export async function getContractManifest({
