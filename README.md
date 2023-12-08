@@ -1,3 +1,4 @@
+[![codecov](https://codecov.io/gh/ar-io/ant-pilot/graph/badge.svg?token=J2H5WQQ0IX)](https://codecov.io/gh/ar-io/ant-pilot)
 # Arweave Name Token Proof of Concept
 
 ## Project setup
