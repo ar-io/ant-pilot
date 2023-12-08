@@ -14,19 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-export const keyfile = 'key.json';
-
-// The warp testnet wallet that will be used in the creation of contracts, ants and record purchases.
-export const testKeyfile = 'testKey.json';
-
-// ~~ Inidicate contract id ~~
-export const deployedContracts = {
-  contractTxId: 'tX7_OSAKLNgBkQtkl4o6KowAiToHrrp9cicMO398Ofw',
-  sourceTxId: 'PEI1efYrsX08HUwvc6y-h6TSpsNlo2r6_fWL2_GdwhY',
-};
-
-export const deployedTestContracts = {
-  contractTxId: 'KAfi2o_iORnDlWEJkJsKFR6Kf3qcUUoOo8VCwtsrmUQ',
-  sourceTxId: '33PxoQzxKVOhOBVaVqibWMK_xj3vgpbwfxdAlMUmtCY',
-};
+export const MIN_TTL_LENGTH = 900; // 15 minutes
+export const MAX_TTL_LENGTH = 2_592_000; // 30 days
+export const MAX_NAME_LENGTH = 20;
+export const TX_ID_LENGTH = 43;
+export const ARWEAVE_ID_REGEX = new RegExp('^[a-zA-Z0-9_-]{43}$');
+export const UNDERNAME_REGEX = new RegExp('^[a-zA-Z0-9_-]+$');
+export const INVALID_INPUT_MESSAGE = 'Invalid input for interaction';
+export const NON_CONTRACT_OWNER_MESSAGE = `Caller is not the owner of the ANT!`;

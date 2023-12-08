@@ -77,10 +77,13 @@ export async function setupInitialArNSContractState<T extends PstState>(
   // add balance to the owner
   state.balances = {
     ...state.balances,
-    ...holders.reduce((acc, holder) => {
-      acc[holder] = 1_000_000;
-      return acc;
-    }, {} as Record<string, number>),
+    ...holders.reduce(
+      (acc, holder) => {
+        acc[holder] = 1_000_000;
+        return acc;
+      },
+      {} as Record<string, number>,
+    ),
   };
 
   // set the owner to the first wallet

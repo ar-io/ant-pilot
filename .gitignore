@@ -4,9 +4,9 @@ node_modules
 /lib
 .secrets
 logs
+log
 /cache
-/contracts/*/dist
-/contracts/*/validations*
+validations*
 /coverage
 
 
@@ -22,7 +22,6 @@ pnpm-debug.log*
 
 # Editor directories and files
 .idea
-.vscode
 *.suo
 *.ntvs*
 *.njsproj

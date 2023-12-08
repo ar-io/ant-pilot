@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "commonjs",
+    "target": "ESNext",
+    "module": "ESNext",
     "importHelpers": true,
     "moduleResolution": "node",
     "skipLibCheck": true,
@@ -11,20 +11,9 @@
     "sourceMap": true,
     "allowJs": true,
     "baseUrl": ".",
-    "types": ["jest", "node"],
-    "paths": {
-      "@/*": ["src/*"]
-    },
+    "types": ["jest"],
     "lib": ["ESNext"]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx",
-    "utils/_helpers.ts",
-    "contracts/ANT-1/tests/contract.ts"
-  ],
-  "exclude": ["node_modules", "tests"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "tests", "./src/*.js", "schemas/**/*"]
 }

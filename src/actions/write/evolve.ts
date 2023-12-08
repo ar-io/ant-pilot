@@ -14,19 +14,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import { NON_CONTRACT_OWNER_MESSAGE } from '../../constants';
+import { ANTState, ContractResult, PstAction } from '../../types';
 
-export const keyfile = 'key.json';
+declare const ContractError;
 
-// The warp testnet wallet that will be used in the creation of contracts, ants and record purchases.
-export const testKeyfile = 'testKey.json';
+// Updates this contract to new source code
+export const evolve = async (
+  state: ANTState,
+  { caller, input: { value } }: PstAction,
+): Promise<ContractResult> => {
+  const owner = state.owner;
 
-// ~~ Inidicate contract id ~~
-export const deployedContracts = {
-  contractTxId: 'tX7_OSAKLNgBkQtkl4o6KowAiToHrrp9cicMO398Ofw',
-  sourceTxId: 'PEI1efYrsX08HUwvc6y-h6TSpsNlo2r6_fWL2_GdwhY',
-};
+  if (caller !== owner) {
+    throw new ContractError(NON_CONTRACT_OWNER_MESSAGE);
+  }
 
-export const deployedTestContracts = {
-  contractTxId: 'KAfi2o_iORnDlWEJkJsKFR6Kf3qcUUoOo8VCwtsrmUQ',
-  sourceTxId: '33PxoQzxKVOhOBVaVqibWMK_xj3vgpbwfxdAlMUmtCY',
+  state.evolve = value.toString();
+
+  return { state };
 };

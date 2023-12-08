@@ -14,19 +14,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import { INVALID_INPUT_MESSAGE } from '../../constants';
+import { ANTState, ContractResult, PstAction } from '../../types';
+// composed by ajv at build
+import { validateBalance } from '../../validations';
 
-export const keyfile = 'key.json';
+declare const ContractError;
 
-// The warp testnet wallet that will be used in the creation of contracts, ants and record purchases.
-export const testKeyfile = 'testKey.json';
+export const balance = async (
+  state: ANTState,
+  { input }: PstAction,
+): Promise<ContractResult> => {
+  const ticker = state.ticker;
+  const owner = state.owner;
+  const { target } = input;
 
-// ~~ Inidicate contract id ~~
-export const deployedContracts = {
-  contractTxId: 'tX7_OSAKLNgBkQtkl4o6KowAiToHrrp9cicMO398Ofw',
-  sourceTxId: 'PEI1efYrsX08HUwvc6y-h6TSpsNlo2r6_fWL2_GdwhY',
-};
+  if (!validateBalance(input)) {
+    throw new ContractError(INVALID_INPUT_MESSAGE);
+  }
 
-export const deployedTestContracts = {
-  contractTxId: 'KAfi2o_iORnDlWEJkJsKFR6Kf3qcUUoOo8VCwtsrmUQ',
-  sourceTxId: '33PxoQzxKVOhOBVaVqibWMK_xj3vgpbwfxdAlMUmtCY',
+  if (typeof target !== 'string') {
+    throw new ContractError('Must specify target to get balance for');
+  }
+
+  return {
+    result: { target, ticker, balance: target === owner ? 1 : 0 },
+  };
 };
