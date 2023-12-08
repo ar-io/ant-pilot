@@ -19,11 +19,13 @@ import * as fs from 'fs';
 import path from 'path';
 import {
   ContractDeploy,
+  JWKInterface,
   LoggerFactory,
   PstState,
   WarpFactory,
   defaultCacheOptions,
 } from 'warp-contracts';
+import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 
 import { keyfile } from './constants';
 
@@ -45,15 +47,19 @@ import { keyfile } from './constants';
       inMemory: true,
     },
     true,
-  );
+  ).use(new DeployPlugin());
 
   // Get the key file used for the distribution
-  const wallet = JSON.parse(await fs.readFileSync(keyfile).toString());
+  // load local wallet
+  const keyPath = path.join(__dirname, keyfile);
+  const wallet: JWKInterface = JSON.parse(
+    process.env.JWK ? process.env.JWK : fs.readFileSync(keyPath).toString(),
+  );
   const walletAddress = await arweave.wallets.jwkToAddress(wallet);
 
   // ~~ Read contract source and initial state files ~~
   const contractSrc = fs.readFileSync(
-    path.join(__dirname, '../../dist/contract.js'),
+    path.join(__dirname, '../dist/contract.js'),
     'utf8',
   );
   const stateFromFile: PstState = JSON.parse(

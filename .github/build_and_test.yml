@@ -15,13 +15,7 @@ jobs:
       pull-requests: write
     strategy:
       matrix:
-        step:
-          [
-            'format:check',
-            'lint:check',
-            'build',
-            'test:unit'
-          ]
+        step: ['format:check', 'lint:check', 'build', 'test:unit']
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3

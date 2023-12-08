@@ -17,9 +17,7 @@
 import { INVALID_INPUT_MESSAGE } from '../../constants';
 import { ANTState, ContractResult, PstAction } from '../../types';
 // composed by ajv at build
-import {
-  validateTransferTokens,
-} from '../../validations';
+import { validateTransferTokens } from '../../validations';
 
 declare const ContractError;
 

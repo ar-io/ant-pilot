@@ -11,7 +11,7 @@
     "clean": "rimraf [ dist cache ]",
     "test:unit": "yarn build && jest --testPathPattern=src --coverage --passWithNoTests",
     "test:integration": "yarn build && jest --testPathPattern=tests --globalSetup=./tests/setup.jest.ts --globalTeardown=./tests/teardown.jest.ts --runInBand",
-    "deploy": "ts-node ./tools"
+    "deploy": "yarn build && ts-node ./tools/deploy-contract.ts"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.16.7",

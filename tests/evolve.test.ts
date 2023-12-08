@@ -18,6 +18,7 @@ import Arweave from 'arweave';
 import fs from 'fs';
 import path from 'path';
 import { JWKInterface, Warp } from 'warp-contracts';
+
 import { ANTState } from '../src/types';
 import { ANTDeployer, mineBlock } from '../tools/common/helpers';
 

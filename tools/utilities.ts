@@ -53,7 +53,6 @@ export const warp = WarpFactory.forMainnet(
   arweave,
 ).use(new DeployPlugin());
 
-
 const defaultArweave = arweave;
 export async function getContractManifest({
   arweave = defaultArweave,

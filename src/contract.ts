@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 import { balance } from './actions/read/balance';
 import { evolve } from './actions/write/evolve';
 import { removeController } from './actions/write/removeController';

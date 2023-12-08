@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const keyfile = 'key.json';
+export const keyfile = './key.json';
 
 // The warp testnet wallet that will be used in the creation of contracts, ants and record purchases.
 export const testKeyfile = 'testKey.json';

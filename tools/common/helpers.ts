@@ -18,7 +18,7 @@ import { JWKInterface } from 'arbundles/src/interface-jwk';
 import Arweave from 'arweave';
 import * as fs from 'fs';
 import path from 'path';
-import { LoggerFactory, PstState, WarpFactory, Warp } from 'warp-contracts';
+import { LoggerFactory, PstState, Warp, WarpFactory } from 'warp-contracts';
 import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 
 import { INITIAL_STATE, WALLET_FUND_AMOUNT } from './constants';

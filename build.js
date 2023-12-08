@@ -69,7 +69,7 @@ build({
   minify: false,
   bundle: true,
   format: 'iife',
-  packages: "external",
+  packages: 'external',
   tsconfig: './tsconfig.json',
 })
   .catch(() => process.exit(1))
