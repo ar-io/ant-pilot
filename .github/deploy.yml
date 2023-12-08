@@ -33,5 +33,5 @@ jobs:
         env:
           JWK: ${{ secrets.JWK }}
       - run: |
-          git tag "${{ steps.evolve.outputs.srcTxId }}"
+          git tag "${{ steps.deploy.outputs.srcTxId }}"
           git push --tags
