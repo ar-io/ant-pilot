@@ -34,10 +34,6 @@ export const setController = async (
     throw new ContractError(INVALID_INPUT_MESSAGE);
   }
 
-  if (!target) {
-    throw new ContractError('No target specified');
-  }
-
   if (caller !== owner) {
     throw new ContractError(NON_CONTRACT_OWNER_MESSAGE);
   }

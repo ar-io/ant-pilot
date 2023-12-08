@@ -14,15 +14,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+const evolveSchema = {
+  $id: '#/definitions/evolve',
+  type: 'object',
+  properties: {
+    function: {
+      type: 'string',
+      const: 'evolve',
+    },
+    value: {
+      type: 'string',
+      pattern: '^[a-zA-Z0-9_-]{43}$',
+    },
+  },
+  required: ['value'],
+  additionalProperties: false,
+};
+
 module.exports = {
-  evolveSchema: require('./evolve').evolveSchema,
-  setControllerSchema: require('./setController').setControllerSchema,
-  setTickerSchema: require('./setTicker').setTickerSchema,
-  setNameSchema: require('./setName').setNameSchema,
-  removeRecordSchema: require('./removeRecord').removeRecordSchema,
-  setRecordSchema: require('./setRecord').setRecordSchema,
-  removeControllerSchema: require('./removeController').removeControllerSchema,
-  balanceSchema: require('./balance').balanceSchema,
-  transferTokensSchema: require('./transferTokens').transferTokensSchema,
-  initialStateSchema: require('./initial-state').initialStateSchema,
+  evolveSchema,
 };

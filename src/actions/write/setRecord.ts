@@ -44,28 +44,8 @@ export const setRecord = async (
     throw new ContractError(NON_CONTRACT_OWNER_MESSAGE);
   }
 
-  // check subdomain validity
-  const namePattern = new RegExp('^[a-zA-Z0-9_-]+$'); // include underscores and dashes
-  // NEED TO CHECK FOR LEADING DASHES
-  const nameRes = namePattern.test(subDomain);
-  if (
-    typeof subDomain !== 'string' || // must be a string
-    subDomain.length > MAX_NAME_LENGTH || // the name is too long
-    (!nameRes && subDomain !== '@') || // the name does not match our regular expression and is not the root
-    subDomain === 'www' // this is a reserved name
-  ) {
+  if (subDomain === 'www') {
     throw new ContractError('Invalid ArNS Record Subdomain');
-  }
-
-  // check subdomain arweave transaction id validity
-  const pattern = new RegExp('^[a-zA-Z0-9_-]{43}$'); // standard regex for arweave transaction ids
-  const res = pattern.test(transactionId);
-  if (
-    typeof transactionId !== 'string' || // must be a string
-    transactionId.length !== TX_ID_LENGTH || // the tx id is too long
-    !res
-  ) {
-    throw new ContractError('Invalid Arweave Transaction ID');
   }
 
   state.records[subDomain] = {

@@ -30,6 +30,7 @@ const {
   setRecordSchema,
   removeRecordSchema,
   transferTokensSchema,
+  evolveSchema
 } = require('./schemas');
 
 // build our validation source code
@@ -43,6 +44,7 @@ const ajv = new Ajv({
     setRecordSchema,
     removeRecordSchema,
     transferTokensSchema,
+    evolveSchema
   ],
   code: { source: true, esm: true },
 });
@@ -56,6 +58,7 @@ const moduleCode = standaloneCode(ajv, {
   validateSetTicker: '#/definitions/setTicker',
   validateBalance: '#/definitions/balance',
   validateTransferTokens: '#/definitions/transferTokens',
+  validateEvolve: '#/definitions/evolve'
 });
 
 // Now you can write the module code to file

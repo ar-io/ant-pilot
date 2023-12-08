@@ -37,13 +37,6 @@ export const setTicker = async (
     throw new ContractError(`Caller is not the token owner or controller!`);
   }
 
-  // check ticker validity
-  if (
-    typeof ticker !== 'string' && // must be a string
-    ticker === ''
-  ) {
-    throw new ContractError('Invalid ANT ticker');
-  }
   state.ticker = ticker;
 
   return { state };

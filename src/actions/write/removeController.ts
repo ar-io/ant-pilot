@@ -32,9 +32,6 @@ export const removeController = async (
   }
 
   const owner = state.owner;
-  if (!target) {
-    throw new ContractError('No target specified');
-  }
 
   if (caller !== owner) {
     throw new ContractError(`Caller is not the token owner!`);

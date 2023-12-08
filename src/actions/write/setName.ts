@@ -38,13 +38,6 @@ export const setName = async (
     throw new ContractError(`Caller is not the token owner or controller!`);
   }
 
-  // check name validity
-  if (
-    typeof name !== 'string' || // must be a string
-    name === ''
-  ) {
-    throw new ContractError('Invalid ANT name');
-  }
   state.name = name;
 
   return { state };

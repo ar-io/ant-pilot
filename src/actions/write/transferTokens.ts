@@ -34,9 +34,6 @@ export const transferTokens = async (
     throw new ContractError(INVALID_INPUT_MESSAGE);
   }
 
-  if (!target) {
-    throw new ContractError('No target specified');
-  }
 
   if (caller === target) {
     throw new ContractError('Invalid token transfer');
