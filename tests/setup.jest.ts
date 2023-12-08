@@ -14,19 +14,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-module.exports = {
-  clearMocks: true,
+import ArLocal from 'arlocal';
 
-  moduleFileExtensions: ['ts', 'js'],
+import { initializeArLocalTestVariables } from '../tools/common/helpers';
 
-  testPathIgnorePatterns: ['/.yalc/', '/data/', '/_helpers'],
+module.exports = async function () {
+  // Set reference to mongod in order to close the server during teardown.
+  const arlocal = new ArLocal(1820, false);
+  await arlocal.start();
 
-  testEnvironment: 'node',
+  const { contractIds, arweave, wallets, warp } =
+    await initializeArLocalTestVariables({
+      walletCount: 10,
+    });
 
-  transformIgnorePatterns: ['<rootDir>/node_modules/(?!@assemblyscript/.*)'],
-  testTimeout: 600_000,
-
-  transform: {
-    '^.+\\.(ts|js)$': 'ts-jest',
-  },
+  global.arlocal = arlocal;
+  global.arweave = arweave;
+  global.wallets = wallets;
+  global.contractIds = contractIds;
+  global.warp = warp;
 };

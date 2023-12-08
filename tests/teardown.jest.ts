@@ -14,19 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-module.exports = {
-  clearMocks: true,
-
-  moduleFileExtensions: ['ts', 'js'],
-
-  testPathIgnorePatterns: ['/.yalc/', '/data/', '/_helpers'],
-
-  testEnvironment: 'node',
-
-  transformIgnorePatterns: ['<rootDir>/node_modules/(?!@assemblyscript/.*)'],
-  testTimeout: 600_000,
-
-  transform: {
-    '^.+\\.(ts|js)$': 'ts-jest',
-  },
+module.exports = async function () {
+  await global.arlocal.stop();
+  global.arlocal = undefined;
+  global.arweave = undefined;
+  global.wallets = undefined;
+  global.contractIds = undefined;
+  global.warp = undefined;
 };
