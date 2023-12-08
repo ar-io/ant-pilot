@@ -24,7 +24,7 @@ module.exports = {
   testEnvironment: 'node',
 
   transformIgnorePatterns: ['<rootDir>/node_modules/(?!@assemblyscript/.*)'],
-  testTimeout: 600_000,
+  testTimeout: 30_000,
 
   transform: {
     '^.+\\.(ts|js)$': 'ts-jest',
