@@ -1,14 +1,10 @@
 import { JWKInterface } from 'arweave/node/lib/wallet';
 import * as fs from 'fs';
-import {
-  LoggerFactory,
-  WarpFactory,
-  defaultCacheOptions,
-} from 'warp-contracts';
-
 import { keyfile } from './constants';
+import { initialize, warp } from './utilities';
 
 (async () => {
+  initialize();
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // The subdomain to add or update
   const subDomainToUpdate = 'logo';
@@ -21,34 +17,19 @@ import { keyfile } from './constants';
 
   // This is the Arweave Name Token Contract TX ID that will have a subdomain added/modified
   const contractTxId = 'bh9l1cy0aksiL_x9M359faGzM_yjralacHIUo8_nQXM';
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  // ~~ Initialize `LoggerFactory` ~~
-  LoggerFactory.INST.logLevel('error');
-
-  // ~~ Initialize Warp ~~
-  const warp = WarpFactory.forMainnet(
-    {
-      ...defaultCacheOptions,
-      inMemory: true,
-    },
-    true,
-  );
-
+  
   // Get the key file used for the distribution
   const wallet: JWKInterface = JSON.parse(fs.readFileSync(keyfile).toString());
 
   // ~~ Read contract source and initial state files ~~
-  const pst = warp.pst(contractTxId);
-  pst.connect(wallet);
-  const swTxId = await pst.writeInteraction({
+  const contract = warp.pst(contractTxId);
+  contract.connect(wallet);
+  const writeInteraction = await contract.writeInteraction({
     function: 'setRecord',
     subDomain: subDomainToUpdate,
     ttlSeconds: newTtlSeconds,
     transactionId: txIdToUpdate,
   });
 
-  console.log(
-    `Updating ANT "${contractTxId}"'s subdomain "${subDomainToUpdate}" value to "${txIdToUpdate}" at txID ${swTxId}`,
-  );
+  console.log(`Deployed transaction ID: ${writeInteraction}`);
 })();

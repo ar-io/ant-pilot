@@ -29,7 +29,7 @@ const {
   setTickerSchema,
   setRecordSchema,
   removeRecordSchema,
-  transferTokensSchema,
+  transferSchema,
   evolveSchema
 } = require('./schemas');
 
@@ -43,7 +43,7 @@ const ajv = new Ajv({
     setTickerSchema,
     setRecordSchema,
     removeRecordSchema,
-    transferTokensSchema,
+    transferSchema,
     evolveSchema
   ],
   code: { source: true, esm: true },
@@ -57,7 +57,7 @@ const moduleCode = standaloneCode(ajv, {
   validateSetName: '#/definitions/setName',
   validateSetTicker: '#/definitions/setTicker',
   validateBalance: '#/definitions/balance',
-  validateTransferTokens: '#/definitions/transferTokens',
+  validateTransferTokens: '#/definitions/transfer',
   validateEvolve: '#/definitions/evolve'
 });
 

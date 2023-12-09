@@ -14,40 +14,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import Arweave from 'arweave';
 import * as fs from 'fs';
 import path from 'path';
 import {
   ContractDeploy,
-  JWKInterface,
-  LoggerFactory,
   PstState,
-  WarpFactory,
-  defaultCacheOptions,
 } from 'warp-contracts';
-import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 
 import { keyfile } from './constants';
+import { arweave, initialize, warp } from './utilities';
+import { JWKInterface } from 'arweave/node/lib/wallet';
 
 (async () => {
-  // ~~ Initialize Arweave ~~
-  const arweave = Arweave.init({
-    host: 'arweave.net',
-    port: 443,
-    protocol: 'https',
-  });
-
-  // ~~ Initialize `LoggerFactory` ~~
-  LoggerFactory.INST.logLevel('error');
-
-  // ~~ Initialize Warp ~~
-  const warp = WarpFactory.forMainnet(
-    {
-      ...defaultCacheOptions,
-      inMemory: true,
-    },
-    true,
-  ).use(new DeployPlugin());
+  initialize()
 
   // Get the key file used for the distribution
   // load local wallet
