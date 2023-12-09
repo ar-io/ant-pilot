@@ -1,31 +1,6 @@
-[![codecov](https://codecov.io/gh/ar-io/ant-pilot/graph/badge.svg)](https://codecov.io/gh/ar-io/ant-pilot)
+
 # Arweave Name Token Proof of Concept
 
-## Project setup
-
-Clone this repository and install the dependencies.
-
-```bash
-git clone https://github.com/ar-io/ant-pilot.git
-cd ant-pilot
-```
-
-
-```
-yarn install
-```
-
-### Compiles and minifies for production
-
-```
-yarn build
-```
-
-### Tests contracts with arlocal
-
-```
-yarn test
-```
 ### Methods
 
 ### Initial setup
@@ -189,23 +164,33 @@ const { originalTxId } = await contract.writeInteraction({
 ```
 
 # Development
+## Project setup
 
-### Using AJV for Input Validation in Contract Methods
+Clone this repository and install the dependencies.
 
-We employ AJV (Another JSON Schema Validator) to ensure the integrity and correctness of inputs for our smart contract methods. AJV is a fast JSON schema validator that allows us to define the expected format of inputs and validate these inputs against the defined schemas.
-#### Overview of AJV Integration
+```bash
+git clone https://github.com/ar-io/ant-pilot.git
+cd ant-pilot
+```
 
-We use AJV to compile JSON schemas into validation functions, which are then used to validate inputs for our contract methods. The schemas define the expected structure, type, and constraints of the data. Our build file (`build.js`) includes the setup and compilation of these validation functions.
 
-#### Schemas
+```
+yarn install
+```
 
-We have defined multiple schemas for different contract methods, such as `balanceSchema`, `setControllerSchema`, `setNameSchema`, etc. These schemas are located in the `./schemas` directory. Each schema precisely defines the expected format of inputs for a corresponding contract method.
+### Compiles and minifies for production
 
-#### Compilation of Validation Functions
+```
+yarn build
+```
 
-In the build process, we create an instance of AJV and add our schemas to it. We then use `standaloneCode` from `ajv/dist/standalone` to compile these schemas into standalone validation functions. This compilation process generates a module (`validations.js`) in the `src` directory, which contains all the validation functions.
+### Tests contracts with arlocal
 
-#### Usage in Contract Methods
+```
+yarn test
+```
+
+#### Usage of AJV in Contract Methods
 
 In our contract methods, we import the relevant validation function from `validations.js` and use it to validate the input data. For example, if we have a contract method `setRecord`, we use the `validateSetRecord` function to validate its inputs.
 
@@ -220,12 +205,14 @@ function setRecord(input) {
 ```
 
 # Additional Resources
+Check out the Arweave Name System on the [ArNS Portal]!
 
 ### Documentation
 
 - [Arweave Name System Documentation]
 - [Permaweb Cookbook]
 - [AJV]
+- [ArNS Service]
 
 ### Support channels
 
@@ -259,6 +246,8 @@ The above scripts must have their variables updated in the script, and can be ru
 [Arweave Name System Documentation]: (https://ar.io/docs/arns/)
 [Permaweb Cookbook]: (https://cookbook.arweave.dev/concepts/arns.html)
 [AJV]:(https://ajv.js.org/guide/getting-started.html)
+[ArNS Portal]:(https://arns.app)
+[ArNS Service]:(https://github.com/ar-io/arns-service)
 
 
 
