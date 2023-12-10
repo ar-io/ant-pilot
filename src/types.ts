@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export type ANTRecord = {  
-   transactionId: string,  
-   ttlSeconds: number,  
-} 
+export type ANTRecord = {
+  transactionId: string;
+  ttlSeconds: number;
+};
 
 export type ANTState = {
   ticker: string; // A short token symbol, shown in block explorers and marketplaces
   name: string; // The friendly name of the token, shown in block explorers and marketplaces
   owner: string; // The owner of this contract who can execute specific methods
   controllers: string[]; // The controller of the records, who can add/change subdomains and their settings
-  records: Record<string, ANTRecord>
+  records: Record<string, ANTRecord>;
   balances: {
     // A list of all outstanding, positive, token balances
     [address: string]: number;

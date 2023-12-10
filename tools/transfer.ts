@@ -16,6 +16,7 @@
  */
 import { JWKInterface } from 'arweave/node/lib/wallet';
 import * as fs from 'fs';
+
 import { keyfile } from './constants';
 import { initialize, warp } from './utilities';
 

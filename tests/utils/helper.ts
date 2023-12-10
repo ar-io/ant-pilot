@@ -31,9 +31,7 @@ export async function mineBlocks(
   arweave: Arweave,
   blocks: number,
 ): Promise<void> {
-  for (let i = 0; i < blocks; i++) {
-    
-  }
+  for (let i = 0; i < blocks; i++) {}
 }
 
 export async function createLocalWallet(

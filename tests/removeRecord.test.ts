@@ -33,7 +33,6 @@ describe('Testing removeRecord...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
     const subDomain = 'test';
@@ -48,8 +47,6 @@ describe('Testing removeRecord...', () => {
     expect(setResult).toBeDefined();
     expect(setResult?.originalTxId).toBeDefined();
 
-    
-
     const result = await contract.writeInteraction({
       function: 'removeRecord',
       subDomain,
@@ -58,7 +55,6 @@ describe('Testing removeRecord...', () => {
     expect(result).toBeDefined();
     expect(result?.originalTxId).toBeDefined();
 
-    
     const { cachedValue } = await contract.readState();
     const state = cachedValue.state;
     expect(Object.keys(state.records)).not.toContain(subDomain);
@@ -69,7 +65,6 @@ describe('Testing removeRecord...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
     await contract.writeInteraction({
@@ -78,14 +73,13 @@ describe('Testing removeRecord...', () => {
       transactionId: defaultOwner[0],
       ttlSeconds: MIN_TTL_LENGTH,
     });
-    
 
     contract.connect(defaultOwner2[1]);
     await contract.writeInteraction({
       function: 'removeRecord',
       subDomain: 'test',
     });
-    
+
     const { cachedValue: newCachedValue } = await contract.readState();
     const newState = newCachedValue.state as ANTState;
     expect(newState.records['test']).not.toEqual(undefined);
@@ -100,7 +94,6 @@ describe('Testing removeRecord...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
 
@@ -108,7 +101,6 @@ describe('Testing removeRecord...', () => {
       function: 'setController',
       target: defaultOwner2[0],
     });
-    
 
     contract.connect(defaultOwner2[1]);
     await contract.writeInteraction({
@@ -117,13 +109,12 @@ describe('Testing removeRecord...', () => {
       transactionId,
       ttlSeconds,
     });
-    
 
     await contract.writeInteraction({
       function: 'removeRecord',
       subDomain,
     });
-    
+
     const { cachedValue: newCachedValue } = await contract.readState();
     const newState = newCachedValue.state as ANTState;
     expect(newState.records[subDomain]).toEqual(undefined);

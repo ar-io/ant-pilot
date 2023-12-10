@@ -14,7 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { INVALID_INPUT_MESSAGE, NON_CONTRACT_OWNER_MESSAGE } from '../../constants';
+import {
+  INVALID_INPUT_MESSAGE,
+  NON_CONTRACT_OWNER_MESSAGE,
+} from '../../constants';
 import { ANTState, ContractResult, PstAction } from '../../types';
 // composed by ajv at build
 import { validateEvolve } from '../../validations';
@@ -26,7 +29,7 @@ export const evolve = async (
   state: ANTState,
   { caller, input: { value } }: PstAction,
 ): Promise<ContractResult> => {
-  if (!validateEvolve({value})) {
+  if (!validateEvolve({ value })) {
     throw new ContractError(INVALID_INPUT_MESSAGE);
   }
   const owner = state.owner;

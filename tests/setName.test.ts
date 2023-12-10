@@ -32,7 +32,6 @@ describe('Testing setName...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
 
@@ -46,7 +45,6 @@ describe('Testing setName...', () => {
     expect(result).toBeDefined();
     expect(result?.originalTxId).toBeDefined();
 
-    
     const { cachedValue } = await contract.readState();
     const state = cachedValue.state;
     expect(state.name).toEqual(name);
@@ -57,7 +55,6 @@ describe('Testing setName...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner2[1]);
     const { cachedValue: prevCachedValue } = await contract.readState();
@@ -66,7 +63,7 @@ describe('Testing setName...', () => {
       function: 'setName',
       name: 'HACKED',
     });
-    
+
     expect(writeInteraction?.originalTxId).not.toBe(undefined);
     const { cachedValue: newCachedValue } = await contract.readState();
     const newState = newCachedValue.state as ANTState;
@@ -78,7 +75,6 @@ describe('Testing setName...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
 
@@ -86,13 +82,13 @@ describe('Testing setName...', () => {
       function: 'setController',
       target: defaultOwner2[0],
     });
-    
+
     contract.connect(defaultOwner2[1]);
     await contract.writeInteraction({
       function: 'setName',
       name: 'My New Token Renamed',
     });
-    
+
     const { cachedValue: newCachedValue } = await contract.readState();
     const newState = newCachedValue.state as ANTState;
     expect(newState.name).toEqual('My New Token Renamed');

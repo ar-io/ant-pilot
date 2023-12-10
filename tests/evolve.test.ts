@@ -41,7 +41,6 @@ describe('Testing evolve...', () => {
       true,
     );
     _srcTxId = await warp.saveSource(srcTx, true);
-    
   });
 
   it('Should evolve the ANT', async () => {
@@ -49,11 +48,10 @@ describe('Testing evolve...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
     const evolveResult = await contract.evolve(_srcTxId);
-    
+
     const { cachedValue } = await contract.readState();
 
     expect(evolveResult?.originalTxId).toBeDefined();

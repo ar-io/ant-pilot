@@ -11,7 +11,6 @@ import { keyfile } from './constants';
 import { initialize, warp } from './utilities';
 
 (async () => {
-
   initialize();
   //~~~~~~~~~~~~~~~~~~~~~~~~~~UPDATE THE BELOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // This is the Arweave Name Token Contract TX ID that will have a controller set
@@ -32,7 +31,5 @@ import { initialize, warp } from './utilities';
     target,
   });
 
-  console.log(
-    `Deployed transaction ID: ${writeInteraction}`,
-  );
+  console.log(`Deployed transaction ID: ${writeInteraction}`);
 })();

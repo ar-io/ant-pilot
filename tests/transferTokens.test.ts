@@ -33,7 +33,6 @@ describe('Testing transfer...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
 
@@ -41,7 +40,7 @@ describe('Testing transfer...', () => {
       function: 'transfer',
       target: defaultOwner2[0],
     });
-    
+
     expect(writeInteraction?.originalTxId).not.toBe(undefined);
     const { cachedValue: newCachedValue } = await contract.readState();
     const newState = newCachedValue.state as ANTState;
@@ -55,7 +54,6 @@ describe('Testing transfer...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner2[1]);
     const { cachedValue: prevCachedValue } = await contract.readState();
@@ -65,7 +63,7 @@ describe('Testing transfer...', () => {
       function: 'transfer',
       target: defaultOwner[0],
     });
-    
+
     const { cachedValue: newCachedValue } = await contract.readState();
     const newState = newCachedValue.state as ANTState;
     expect(writeInteraction?.originalTxId).not.toBe(undefined);
@@ -77,7 +75,6 @@ describe('Testing transfer...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
 
@@ -85,7 +82,7 @@ describe('Testing transfer...', () => {
       function: 'setController',
       target: defaultOwner2[0],
     });
-    
+
     contract.connect(defaultOwner2[1]); // this wallet is only a controller
     const { cachedValue: prevCachedValue } = await contract.readState();
     const prevState = prevCachedValue.state as ANTState;
@@ -95,7 +92,6 @@ describe('Testing transfer...', () => {
       qty: 1,
     });
 
-    
     expect(writeInteraction?.originalTxId).not.toBe(undefined);
     const { cachedValue: newCachedValue } = await contract.readState();
     const newState = newCachedValue.state as ANTState;

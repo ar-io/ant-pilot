@@ -14,19 +14,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import { JWKInterface } from 'arweave/node/lib/wallet';
 import * as fs from 'fs';
 import path from 'path';
-import {
-  ContractDeploy,
-  PstState,
-} from 'warp-contracts';
+import { ContractDeploy, PstState } from 'warp-contracts';
 
 import { keyfile } from './constants';
 import { arweave, initialize, warp } from './utilities';
-import { JWKInterface } from 'arweave/node/lib/wallet';
 
 (async () => {
-  initialize()
+  initialize();
 
   // Get the key file used for the distribution
   // load local wallet

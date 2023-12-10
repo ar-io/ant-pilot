@@ -1,4 +1,3 @@
-
 # ArNS - Arweave Name Token (ANT)
 
 This repository contains the source code used for Arweave Name Tokens used to resolve ArNS names on ar-io gateways. For official documentation on ANT's refer to the [ArNS ANT Docs]. For official documentation on ArNS refer to the [ArNS Docs].
@@ -9,12 +8,9 @@ The ANT [SmartWeave] Contract is a standardized contract that contains the speci
 
 ## ANT Contract
 
-ANT contracts need to include the following methods and match the general schema of the [ANT Contract Schema] to be usable for ArNS name resolutions. 
+ANT contracts need to include the following methods and match the general schema of the [ANT Contract Schema] to be usable for ArNS name resolutions.
 
 ### Methods
-
-
-
 
 ### `transfer`
 
@@ -23,7 +19,6 @@ Transfers the ownership of the ANT.
 | Name   | Type   | Pattern               | Required | Description                 |
 | ------ | ------ | --------------------- | -------- | --------------------------- |
 | target | string | "^[a-zA-Z0-9_-]{43}$" | true     | Address to transfer ANT to. |
-
 
 ### `setRecord`
 
@@ -35,7 +30,6 @@ Sets a record for a given subdomain.
 | transactionId | string | "^[a-zA-Z0-9_-]{43}$"     | true     | Transaction ID for the record.      |
 | ttlSeconds    | number | Min: 900, Max: 2,592,000  | false    | Time-to-live in seconds for record. |
 
-
 ### `setName`
 
 Sets the name of the ANT.
@@ -44,7 +38,6 @@ Sets the name of the ANT.
 | ---- | ------ | ------- | -------- | --------------------- |
 | name | string | N/A     | true     | New name for the ANT. |
 
-
 ### `setTicker`
 
 Sets the ticker symbol for the ANT.
@@ -52,7 +45,6 @@ Sets the ticker symbol for the ANT.
 | Name   | Type   | Pattern | Required | Description                |
 | ------ | ------ | ------- | -------- | -------------------------- |
 | ticker | string | N/A     | true     | New ticker symbol for ANT. |
-
 
 ### `setController`
 
@@ -136,14 +128,13 @@ Make sure to update the variables at the top of each tool's `.ts` file, as well 
 - [Permaweb Cookbook]
 - [Warp]
 
-[ANT Contract Schema]:./initial-state.json
-[AR.IO Gateways]:https://ar.io/docs/gateway-network/#overview
-[ArNS Docs]:https://ar.io/docs/arns/
-[ArNS ANT Docs]:https://ar.io/docs/arns/#arweave-name-token-ant
-[ArNS Service]:https://github.com/ar-io/arns-service
-[ArNS Portal]:https://arns.app
-[Permaweb Cookbook]:https://cookbook.arweave.dev/concepts/arns.html
-[AJV]:https://ajv.js.org/guide/getting-started.html
-[Warp]:https://academy.warp.cc
-[SmartWeave]:https://github.com/ArweaveTeam/SmartWeave
-
+[ANT Contract Schema]: ./initial-state.json
+[AR.IO Gateways]: https://ar.io/docs/gateway-network/#overview
+[ArNS Docs]: https://ar.io/docs/arns/
+[ArNS ANT Docs]: https://ar.io/docs/arns/#arweave-name-token-ant
+[ArNS Service]: https://github.com/ar-io/arns-service
+[ArNS Portal]: https://arns.app
+[Permaweb Cookbook]: https://cookbook.arweave.dev/concepts/arns.html
+[AJV]: https://ajv.js.org/guide/getting-started.html
+[Warp]: https://academy.warp.cc
+[SmartWeave]: https://github.com/ArweaveTeam/SmartWeave

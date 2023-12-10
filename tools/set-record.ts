@@ -1,5 +1,6 @@
 import { JWKInterface } from 'arweave/node/lib/wallet';
 import * as fs from 'fs';
+
 import { keyfile } from './constants';
 import { initialize, warp } from './utilities';
 
@@ -17,7 +18,7 @@ import { initialize, warp } from './utilities';
 
   // This is the Arweave Name Token Contract TX ID that will have a subdomain added/modified
   const contractTxId = 'bh9l1cy0aksiL_x9M359faGzM_yjralacHIUo8_nQXM';
-  
+
   // Get the key file used for the distribution
   const wallet: JWKInterface = JSON.parse(fs.readFileSync(keyfile).toString());
 

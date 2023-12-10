@@ -32,7 +32,6 @@ describe('Testing setController...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
 
@@ -44,7 +43,6 @@ describe('Testing setController...', () => {
     expect(result).toBeDefined();
     expect(result?.originalTxId).toBeDefined();
 
-    
     const { cachedValue } = await contract.readState();
     const state = cachedValue.state;
     expect(state.controllers).toContain(defaultOwner2[0]);
@@ -55,7 +53,6 @@ describe('Testing setController...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner2[1]);
 
@@ -65,7 +62,7 @@ describe('Testing setController...', () => {
       function: 'setController',
       target: 'HACKED',
     });
-    
+
     expect(writeInteraction?.originalTxId).not.toBe(undefined);
     const { cachedValue: newCachedValue } = await contract.readState();
     const newState = newCachedValue.state as ANTState;

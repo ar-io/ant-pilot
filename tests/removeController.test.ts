@@ -31,7 +31,6 @@ describe('Testing removeController...', () => {
       address: defaultOwner[0],
       wallet: defaultOwner[1],
     });
-    
 
     const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
     const result = await contract.writeInteraction({
@@ -42,7 +41,6 @@ describe('Testing removeController...', () => {
     expect(result).toBeDefined();
     expect(result?.originalTxId).toBeDefined();
 
-    
     const { cachedValue } = await contract.readState();
     const state = cachedValue.state;
     expect(state.controllers).not.toContain(defaultOwner[0]);
