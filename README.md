@@ -1,51 +1,158 @@
-# Arweave Name Token Proof of Concept
+
+# ArNS - Arweave Name Token (ANT)
+
+This repository contains the source code used for Arweave Name Tokens used to resolve ArNS names on ar-io gateways. For official documentation on ANT's refer to the [ArNS ANT Docs]. For official documentation on ArNS refer to the [ArNS Docs].
+
+## Overview
+
+The ANT [SmartWeave] Contract is a standardized contract that contains the specific ArNS Record specification required by [AR.IO gateways] who resolve ArNS names and their Arweave Transaction IDs. It also contains other basic functionality to establish ownership and the ability to transfer ownership and update the Arweave Transaction ID.
+
+## ANT Contract
+
+ANT contracts need to include the following methods and match the general schema of the [ANT Contract Schema] to be usable for ArNS name resolutions. 
+
+### Methods
+
+
+
+
+### `transfer`
+
+Transfers the ownership of the ANT.
+
+| Name   | Type   | Pattern               | Required | Description                 |
+| ------ | ------ | --------------------- | -------- | --------------------------- |
+| target | string | "^[a-zA-Z0-9_-]{43}$" | true     | Address to transfer ANT to. |
+
+
+### `setRecord`
+
+Sets a record for a given subdomain.
+
+| Name          | Type   | Pattern                   | Required | Description                         |
+| ------------- | ------ | ------------------------- | -------- | ----------------------------------- |
+| subDomain     | string | "^(?:[a-zA-Z0-9_-]+\|@)$" | true     | Subdomain to set the record for.    |
+| transactionId | string | "^[a-zA-Z0-9_-]{43}$"     | true     | Transaction ID for the record.      |
+| ttlSeconds    | number | Min: 900, Max: 2,592,000  | false    | Time-to-live in seconds for record. |
+
+
+### `setName`
+
+Sets the name of the ANT.
+
+| Name | Type   | Pattern | Required | Description           |
+| ---- | ------ | ------- | -------- | --------------------- |
+| name | string | N/A     | true     | New name for the ANT. |
+
+
+### `setTicker`
+
+Sets the ticker symbol for the ANT.
+
+| Name   | Type   | Pattern | Required | Description                |
+| ------ | ------ | ------- | -------- | -------------------------- |
+| ticker | string | N/A     | true     | New ticker symbol for ANT. |
+
+
+### `setController`
+
+Adds a new controller to the ANT.
+
+| Name   | Type   | Pattern               | Required | Description                    |
+| ------ | ------ | --------------------- | -------- | ------------------------------ |
+| target | string | "^[a-zA-Z0-9_-]{43}$" | true     | Address of the new controller. |
+
+### `removeController`
+
+Removes a controller from the ANT.
+
+| Name   | Type   | Pattern               | Required | Description                          |
+| ------ | ------ | --------------------- | -------- | ------------------------------------ |
+| target | string | "^[a-zA-Z0-9_-]{43}$" | true     | Address of the controller to remove. |
+
+### `removeRecord`
+
+Removes a record from the ANT.
+
+| Name      | Type   | Pattern                   | Required | Description                        |
+| --------- | ------ | ------------------------- | -------- | ---------------------------------- |
+| subDomain | string | "^(?:[a-zA-Z0-9_-]+\|@)$" | true     | Subdomain of the record to remove. |
+
+### `balance`
+
+Retrieves the balance of a target address.
+
+| Name   | Type   | Pattern               | Required | Description                      |
+| ------ | ------ | --------------------- | -------- | -------------------------------- |
+| target | string | "^[a-zA-Z0-9_-]{43}$" | true     | Address to retrieve balance for. |
+
+### `evolve`
+
+Allows the contract to evolve by setting a new contract source.
+
+| Name  | Type   | Pattern               | Required | Description                       |
+| ----- | ------ | --------------------- | -------- | --------------------------------- |
+| value | string | "^[a-zA-Z0-9_-]{43}$" | true     | New source code for the contract. |
+
+# Development
 
 ## Project setup
 
 Clone this repository and install the dependencies.
 
+```bash
+git clone https://github.com/ar-io/ant-pilot.git
+cd ant-pilot
 ```
+
+```typescript
 yarn install
-```
-
-### Compiles and minifies for production
-
-```
 yarn build
-```
-
-### Tests contracts with arlocal
-
-```
 yarn test
 ```
 
-### Create an ANT and Register a Name for It
+#### AJV
 
-1. Set the `keyfile` value in `constants.ts` to any wallet with sufficient AR to fund a smartweave transaction and enough ARNS tokens to register the desired subdomain name.
-2. Set the desired `ticker` and `name` variable values for your ANT in `create-ant-and-buy-arns-name.ts`.
-3. Set the desired Arweave txID for the ANT's `@` record to the `dataPointer` variable in `create-ant-and-buy-arns-name.ts`
-4. Set the desired ArNS subdomain name for the ANT that will be created to the `nameToBuy` variable in `create-ant-and-buy-arns-name.ts`
-5. Run: `yarn ts-node .\src\tools\create-ant-and-buy-arns-name.ts`
+The Arweave Name Token contract uses [AJV] for validating the input data for interactions. The schemas for each is located in [schemas] directory.
 
 ### Tools
 
-In order to deploy contracts and use the Gateway Name Service Registry (along with creating Gateway Name Tokens) the following tools are available to be used.
+In order to deploy contracts and use the Arweave Name System (along with creating Arweave Name Tokens) the following tools are available to be used.
 
 Make sure to update the variables at the top of each tool's `.ts` file, as well as the local wallet file in `constants.ts`
 
-- `buy-arns-name` purchases a new ArNS Name in the registry (if availabile) and adds the reference to the ANT Smartweave Contract ID. Requires the name you wish to purchase, the existing ANT Smartweave Contract ID that will be added to the registry, and the ArNS Registry Smartcontract ID.
-- `create-ant` creates a new ANT with arweave data pointer. Requires a short token ticker, a friendly token name and an Arweave Transaction ID as the data pointer. Please note that only the `@` sub domain will work at this time, and it is hard-coded into the script.
-- `create-ant-and-buy-arns-name` creates a new ANT with arweave data pointer and then registers it in the ArNS Registry. Please note that only the `@` sub domain will work at this time, and it is hard-coded into the script. Also this script will not check if the ANT was successfully created and mined before adding to the ArNS Registry. Requires a short token ticker, a friendly token name and an Arweave Transaction ID as the data pointer and the ArNS Registry Smartweave Contract ID.
-- `create-test-ant` creates a new ANT with arweave data pointer on RedStone Testnet. Requires a short token ticker, a friendly token name and an Arweave Transaction ID as the data pointer.
-- `deploy-contract` deploys a new ANT Source Contract to mainnet
-- `deploy-test-contract` deploys a new Test ANT Source Contract to Redstone Testnet
+- `deploy-contract` creates a new ANT with arweave data pointer. Requires a short token ticker, a friendly token name and an Arweave Transaction ID as the data pointer. The state variables can be updated in `inital-state.json` in the root folder of the project.
 - `remove-ant-subdomain` removes an existing subdomain from the ANT. Requires the subdomain name to be removed and the ANT Smartweave Contract ID.
-- `remove-test-ant-subdomain` removes an existing subdomain from a Test ANT on Redstone Testnet. Requires the subdomain name to be removed and the ANT Smartweave Contract ID.
 - `transfer-ant` transfers a ANT to another wallet. Requires the recipient target to transfer the ANT to, and the ANT Smartweave Contract ID that is to be transfered.
-- `transfer-test-ant` transfers a Test ANT to another wallet on Redstone Testnet. Requires the recipient target to transfer the Test ANT to, and the ANT Smartweave Contract ID that is to be transfered.
 - `update-ant-subdomain` creates a new subdomain in a ANT or updates existing one. Requires the subdomain name that is to be created or updated, the ANT Smartweave Contract ID and an Arweave Transaction. Please note that only the `@` sub domain will work at this time.
-- `update-test-ant-subdomain` creates a new subdomain in a ANT or updates existing one on Redstone Testnet. Requires the subdomain name that is to be created or updated, the ANT Smartweave Contract ID and an Arweave Transaction. Please note that only the `@` sub domain will work at this time.
+
 
 The above scripts must have their variables updated in the script, and can be run like the following example
-`yarn ts-node .\src\tools\create-ant-and-buy-arns-name.ts`
+`yarn ts-node .\tools\deploy-contract.ts`
+
+
+# Additional Resources
+
+- [ArNS Docs]
+- [ArNS Portal]
+- [ArNS Service]
+- [Warp]
+- [Ar.IO Discord]
+- [Arweave-Dev Discord]
+- [Permaweb Cookbook]
+- [Warp Discord]
+
+
+[Ar.IO Discord]: (https://discord.gg/7aQMHyY5FF)
+[Arweave-Dev Discord]: (https://discord.gg/VEfJVuuUfx)
+[Permaweb Discord]: (https://discord.gg/NPgK8vpQkw)
+[Warp Discord]: (https://discord.gg/8EvRD38dk5)
+[ArNS Docs]: (https://ar.io/docs/arns/)
+[ArNS ANT Docs]: (https://ar.io/docs/arns/#arweave-name-token-ant)
+[ArNS Service]:(https://github.com/ar-io/arns-service)
+
+[ArNS Portal]: (https://arns.app)
+[Permaweb Cookbook]: (https://cookbook.arweave.dev/concepts/arns.html)
+[AJV]: (https://ajv.js.org/guide/getting-started.html)
+[Warp]: (https://academy.warp.cc)
+

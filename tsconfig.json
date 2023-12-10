@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "commonjs",
+    "target": "ESNext",
+    "module": "CommonJS",
     "importHelpers": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
@@ -12,18 +12,8 @@
     "allowJs": true,
     "baseUrl": ".",
     "types": ["jest"],
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    "lib": ["esnext"]
+    "lib": ["ESNext"]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx",
-    "utils/_helpers.ts"
-  ],
-  "exclude": ["node_modules", "tests"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "tests", "./src/*.js", "schemas/**/*"]
 }

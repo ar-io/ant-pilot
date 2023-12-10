@@ -3,11 +3,8 @@ import { JWKInterface } from 'arweave/node/lib/wallet';
 import * as fs from 'fs';
 import path from 'path';
 
-import { ANTState } from '../../src/types';
-import {
-  INITIAL_STATE,
-  WALLET_FUND_AMOUNT,
-} from './constants';
+import { ANTState } from '../../types';
+import { INITIAL_STATE, WALLET_FUND_AMOUNT } from './constants';
 
 // ~~ Write function responsible for adding funds to the generated wallet ~~
 export async function addFunds(
@@ -35,7 +32,7 @@ export async function mineBlocks(
   blocks: number,
 ): Promise<void> {
   for (let i = 0; i < blocks; i++) {
-    await mineBlock(arweave);
+    
   }
 }
 
@@ -79,10 +76,7 @@ export function getLocalWallet(index = 0): JWKInterface {
 
 export function getLocalANTContractId(): string {
   const contract = JSON.parse(
-    fs.readFileSync(
-      path.join(__dirname, "../dist/contract.js"),
-      'utf8',
-    ),
+    fs.readFileSync(path.join(__dirname, '../dist/contract.js'), 'utf8'),
   ) as unknown as ANTState & { id: string };
   return contract.id;
 }

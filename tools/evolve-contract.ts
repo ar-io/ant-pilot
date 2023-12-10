@@ -1,8 +1,6 @@
 import { JWKInterface } from 'arweave/node/lib/wallet';
 import * as fs from 'fs';
 import path from 'path';
-import { LoggerFactory } from 'warp-contracts';
-import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 
 import { keyfile } from './constants';
 import { initialize, warp } from './utilities';
@@ -12,24 +10,16 @@ import { initialize, warp } from './utilities';
   // simple setup script
   initialize();
 
-  // override log settings
-  LoggerFactory.INST.logLevel('none');
-
   // load local wallet
   const wallet: JWKInterface = JSON.parse(
     process.env.JWK ? process.env.JWK : fs.readFileSync(keyfile).toString(),
   );
 
   // load state of contract
-  const antContractTxId =
-    process.env.ANT_CONTRACT_TX_ID ??
-    'YOUR ANT CONTRACT';
-
-  // ~~ Initialize SmartWeave ~~
-  const warpWithDeploy = warp.use(new DeployPlugin());
+  const antContractTxId = process.env.ANT_CONTRACT_TX_ID ?? 'YOUR ANT CONTRACT';
 
   // Read the ArNS Registry Contract
-  const contract = warpWithDeploy.pst(antContractTxId);
+  const contract = warp.pst(antContractTxId);
   contract.connect(wallet);
 
   // ~~ Read contract source and initial state files ~~
@@ -39,12 +29,15 @@ import { initialize, warp } from './utilities';
   );
 
   // Create the evolved source code tx
-  const evolveSrcTx = await warpWithDeploy.createSource(
+  const evolveSrcTx = await warp.createSourceTx(
     { src: newLocalSourceCodeJS },
     wallet,
-    true,
   );
-  const evolveSrcTxId = await warpWithDeploy.saveSource(evolveSrcTx, true);
+  if (evolveSrcTx === null) {
+    return 0;
+  }
+
+  const evolveSrcTxId = await warp.saveSourceTx(evolveSrcTx, true);
   if (evolveSrcTxId === null) {
     return 0;
   }
@@ -57,7 +50,10 @@ import { initialize, warp } from './utilities';
     },
   );
 
-  console.log ("Evolve Interaction Tx Id: ", evolveInteractionTXId?.originalTxId)
+  console.log(
+    'Evolve Interaction Tx Id: ',
+    evolveInteractionTXId?.originalTxId,
+  );
   // DO NOT CHANGE THIS - it's used by github actions
   console.log(evolveSrcTxId);
 })();

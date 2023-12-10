@@ -3,11 +3,17 @@ node_modules
 /dist
 /lib
 .secrets
+logs
+log
+/cache
+validations*
+/coverage
 
 
 # local env files
 .env.local
 .env.*.local
+.env
 
 # Log files
 npm-debug.log*
@@ -17,7 +23,6 @@ pnpm-debug.log*
 
 # Editor directories and files
 .idea
-.vscode
 *.suo
 *.ntvs*
 *.njsproj
