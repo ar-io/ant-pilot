@@ -6,9 +6,9 @@ on:
   #   branches:
   #     - develop
   #     - main
-    paths:
-      - src/**
-      - schemas/**
+  #   paths:
+  #     - src/**
+  #     - schemas/**
 
 jobs:
   build:
@@ -17,7 +17,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [build]
-    environment: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
