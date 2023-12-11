@@ -30,4 +30,3 @@ module.exports = {
     '^.+\\.(ts|js)$': 'ts-jest',
   },
 };
-
