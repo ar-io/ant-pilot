@@ -26,20 +26,17 @@ export type ANTState = {
   owner: string; // The owner of this contract who can execute specific methods
   controllers: string[]; // The controller of the records, who can add/change subdomains and their settings
   records: Record<string, ANTRecord>;
-  balances: {
-    // A list of all outstanding, positive, token balances
-    [address: string]: number;
-  };
+  balances: Record<string, number>;
   evolve: string; // The new Smartweave Source Code transaction to evolve this contract to
 };
 
-export interface PstAction {
-  input: PstInput;
+export interface AntAction {
+  input: AntInput;
   caller: string;
 }
 
-export interface PstInput {
-  function: PstFunction;
+export interface AntInput {
+  function: AntFunction;
   target: string;
   name: string;
   ticker: string;
@@ -50,7 +47,7 @@ export interface PstInput {
   ttlSeconds: number;
 }
 
-export interface PstResult {
+export interface AntReadResult {
   target: string;
   ticker: string;
   balance: number;
@@ -61,7 +58,7 @@ export interface ANTSubDomainResult {
   transactionId: string;
 }
 
-export type PstFunction =
+export type AntFunction =
   | 'transfer'
   | 'setRecord'
   | 'setName'
@@ -72,7 +69,14 @@ export type PstFunction =
   | 'balance'
   | 'evolve';
 
+export type AntContractWriteResult = {
+  state: ANTState;
+}
+
+export type AntContractReadResult = {
+result: AntContractReadResult | ANTSubDomainResult | unknown;
+}
+
 export type ContractResult =
-  | { state: ANTState }
-  | { result: PstResult }
-  | { result: ANTSubDomainResult };
+  | AntContractWriteResult
+  | AntContractReadResult

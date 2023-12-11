@@ -1,11 +1,23 @@
 import Arweave from 'arweave';
 import { JWKInterface } from 'arweave/node/lib/wallet';
+import { ANTState } from '../../src/types'
 import * as fs from 'fs';
 import path from 'path';
 
-import { ANTState } from '../../types';
 import { INITIAL_STATE, WALLET_FUND_AMOUNT } from './constants';
+import ArLocal from 'arlocal';
+import { LoggerFactory, Warp, WarpFactory } from 'warp-contracts';
+import { DeployPlugin} from 'warp-contracts-plugin-deploy';
 
+LoggerFactory.INST.logLevel('none');
+
+export const arweave = Arweave.init({
+  host: 'localhost',
+  port: 1984,
+  protocol: 'http',
+});
+export const warp = WarpFactory.forLocal(1984, arweave).use(new DeployPlugin());
+export const arlocal = new ArLocal(1984, false);
 // ~~ Write function responsible for adding funds to the generated wallet ~~
 export async function addFunds(
   arweave: Arweave,
@@ -41,7 +53,6 @@ export async function createLocalWallet(
   const wallet = await arweave.wallets.generate();
   const address = await arweave.wallets.jwkToAddress(wallet);
   await addFunds(arweave, wallet);
-
   return {
     wallet,
     address,
@@ -65,11 +76,18 @@ export async function setupInitialContractState(
   return state;
 }
 
-export function getLocalWallet(index = 0): JWKInterface {
+export async function getLocalWallet(arweave, index = 0): Promise<{
+  address: string,
+  wallet: JWKInterface
+ }> {
   const wallet = JSON.parse(
     fs.readFileSync(path.join(__dirname, `../wallets/${index}.json`), 'utf8'),
   ) as unknown as JWKInterface;
-  return wallet;
+  const address = await arweave.wallets.getAddress(wallet);
+  return {
+    address,
+    wallet,
+  };
 }
 
 export function getLocalANTContractId(): string {
@@ -77,4 +95,51 @@ export function getLocalANTContractId(): string {
     fs.readFileSync(path.join(__dirname, '../dist/contract.js'), 'utf8'),
   ) as unknown as ANTState & { id: string };
   return contract.id;
+}
+
+export async function deployANTContract({
+  warp,
+  owner,
+  wallet,
+}:{
+    owner: string;
+    warp: Warp;
+    wallet: JWKInterface;
+  },
+): Promise<{
+  contractTxId: string;
+  srcTxId: string;
+}> {
+  const sourceCode = fs.readFileSync(
+    path.join(__dirname, '../../dist/contract.js'),
+    'utf8',
+  );
+  const initState = fs.readFileSync(
+    path.join(__dirname, '../../initial-state.json'),
+    'utf8',
+  );
+    const ownerState = {
+      ...JSON.parse(initState),
+      owner,
+      records: {
+        remove: {
+          transactionId: '',
+          ttlSeconds: 900,
+        }
+      },
+      balances: {
+        [owner]: 1,
+      },
+    };
+    const { contractTxId, srcTxId } = await warp.deploy(
+      {
+        src: sourceCode,
+        initState: JSON.stringify(ownerState),
+        wallet,
+      },
+      true,
+    );
+    return {
+      contractTxId, srcTxId
+    };
 }

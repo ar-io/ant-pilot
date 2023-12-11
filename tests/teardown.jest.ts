@@ -1,3 +1,6 @@
+import { fstat } from "fs";
+import { arlocal } from "./utils/helper";
+
 /**
  * Copyright (C) 2022-2024 Permanent Data Solutions, Inc. All Rights Reserved.
  *
@@ -14,11 +17,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import fs from 'fs';
+import path from 'path';
 module.exports = async function () {
-  await global.arlocal.stop();
-  global.arlocal = undefined;
-  global.arweave = undefined;
-  global.wallets = undefined;
-  global.contractIds = undefined;
-  global.warp = undefined;
+  await arlocal.stop();
+
+  // clean up our temp wallets
+  if(fs.existsSync(path.join(__dirname,'./wallets'))){
+    fs.rmSync(path.join(__dirname, './wallets'), { recursive: true });
+  }
 };

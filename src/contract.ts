@@ -23,13 +23,13 @@ import { setName } from './actions/write/setName';
 import { setRecord } from './actions/write/setRecord';
 import { setTicker } from './actions/write/setTicker';
 import { transferTokens } from './actions/write/transferTokens';
-import { ANTState, ContractResult, PstAction } from './types';
+import { ANTState, ContractResult, AntAction } from './types';
 
 declare const ContractError;
 
 export async function handle(
   state: ANTState,
-  action: PstAction,
+  action: AntAction,
 ): Promise<ContractResult> {
   const input = action.input;
 

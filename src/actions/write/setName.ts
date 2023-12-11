@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { INVALID_INPUT_MESSAGE } from '../../constants';
-import { ANTState, ContractResult, PstAction } from '../../types';
+import { ANTState, ContractResult, AntAction } from '../../types';
 // composed by ajv at build
 import { validateSetName } from '../../validations';
 
@@ -24,7 +24,7 @@ declare const ContractError;
 // Sets an existing record and if one does not exist, it creates it
 export const setName = async (
   state: ANTState,
-  { caller, input }: PstAction,
+  { caller, input }: AntAction,
 ): Promise<ContractResult> => {
   const { name } = input;
   const owner = state.owner;

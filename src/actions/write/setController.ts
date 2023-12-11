@@ -18,14 +18,14 @@ import {
   INVALID_INPUT_MESSAGE,
   NON_CONTRACT_OWNER_MESSAGE,
 } from '../../constants';
-import { ANTState, ContractResult, PstAction } from '../../types';
+import { ANTState, ContractResult, AntAction } from '../../types';
 import { validateSetController } from '../../validations';
 
 declare const ContractError;
 
 export const setController = async (
   state: ANTState,
-  { caller, input }: PstAction,
+  { caller, input }: AntAction,
 ): Promise<ContractResult> => {
   const { target } = input;
   const owner = state.owner;

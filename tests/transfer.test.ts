@@ -17,28 +17,30 @@
 import { ANTState } from '../src/types';
 import { warp, arweave, getLocalWallet } from './utils/helper';
 
-describe('setTicker', () => {
+
+describe('transfer', () => {
   let antContractTxId: string;
+  let antContractOwnerAddress: string;
   let contract;
 
   beforeEach(async () => {
     const { wallet , address } = await getLocalWallet(arweave);
+    antContractOwnerAddress = address;
     antContractTxId = process.env.ANT_CONTRACT_TX_ID;
     contract = warp.contract<ANTState>(antContractTxId).connect(wallet)
   });
 
-  it('should set the ticker of the ANT', async () => {
-    const ticker = 'TICK'
-    const result = await contract.writeInteraction({
-      function: 'setTicker',
-      ticker,
+  it('should transfer balance to the correct address of the ANT', async () => {
+    const target = 'someothertransactionidforwalletandcontract1';
+    const writeInteraction = await contract.writeInteraction({
+      function: 'transfer',
+      target
     });
 
-    expect(result).toBeDefined();
-    expect(result?.originalTxId).toBeDefined();
-
-    const { cachedValue } = await contract.readState();
-    const state = cachedValue.state;
-    expect(state.ticker).toEqual(ticker);
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
+    const { cachedValue: newCachedValue } = await contract.readState();
+    const newState = newCachedValue.state as ANTState;
+    expect(newState.balances[antContractOwnerAddress]).toEqual(undefined);
+    expect(newState.balances[target]).toEqual(1);
   });
 });

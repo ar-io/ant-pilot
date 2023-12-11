@@ -18,7 +18,7 @@ import {
   INVALID_INPUT_MESSAGE,
   NON_CONTRACT_OWNER_MESSAGE,
 } from '../../constants';
-import { ANTState, ContractResult, PstAction } from '../../types';
+import { ANTState, ContractResult, AntAction } from '../../types';
 // composed by ajv at build
 import { validateEvolve } from '../../validations';
 
@@ -27,7 +27,7 @@ declare const ContractError;
 // Updates this contract to new source code
 export const evolve = async (
   state: ANTState,
-  { caller, input: { value } }: PstAction,
+  { caller, input: { value } }: AntAction,
 ): Promise<ContractResult> => {
   if (!validateEvolve({ value })) {
     throw new ContractError(INVALID_INPUT_MESSAGE);

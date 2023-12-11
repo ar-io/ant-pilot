@@ -27,4 +27,4 @@ export const CONTRACT_SETTINGS = {
   operatorStakeWithdrawLength: 5,
 };
 // Also export all our other constants
-export * from '../../constants';
+export * from '../../src/constants';
