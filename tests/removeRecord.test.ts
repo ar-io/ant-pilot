@@ -36,6 +36,6 @@ describe('removeRecord', () => {
     expect(result?.originalTxId).toBeDefined();
     const { cachedValue } = await contract.readState();
     const state = cachedValue.state;
-    expect(Object.keys(state.records)).not.toContain(subDomain);
+    expect(state.records[subDomain]).toBeUndefined();
   });
 });

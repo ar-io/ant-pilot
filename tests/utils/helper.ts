@@ -129,6 +129,7 @@ export async function deployANTContract({
         ttlSeconds: 900,
       },
     },
+    controllers: ['someothertransactionidforwalletandcontract1'],
     balances: {
       [owner]: 1,
     },
