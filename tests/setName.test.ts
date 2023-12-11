@@ -32,16 +32,18 @@ describe('setName', () => {
   it('should set the name of the ANT', async () => {
     const name = 'my-new-name';
 
-    const result = await contract.writeInteraction({
+    const writeInteraction = await contract.writeInteraction({
       function: 'setName',
       name,
     });
 
-    expect(result).toBeDefined();
-    expect(result?.originalTxId).toBeDefined();
+    expect(writeInteraction).toBeDefined();
+    expect(writeInteraction?.originalTxId).toBeDefined();
 
     const { cachedValue } = await contract.readState();
-    const state = cachedValue.state;
-    expect(state.name).toEqual(name);
+    expect(
+      cachedValue?.errorMessages[writeInteraction?.originalTxId],
+    ).toBeUndefined();
+    expect(cachedValue.state.name).toEqual(name);
   });
 });

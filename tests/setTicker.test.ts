@@ -29,16 +29,18 @@ describe('setTicker', () => {
 
   it('should set the ticker of the ANT', async () => {
     const ticker = 'TICK';
-    const result = await contract.writeInteraction({
+    const writeInteraction = await contract.writeInteraction({
       function: 'setTicker',
       ticker,
     });
 
-    expect(result).toBeDefined();
-    expect(result?.originalTxId).toBeDefined();
+    expect(writeInteraction).toBeDefined();
+    expect(writeInteraction?.originalTxId).toBeDefined();
 
     const { cachedValue } = await contract.readState();
-    const state = cachedValue.state;
-    expect(state.ticker).toEqual(ticker);
+    expect(
+      cachedValue?.errorMessages[writeInteraction?.originalTxId],
+    ).toBeUndefined();
+    expect(cachedValue.state.ticker).toEqual(ticker);
   });
 });

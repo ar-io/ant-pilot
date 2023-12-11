@@ -15,17 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { ANTState } from '../src/types';
-import { arweave, getLocalWallet, warp } from './utils/helper';
+import {
+  arweave,
+  deployANTContract,
+  getLocalWallet,
+  warp,
+} from './utils/helper';
 
 describe('transfer', () => {
-  let antContractTxId: string;
   let antContractOwnerAddress: string;
+  let antContractTxId: string;
   let contract;
 
   beforeEach(async () => {
     const { wallet, address } = await getLocalWallet(arweave);
-    antContractOwnerAddress = address;
-    antContractTxId = process.env.ANT_CONTRACT_TX_ID;
+    // deploy a separate contract for this test
+    const { contractTxId } = await deployANTContract({
+      warp,
+      owner: address,
+      wallet,
+    });
+    antContractTxId = contractTxId;
     contract = warp.contract<ANTState>(antContractTxId).connect(wallet);
   });
 
@@ -37,9 +47,11 @@ describe('transfer', () => {
     });
 
     expect(writeInteraction?.originalTxId).not.toBe(undefined);
-    const { cachedValue: newCachedValue } = await contract.readState();
-    const newState = newCachedValue.state as ANTState;
-    expect(newState.balances[antContractOwnerAddress]).toEqual(undefined);
-    expect(newState.balances[target]).toEqual(1);
+    const { cachedValue } = await contract.readState();
+    expect(cachedValue.state.balances[antContractOwnerAddress]).toEqual(
+      undefined,
+    );
+    expect(cachedValue.state.balances[target]).toEqual(1);
+    expect(cachedValue.state.owner).toEqual(target);
   });
 });

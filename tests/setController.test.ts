@@ -19,27 +19,28 @@ import { arweave, getLocalWallet, warp } from './utils/helper';
 
 describe('setController', () => {
   let antContractTxId: string;
-  let antContractOwnerAddress: string;
   let contract;
 
   beforeEach(async () => {
-    const { wallet, address } = await getLocalWallet(arweave);
-    antContractOwnerAddress = address;
+    const { wallet } = await getLocalWallet(arweave);
     antContractTxId = process.env.ANT_CONTRACT_TX_ID;
     contract = warp.contract<ANTState>(antContractTxId).connect(wallet);
   });
 
   it('should add controller to the ANT', async () => {
-    const result = await contract.writeInteraction({
+    const newController = 'someothertransactionidforwalletandcontract2';
+    const writeInteraction = await contract.writeInteraction({
       function: 'setController',
-      target: antContractOwnerAddress,
+      target: newController,
     });
 
-    expect(result).toBeDefined();
-    expect(result?.originalTxId).toBeDefined();
+    expect(writeInteraction).toBeDefined();
+    expect(writeInteraction?.originalTxId).toBeDefined();
 
     const { cachedValue } = await contract.readState();
-    const state = cachedValue.state;
-    expect(state.controllers).toContain(antContractOwnerAddress);
+    expect(
+      cachedValue?.errorMessages[writeInteraction?.originalTxId],
+    ).toBeUndefined();
+    expect(cachedValue.state.controllers).toContain(newController);
   });
 });

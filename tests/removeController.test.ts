@@ -30,13 +30,17 @@ describe('removeController', () => {
   });
 
   it('should remove controller from the ANT', async () => {
+    const controller = 'someothertransactionidforwalletandcontract1';
     const writeInteraction = await contract.writeInteraction({
       function: 'removeController',
-      target: antContractOwnerAddress,
+      target: controller,
     });
 
     expect(writeInteraction?.originalTxId).toBeDefined();
     const { cachedValue } = await contract.readState();
+    expect(
+      cachedValue?.errorMessages[writeInteraction?.originalTxId],
+    ).toBeUndefined();
     expect(cachedValue.state.controllers[antContractOwnerAddress]).toEqual(
       undefined,
     );

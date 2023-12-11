@@ -44,8 +44,10 @@ describe('Testing setRecord...', () => {
     expect(writeInteraction?.originalTxId).toBeDefined();
 
     const { cachedValue } = await contract.readState();
-    const state = cachedValue.state;
-    expect(state.records[subDomain]).toEqual({
+    expect(
+      cachedValue?.errorMessages[writeInteraction?.originalTxId],
+    ).toBeUndefined();
+    expect(cachedValue.state.records[subDomain]).toEqual({
       transactionId: antContractOwnerAddress,
       ttlSeconds: MIN_TTL_LENGTH,
     });

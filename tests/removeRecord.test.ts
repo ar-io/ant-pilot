@@ -29,13 +29,15 @@ describe('removeRecord', () => {
 
   it('should remove test record from the ANT', async () => {
     const subDomain = 'remove';
-    const result = await contract.writeInteraction({
+    const writeInteraction = await contract.writeInteraction({
       function: 'removeRecord',
       subDomain,
     });
-    expect(result?.originalTxId).toBeDefined();
+    expect(writeInteraction?.originalTxId).toBeDefined();
     const { cachedValue } = await contract.readState();
-    const state = cachedValue.state;
-    expect(state.records[subDomain]).toBeUndefined();
+    expect(
+      cachedValue?.errorMessages[writeInteraction?.originalTxId],
+    ).toBeUndefined();
+    expect(cachedValue.state.records[subDomain]).toBeUndefined();
   });
 });
