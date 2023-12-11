@@ -18,7 +18,7 @@ import {
   INVALID_INPUT_MESSAGE,
   NON_CONTRACT_OWNER_MESSAGE,
 } from '../../constants';
-import { ANTState, ContractResult, AntAction } from '../../types';
+import { ANTState, AntAction, ContractResult } from '../../types';
 // composed by ajv at build
 import { validateEvolve } from '../../validations';
 

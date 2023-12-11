@@ -14,9 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-import { MIN_TTL_LENGTH } from './utils/constants';
 import { ANTState } from '../src/types';
+import { MIN_TTL_LENGTH } from './utils/constants';
 import { arweave, getLocalWallet, warp } from './utils/helper';
 
 describe('Testing setRecord...', () => {
@@ -25,10 +24,10 @@ describe('Testing setRecord...', () => {
   let contract;
 
   beforeEach(async () => {
-    const { wallet , address } = await getLocalWallet(arweave);
+    const { wallet, address } = await getLocalWallet(arweave);
     antContractOwnerAddress = address;
     antContractTxId = process.env.ANT_CONTRACT_TX_ID;
-    contract = warp.contract<ANTState>(antContractTxId).connect(wallet)
+    contract = warp.contract<ANTState>(antContractTxId).connect(wallet);
   });
 
   it('should set the record of the ANT', async () => {
@@ -49,6 +48,6 @@ describe('Testing setRecord...', () => {
     expect(state.records[subDomain]).toEqual({
       transactionId: antContractOwnerAddress,
       ttlSeconds: MIN_TTL_LENGTH,
-    })
+    });
   });
 });

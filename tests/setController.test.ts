@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { ANTState } from '../src/types';
-import { warp, arweave, getLocalWallet } from './utils/helper';
-
+import { arweave, getLocalWallet, warp } from './utils/helper';
 
 describe('setController', () => {
   let antContractTxId: string;
@@ -24,10 +23,10 @@ describe('setController', () => {
   let contract;
 
   beforeEach(async () => {
-    const { wallet , address } = await getLocalWallet(arweave);
+    const { wallet, address } = await getLocalWallet(arweave);
     antContractOwnerAddress = address;
     antContractTxId = process.env.ANT_CONTRACT_TX_ID;
-    contract = warp.contract<ANTState>(antContractTxId).connect(wallet)
+    contract = warp.contract<ANTState>(antContractTxId).connect(wallet);
   });
 
   it('should add controller to the ANT', async () => {

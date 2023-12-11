@@ -14,9 +14,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { arweave, arlocal, warp, createLocalWallet, deployANTContract } from './utils/helper';
 import fs from 'fs';
 import path from 'path';
+
+import {
+  arlocal,
+  arweave,
+  createLocalWallet,
+  deployANTContract,
+  warp,
+} from './utils/helper';
 
 module.exports = async function () {
   // start arlocal
@@ -25,13 +32,16 @@ module.exports = async function () {
   const { wallet, address: owner } = await createLocalWallet(arweave);
 
   // write it to disc
-  if(!fs.existsSync(path.join(__dirname,'./wallets'))){
+  if (!fs.existsSync(path.join(__dirname, './wallets'))) {
     fs.mkdirSync(path.join(__dirname, './wallets'));
   }
-  fs.writeFileSync(path.join(__dirname, './wallets/0.json'), JSON.stringify(wallet));
+  fs.writeFileSync(
+    path.join(__dirname, './wallets/0.json'),
+    JSON.stringify(wallet),
+  );
 
   // deploy an ant with our source code
-  const { contractTxId, srcTxId} = await deployANTContract({
+  const { contractTxId, srcTxId } = await deployANTContract({
     warp,
     owner,
     wallet,

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { ANTState } from '../src/types';
-import { warp, arweave, getLocalWallet } from './utils/helper';
+import { arweave, getLocalWallet, warp } from './utils/helper';
 
 describe('removeController', () => {
   let antContractTxId: string;
@@ -23,10 +23,10 @@ describe('removeController', () => {
   let contract;
 
   beforeEach(async () => {
-    const { wallet , address } = await getLocalWallet(arweave);
+    const { wallet, address } = await getLocalWallet(arweave);
     antContractOwnerAddress = address;
     antContractTxId = process.env.ANT_CONTRACT_TX_ID;
-    contract = warp.contract<ANTState>(antContractTxId).connect(wallet)
+    contract = warp.contract<ANTState>(antContractTxId).connect(wallet);
   });
 
   it('should remove controller from the ANT', async () => {
@@ -37,6 +37,8 @@ describe('removeController', () => {
 
     expect(writeInteraction?.originalTxId).toBeDefined();
     const { cachedValue } = await contract.readState();
-    expect(cachedValue.state.controllers[antContractOwnerAddress]).toEqual(undefined)
+    expect(cachedValue.state.controllers[antContractOwnerAddress]).toEqual(
+      undefined,
+    );
   });
 });

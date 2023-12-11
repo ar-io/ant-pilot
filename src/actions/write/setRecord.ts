@@ -21,7 +21,7 @@ import {
   NON_CONTRACT_OWNER_MESSAGE,
   TX_ID_LENGTH,
 } from '../../constants';
-import { ANTState, ContractResult, AntAction } from '../../types';
+import { ANTState, AntAction, ContractResult } from '../../types';
 import { validateSetRecord } from '../../validations';
 
 declare const ContractError;

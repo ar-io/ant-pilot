@@ -23,7 +23,7 @@ import { setName } from './actions/write/setName';
 import { setRecord } from './actions/write/setRecord';
 import { setTicker } from './actions/write/setTicker';
 import { transferTokens } from './actions/write/transferTokens';
-import { ANTState, ContractResult, AntAction } from './types';
+import { ANTState, AntAction, ContractResult } from './types';
 
 declare const ContractError;
 

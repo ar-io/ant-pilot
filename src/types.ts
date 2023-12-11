@@ -71,12 +71,10 @@ export type AntFunction =
 
 export type AntContractWriteResult = {
   state: ANTState;
-}
+};
 
 export type AntContractReadResult = {
-result: AntContractReadResult | ANTSubDomainResult | unknown;
-}
+  result: AntContractReadResult | ANTSubDomainResult | unknown;
+};
 
-export type ContractResult =
-  | AntContractWriteResult
-  | AntContractReadResult
+export type ContractResult = AntContractWriteResult | AntContractReadResult;

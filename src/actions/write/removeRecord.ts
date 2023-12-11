@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { INVALID_INPUT_MESSAGE } from '../../constants';
-import { ANTState, ContractResult, AntAction } from '../../types';
+import { ANTState, AntAction, ContractResult } from '../../types';
 import { validateRemoveRecord } from '../../validations';
 
 declare const ContractError;

@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { ANTState } from '../src/types';
-import { warp, arweave, getLocalWallet } from './utils/helper';
-
+import { arweave, getLocalWallet, warp } from './utils/helper';
 
 describe('removeRecord', () => {
   let antContractTxId: string;
@@ -25,7 +24,7 @@ describe('removeRecord', () => {
   beforeEach(async () => {
     const { wallet } = await getLocalWallet(arweave);
     antContractTxId = process.env.ANT_CONTRACT_TX_ID;
-    contract = warp.contract<ANTState>(antContractTxId).connect(wallet)
+    contract = warp.contract<ANTState>(antContractTxId).connect(wallet);
   });
 
   it('should remove test record from the ANT', async () => {

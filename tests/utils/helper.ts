@@ -1,13 +1,13 @@
+import ArLocal from 'arlocal';
 import Arweave from 'arweave';
 import { JWKInterface } from 'arweave/node/lib/wallet';
-import { ANTState } from '../../src/types'
 import * as fs from 'fs';
 import path from 'path';
-
-import { INITIAL_STATE, WALLET_FUND_AMOUNT } from './constants';
-import ArLocal from 'arlocal';
 import { LoggerFactory, Warp, WarpFactory } from 'warp-contracts';
-import { DeployPlugin} from 'warp-contracts-plugin-deploy';
+import { DeployPlugin } from 'warp-contracts-plugin-deploy';
+
+import { ANTState } from '../../src/types';
+import { INITIAL_STATE, WALLET_FUND_AMOUNT } from './constants';
 
 LoggerFactory.INST.logLevel('none');
 
@@ -76,10 +76,13 @@ export async function setupInitialContractState(
   return state;
 }
 
-export async function getLocalWallet(arweave, index = 0): Promise<{
-  address: string,
-  wallet: JWKInterface
- }> {
+export async function getLocalWallet(
+  arweave,
+  index = 0,
+): Promise<{
+  address: string;
+  wallet: JWKInterface;
+}> {
   const wallet = JSON.parse(
     fs.readFileSync(path.join(__dirname, `../wallets/${index}.json`), 'utf8'),
   ) as unknown as JWKInterface;
@@ -101,12 +104,11 @@ export async function deployANTContract({
   warp,
   owner,
   wallet,
-}:{
-    owner: string;
-    warp: Warp;
-    wallet: JWKInterface;
-  },
-): Promise<{
+}: {
+  owner: string;
+  warp: Warp;
+  wallet: JWKInterface;
+}): Promise<{
   contractTxId: string;
   srcTxId: string;
 }> {
@@ -118,28 +120,29 @@ export async function deployANTContract({
     path.join(__dirname, '../../initial-state.json'),
     'utf8',
   );
-    const ownerState = {
-      ...JSON.parse(initState),
-      owner,
-      records: {
-        remove: {
-          transactionId: '',
-          ttlSeconds: 900,
-        }
+  const ownerState = {
+    ...JSON.parse(initState),
+    owner,
+    records: {
+      remove: {
+        transactionId: '',
+        ttlSeconds: 900,
       },
-      balances: {
-        [owner]: 1,
-      },
-    };
-    const { contractTxId, srcTxId } = await warp.deploy(
-      {
-        src: sourceCode,
-        initState: JSON.stringify(ownerState),
-        wallet,
-      },
-      true,
-    );
-    return {
-      contractTxId, srcTxId
-    };
+    },
+    balances: {
+      [owner]: 1,
+    },
+  };
+  const { contractTxId, srcTxId } = await warp.deploy(
+    {
+      src: sourceCode,
+      initState: JSON.stringify(ownerState),
+      wallet,
+    },
+    true,
+  );
+  return {
+    contractTxId,
+    srcTxId,
+  };
 }

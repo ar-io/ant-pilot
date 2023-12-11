@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 import { write } from 'fs';
+
 import { ANTState } from '../src/types';
 import { arweave, getLocalWallet, warp } from './utils/helper';
 
@@ -25,20 +25,22 @@ describe('evolve', () => {
   let contract;
 
   beforeEach(async () => {
-    const { wallet  } = await getLocalWallet(arweave);
+    const { wallet } = await getLocalWallet(arweave);
     antContractTxId = process.env.ANT_CONTRACT_TX_ID;
     srcTxId = process.env.ANT_SRC_TX_ID;
-    contract = warp.contract<ANTState>(antContractTxId).connect(wallet)
+    contract = warp.contract<ANTState>(antContractTxId).connect(wallet);
   });
 
   it('should evolve the ANT', async () => {
     const writeInteraction = await contract.writeInteraction({
       function: 'evolve',
-      value: srcTxId
+      value: srcTxId,
     });
     expect(writeInteraction?.originalTxId).toBeDefined();
     const { cachedValue } = await contract.readState();
-    expect(cachedValue?.errorMessages[writeInteraction?.originalTxId]).toBeUndefined();
+    expect(
+      cachedValue?.errorMessages[writeInteraction?.originalTxId],
+    ).toBeUndefined();
     expect(cachedValue.state.evolve).toEqual(srcTxId);
   });
 });

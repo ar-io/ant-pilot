@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { ANTState } from '../src/types';
-import { warp, arweave, getLocalWallet } from './utils/helper';
+import { arweave, getLocalWallet, warp } from './utils/helper';
 
 describe('setTicker', () => {
   let antContractTxId: string;
   let contract;
 
   beforeEach(async () => {
-    const { wallet , address } = await getLocalWallet(arweave);
+    const { wallet, address } = await getLocalWallet(arweave);
     antContractTxId = process.env.ANT_CONTRACT_TX_ID;
-    contract = warp.contract<ANTState>(antContractTxId).connect(wallet)
+    contract = warp.contract<ANTState>(antContractTxId).connect(wallet);
   });
 
   it('should set the ticker of the ANT', async () => {
-    const ticker = 'TICK'
+    const ticker = 'TICK';
     const result = await contract.writeInteraction({
       function: 'setTicker',
       ticker,
