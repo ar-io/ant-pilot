@@ -22,8 +22,6 @@ import { ANTState, AntAction, ContractResult } from '../../types';
 // composed by ajv at build
 import { validateEvolve } from '../../validations';
 
-declare const ContractError;
-
 // Updates this contract to new source code
 export const evolve = async (
   state: ANTState,

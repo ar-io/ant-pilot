@@ -31,20 +31,19 @@ export type ANTState = {
 };
 
 export interface AntAction {
-  input: AntInput;
+  input: { function: string } & AntInput;
   caller: string;
 }
 
 export interface AntInput {
-  function: AntFunction;
-  target: string;
-  name: string;
-  ticker: string;
-  value: string;
-  subDomain: string;
-  transactionId: string;
-  qty: number;
-  ttlSeconds: number;
+  target?: string;
+  name?: string;
+  ticker?: string;
+  value?: string;
+  subDomain?: string;
+  transactionId?: string;
+  qty?: number;
+  ttlSeconds?: number;
 }
 
 export interface AntReadResult {
