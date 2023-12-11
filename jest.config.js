@@ -16,16 +16,16 @@
  */
 module.exports = {
   clearMocks: true,
-
-  moduleFileExtensions: ['ts', 'js'],
-
-  testPathIgnorePatterns: ['/.yalc/', '/data/', '/_helpers'],
-
+  setupFilesAfterEnv: ['./tests/mocks.jest.ts'],
+  moduleFileExtensions: ['ts', 'js', 'mjs'],
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!**/node_modules/**',
+    '!**/dist/**',
+    '!src/**.js',
+  ],
   testEnvironment: 'node',
-
-  transformIgnorePatterns: ['<rootDir>/node_modules/(?!@assemblyscript/.*)'],
-  testTimeout: 30_000,
-
+  testTimeout: 60_000,
   transform: {
     '^.+\\.(ts|js)$': 'ts-jest',
   },

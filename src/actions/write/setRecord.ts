@@ -21,7 +21,7 @@ import {
   NON_CONTRACT_OWNER_MESSAGE,
   TX_ID_LENGTH,
 } from '../../constants';
-import { ANTState, ContractResult, PstAction } from '../../types';
+import { ANTState, AntAction, ContractResult } from '../../types';
 import { validateSetRecord } from '../../validations';
 
 declare const ContractError;
@@ -29,7 +29,7 @@ declare const ContractError;
 // Sets an existing record and if one does not exist, it creates it
 export const setRecord = async (
   state: ANTState,
-  { caller, input }: PstAction,
+  { caller, input }: AntAction,
 ): Promise<ContractResult> => {
   const { subDomain, transactionId, ttlSeconds } = input;
   const owner = state.owner;

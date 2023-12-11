@@ -14,47 +14,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import Arweave from 'arweave';
-import fs from 'fs';
-import path from 'path';
-import { JWKInterface, Warp } from 'warp-contracts';
+import { write } from 'fs';
 
 import { ANTState } from '../src/types';
-import { ANTDeployer } from '../tools/common/helpers';
+import { arweave, getLocalWallet, warp } from './utils/helper';
 
-describe('Testing evolve...', () => {
-  const arweave: Arweave = global.arweave;
-  const wallets: Record<string, JWKInterface> = global.wallets;
-  const warp: Warp = global.warp;
-  const defaultOwner = Object.entries(wallets)[0];
-
-  let _srcTxId: string;
+describe('evolve', () => {
+  let antContractTxId: string;
+  let srcTxId: string;
+  let contract;
 
   beforeEach(async () => {
-    const contractSource = fs.readFileSync(
-      path.join(__dirname, '../dist/contract.js'),
-      'utf8',
-    );
-    const srcTx = await warp.createSource(
-      { src: contractSource },
-      Object.values(wallets)[0],
-      true,
-    );
-    _srcTxId = await warp.saveSource(srcTx, true);
+    const { wallet } = await getLocalWallet(arweave);
+    antContractTxId = process.env.ANT_CONTRACT_TX_ID;
+    srcTxId = process.env.ANT_SRC_TX_ID;
+    contract = warp.contract<ANTState>(antContractTxId).connect(wallet);
   });
 
-  it('Should evolve the ANT', async () => {
-    const ANT = await ANTDeployer(warp, {
-      address: defaultOwner[0],
-      wallet: defaultOwner[1],
+  it('should evolve the ANT', async () => {
+    const writeInteraction = await contract.writeInteraction({
+      function: 'evolve',
+      value: srcTxId,
     });
-
-    const contract = warp.contract<ANTState>(ANT).connect(defaultOwner[1]);
-    const evolveResult = await contract.evolve(_srcTxId);
-
+    expect(writeInteraction?.originalTxId).toBeDefined();
     const { cachedValue } = await contract.readState();
-
-    expect(evolveResult?.originalTxId).toBeDefined();
-    expect(cachedValue.state.evolve).toEqual(_srcTxId);
+    expect(
+      cachedValue?.errorMessages[writeInteraction?.originalTxId],
+    ).toBeUndefined();
+    expect(cachedValue.state.evolve).toEqual(srcTxId);
   });
 });

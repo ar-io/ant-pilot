@@ -15,32 +15,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { ANTState } from '../src/types';
-import { arweave, getLocalWallet, warp } from './utils/helper';
+import {
+  arweave,
+  deployANTContract,
+  getLocalWallet,
+  warp,
+} from './utils/helper';
 
-describe('setController', () => {
+describe('transfer', () => {
+  let antContractOwnerAddress: string;
   let antContractTxId: string;
   let contract;
 
   beforeEach(async () => {
-    const { wallet } = await getLocalWallet(arweave);
-    antContractTxId = process.env.ANT_CONTRACT_TX_ID;
+    const { wallet, address } = await getLocalWallet(arweave);
+    // deploy a separate contract for this test
+    const { contractTxId } = await deployANTContract({
+      warp,
+      owner: address,
+      wallet,
+    });
+    antContractTxId = contractTxId;
     contract = warp.contract<ANTState>(antContractTxId).connect(wallet);
   });
 
-  it('should add controller to the ANT', async () => {
-    const newController = 'someothertransactionidforwalletandcontract2';
+  it('should transfer balance to the correct address of the ANT', async () => {
+    const target = 'someothertransactionidforwalletandcontract1';
     const writeInteraction = await contract.writeInteraction({
-      function: 'setController',
-      target: newController,
+      function: 'transfer',
+      target,
     });
 
-    expect(writeInteraction).toBeDefined();
-    expect(writeInteraction?.originalTxId).toBeDefined();
-
+    expect(writeInteraction?.originalTxId).not.toBe(undefined);
     const { cachedValue } = await contract.readState();
-    expect(
-      cachedValue?.errorMessages[writeInteraction?.originalTxId],
-    ).toBeUndefined();
-    expect(cachedValue.state.controllers).toContain(newController);
+    expect(cachedValue.state.balances[antContractOwnerAddress]).toEqual(
+      undefined,
+    );
+    expect(cachedValue.state.balances[target]).toEqual(1);
+    expect(cachedValue.state.owner).toEqual(target);
   });
 });

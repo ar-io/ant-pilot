@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { INVALID_INPUT_MESSAGE } from '../../constants';
-import { ANTState, ContractResult, PstAction } from '../../types';
+import { ANTState, AntAction, ContractResult } from '../../types';
 import { validateRemoveRecord } from '../../validations';
 
 declare const ContractError;
@@ -23,7 +23,7 @@ declare const ContractError;
 // Sets an existing record and if one does not exist, it cre
 export const removeRecord = async (
   state: ANTState,
-  { caller, input }: PstAction,
+  { caller, input }: AntAction,
 ): Promise<ContractResult> => {
   const { subDomain } = input;
   const owner = state.owner;

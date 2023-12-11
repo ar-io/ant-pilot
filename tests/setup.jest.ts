@@ -14,23 +14,39 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import ArLocal from 'arlocal';
+import fs from 'fs';
+import path from 'path';
 
-import { initializeArLocalTestVariables } from '../tools/common/helpers';
+import {
+  arlocal,
+  arweave,
+  createLocalWallet,
+  deployANTContract,
+  warp,
+} from './utils/helper';
 
 module.exports = async function () {
-  // Set reference to mongod in order to close the server during teardown.
-  const arlocal = new ArLocal(1820, false);
+  // start arlocal
   await arlocal.start();
+  // create a wallet
+  const { wallet, address: owner } = await createLocalWallet(arweave);
 
-  const { contractIds, arweave, wallets, warp } =
-    await initializeArLocalTestVariables({
-      walletCount: 10,
-    });
+  // write it to disc
+  if (!fs.existsSync(path.join(__dirname, './wallets'))) {
+    fs.mkdirSync(path.join(__dirname, './wallets'));
+  }
+  fs.writeFileSync(
+    path.join(__dirname, './wallets/0.json'),
+    JSON.stringify(wallet),
+  );
 
-  global.arlocal = arlocal;
-  global.arweave = arweave;
-  global.wallets = wallets;
-  global.contractIds = contractIds;
-  global.warp = warp;
+  // deploy an ant with our source code
+  const { contractTxId, srcTxId } = await deployANTContract({
+    warp,
+    owner,
+    wallet,
+  });
+
+  process.env.ANT_CONTRACT_TX_ID = contractTxId;
+  process.env.ANT_SRC_TX_ID = srcTxId;
 };
