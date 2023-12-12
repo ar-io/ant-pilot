@@ -27,12 +27,6 @@ import {
 import { removeRecord } from './removeRecord';
 
 describe('removeRecord', () => {
-  let state = { ...baselineAntState };
-
-  beforeEach(() => {
-    state = { ...baselineAntState };
-  });
-
   it.each([
     undefined,
     false,
@@ -45,8 +39,8 @@ describe('removeRecord', () => {
     '=',
     '?'.padEnd(MAX_NAME_LENGTH + 1, '1'),
   ])('should throw on bad domain', async (subDomain: any) => {
-    const _state = {
-      ...state,
+    const initState = {
+      ...baselineAntState,
       records: {
         [subDomain]: {
           transactionId: ''.padEnd(43, '1'),
@@ -54,7 +48,7 @@ describe('removeRecord', () => {
         },
       },
     };
-    const result = await removeRecord(_state, {
+    const result = await removeRecord(initState, {
       caller: 'test',
       input: {
         function: 'removeRecord',
@@ -67,8 +61,8 @@ describe('removeRecord', () => {
   it.each([''.padEnd(43, '1'), ''.padEnd(43, 'a')])(
     'should not remove domain as non-owner or controller',
     async (hacker: string) => {
-      const _state = {
-        ...state,
+      const initState = {
+        ...baselineAntState,
         records: {
           subDomain: {
             transactionId: ''.padEnd(43, '1'),
@@ -76,7 +70,7 @@ describe('removeRecord', () => {
           },
         },
       };
-      const result = await removeRecord(_state, {
+      const result = await removeRecord(initState, {
         caller: hacker,
         input: {
           function: 'removeRecord',
@@ -90,8 +84,8 @@ describe('removeRecord', () => {
   it.each(['fibonachi', 'sequence1', 'tetra-hedron'])(
     'should throw if domain not a record',
     async (subDomain: string) => {
-      const _state = { ...state, controllers: [] };
-      const result = await removeRecord(_state, {
+      const initState = { ...baselineAntState, controllers: [] };
+      const result = await removeRecord(initState, {
         caller: 'test',
         input: {
           function: 'removeRecord',
@@ -106,8 +100,8 @@ describe('removeRecord', () => {
   it.each([''.padEnd(43, '1'), ''.padEnd(43, 'a')])(
     'should remove domain as owner',
     async (owner: string) => {
-      const _state = {
-        ...state,
+      const initState = {
+        ...baselineAntState,
         owner,
         records: {
           subDomain: {
@@ -116,7 +110,7 @@ describe('removeRecord', () => {
           },
         },
       };
-      const result = (await removeRecord(_state, {
+      const result = (await removeRecord(initState, {
         caller: owner,
         input: {
           function: 'removeRecord',
@@ -130,8 +124,8 @@ describe('removeRecord', () => {
   it.each([''.padEnd(43, '1'), ''.padEnd(43, 'a')])(
     'should remove domain as controller',
     async (controller: string) => {
-      const _state = {
-        ...state,
+      const initState = {
+        ...baselineAntState,
         controllers: [controller],
         records: {
           subDomain: {
@@ -140,7 +134,7 @@ describe('removeRecord', () => {
           },
         },
       };
-      const result = (await removeRecord(_state, {
+      const result = (await removeRecord(initState, {
         caller: controller,
         input: {
           function: 'removeRecord',

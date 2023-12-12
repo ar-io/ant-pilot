@@ -23,14 +23,8 @@ import { baselineAntState } from '../../../tests/utils/constants';
 import { setName } from './setName';
 
 describe('setName', () => {
-  let state = { ...baselineAntState };
-
-  beforeEach(() => {
-    state = { ...baselineAntState };
-  });
-
   it('should throw if not owner or controller', async () => {
-    const result = await setName(state, {
+    const result = await setName(baselineAntState, {
       caller: ''.padEnd(43, '1'),
       input: {
         function: 'setName',
@@ -43,7 +37,7 @@ describe('setName', () => {
   it.each([undefined, Infinity, 1, 0, -1, 1.1, true, false, null, {}, []])(
     'should throw on bad name',
     async (name: any) => {
-      const result = await setName(state, {
+      const result = await setName(baselineAntState, {
         caller: 'test',
         input: {
           function: 'setName',
@@ -55,7 +49,7 @@ describe('setName', () => {
   );
 
   it('should set name as owner', async () => {
-    const result = (await setName(state, {
+    const result = (await setName(baselineAntState, {
       caller: 'test',
       input: {
         function: 'setName',
@@ -66,8 +60,11 @@ describe('setName', () => {
   });
 
   it('should set name as controller', async () => {
-    const _state = { ...state, controllers: [''.padEnd(43, '1')] };
-    const result = (await setName(_state, {
+    const initState = {
+      ...baselineAntState,
+      controllers: [''.padEnd(43, '1')],
+    };
+    const result = (await setName(initState, {
       caller: ''.padEnd(43, '1'),
       input: {
         function: 'setName',

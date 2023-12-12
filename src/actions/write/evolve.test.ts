@@ -51,20 +51,31 @@ describe('evolve', () => {
     expect(error.message).toEqual(INVALID_INPUT_MESSAGE);
   });
 
-  it.each(['hacker', undefined, null, false, true, Infinity, 1, 0, -1, [], {}])(
-    'should throw an error on bad caller',
-    async (badCaller: string) => {
-      const error: any = await evolve(baselineAntState, {
-        caller: badCaller,
-        input: {
-          function: 'evolve',
-          value: '1111111111111111111111111111111111111111111',
-        },
-      }).catch((e) => e);
-      expect(error).toBeInstanceOf(Error);
-      expect(error.message).toEqual(NON_CONTRACT_OWNER_MESSAGE);
-    },
-  );
+  it.each([
+    'hacker',
+    undefined,
+    null,
+    false,
+    true,
+    Infinity,
+    1,
+    0,
+    -1,
+    [],
+    {},
+    ''.padEnd(44, '1'),
+    '?'.padEnd(42, '1'),
+  ])('should throw an error on bad caller', async (badCaller: string) => {
+    const error: any = await evolve(baselineAntState, {
+      caller: badCaller,
+      input: {
+        function: 'evolve',
+        value: '1111111111111111111111111111111111111111111',
+      },
+    }).catch((e) => e);
+    expect(error).toBeInstanceOf(Error);
+    expect(error.message).toEqual(NON_CONTRACT_OWNER_MESSAGE);
+  });
 
   it.each([
     {

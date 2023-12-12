@@ -32,8 +32,8 @@ describe('balance', () => {
   it.each(['test', '?', false, Infinity, 0, -1, parseInt(''.padEnd(43, '1'))])(
     'should throw error on invalid address type',
     async (user: any) => {
-      const _state = { ...state, balances: { [user]: 1 } };
-      const result = await balance(_state, {
+      const initState = { ...state, balances: { [user]: 1 } };
+      const result = await balance(initState, {
         caller: 'test',
         input: {
           function: 'balance',

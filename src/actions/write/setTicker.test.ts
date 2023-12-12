@@ -23,14 +23,8 @@ import { baselineAntState } from '../../../tests/utils/constants';
 import { setTicker } from './setTicker';
 
 describe('setTicker', () => {
-  let state = { ...baselineAntState };
-
-  beforeEach(() => {
-    state = { ...baselineAntState };
-  });
-
   it('should throw if not owner or controller', async () => {
-    const result = await setTicker(state, {
+    const result = await setTicker(baselineAntState, {
       caller: ''.padEnd(43, '1'),
       input: {
         function: 'setTicker',
@@ -44,7 +38,7 @@ describe('setTicker', () => {
   it.each([undefined, Infinity, 1, 0, -1, 1.1, true, false, null, {}, []])(
     'should throw on bad ticker',
     async (ticker: any) => {
-      const result = await setTicker(state, {
+      const result = await setTicker(baselineAntState, {
         caller: 'test',
         input: {
           function: 'setTicker',
@@ -56,7 +50,7 @@ describe('setTicker', () => {
   );
 
   it('should set ticker as owner', async () => {
-    const result = (await setTicker(state, {
+    const result = (await setTicker(baselineAntState, {
       caller: 'test',
       input: {
         function: 'setTicker',
@@ -67,8 +61,11 @@ describe('setTicker', () => {
   });
 
   it('should set ticker as controller', async () => {
-    const _state = { ...state, controllers: [''.padEnd(43, '1')] };
-    const result = (await setTicker(_state, {
+    const initState = {
+      ...baselineAntState,
+      controllers: [''.padEnd(43, '1')],
+    };
+    const result = (await setTicker(initState, {
       caller: ''.padEnd(43, '1'),
       input: {
         function: 'setTicker',

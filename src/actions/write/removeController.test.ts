@@ -24,12 +24,6 @@ import {
 import { removeController } from './removeController';
 
 describe('removeController', () => {
-  let state = { ...baselineAntState };
-
-  beforeEach(() => {
-    state = { ...baselineAntState };
-  });
-
   it.each([
     undefined,
     false,
@@ -40,8 +34,8 @@ describe('removeController', () => {
     '?'.padEnd(42, '1'),
     ''.padEnd(44, '1'),
   ])('should throw on bad target', async (target: any) => {
-    const _state = { ...state, controllers: [target] };
-    const result = await removeController(_state, {
+    const initState = { ...baselineAntState, controllers: [target] };
+    const result = await removeController(initState, {
       caller: 'test',
       input: {
         function: 'removeController',
@@ -54,8 +48,8 @@ describe('removeController', () => {
   it.each([''.padEnd(43, '1'), ''.padEnd(43, 'a')])(
     'should not remove controller as non-owner',
     async (target: string) => {
-      const _state = { ...state, controllers: [target] };
-      const result = await removeController(_state, {
+      const initState = { ...baselineAntState, controllers: [target] };
+      const result = await removeController(initState, {
         caller: target,
         input: {
           function: 'removeController',
@@ -69,8 +63,8 @@ describe('removeController', () => {
   it.each([''.padEnd(43, '1'), ''.padEnd(43, 'a')])(
     'should throw if target not a controller',
     async (target: string) => {
-      const _state = { ...state, controllers: [] };
-      const result = await removeController(_state, {
+      const initState = { ...baselineAntState, controllers: [] };
+      const result = await removeController(initState, {
         caller: 'test',
         input: {
           function: 'removeController',
@@ -86,8 +80,8 @@ describe('removeController', () => {
   it.each([''.padEnd(43, '1'), ''.padEnd(43, 'a')])(
     'should remove controller',
     async (target: string) => {
-      const _state = { ...state, controllers: [target] };
-      const result = (await removeController(_state, {
+      const initState = { ...baselineAntState, controllers: [target] };
+      const result = (await removeController(initState, {
         caller: 'test',
         input: {
           function: 'removeController',
@@ -95,7 +89,7 @@ describe('removeController', () => {
         },
       })) as AntContractWriteResult;
 
-      expect(result.state).not.toContain(target);
+      expect(result.state.controllers).not.toContain(target);
     },
   );
 });

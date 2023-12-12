@@ -23,12 +23,6 @@ import { baselineAntState } from '../../../tests/utils/constants';
 import { transferTokens } from './transferTokens';
 
 describe('transferTokens', () => {
-  let state = { ...baselineAntState };
-
-  beforeEach(() => {
-    state = { ...baselineAntState };
-  });
-
   it.each([
     undefined,
     false,
@@ -39,8 +33,8 @@ describe('transferTokens', () => {
     '?'.padEnd(42, '1'),
     ''.padEnd(44, '1'),
   ])('should throw on invalid recipient address', async (target: any) => {
-    const _state = { ...state };
-    const result = await transferTokens(_state, {
+    const initState = { ...baselineAntState };
+    const result = await transferTokens(initState, {
       caller: 'test',
       input: {
         function: 'transfer',
@@ -53,12 +47,12 @@ describe('transferTokens', () => {
   it.each(['23e', null, undefined])(
     'should throw on invalid balance type',
     async (bal: any) => {
-      const _state = {
-        ...state,
+      const initState = {
+        ...baselineAntState,
         owner: ''.padEnd(43, '1'),
         balances: { [''.padEnd(43, '1')]: bal },
       };
-      const result = await transferTokens(_state, {
+      const result = await transferTokens(initState, {
         caller: ''.padEnd(43, '1'),
         input: {
           function: 'transfer',
@@ -70,12 +64,12 @@ describe('transferTokens', () => {
   );
 
   it('should throw on insufficient balance', async () => {
-    const _state = {
-      ...state,
+    const initState = {
+      ...baselineAntState,
       owner: ''.padEnd(43, '1'),
       balances: { [''.padEnd(43, '1')]: 0.1 },
     };
-    const result = await transferTokens(_state, {
+    const result = await transferTokens(initState, {
       caller: ''.padEnd(43, '1'),
       input: {
         function: 'transfer',
@@ -86,12 +80,12 @@ describe('transferTokens', () => {
   });
 
   it('should throw on transfer to self', async () => {
-    const _state = {
-      ...state,
+    const initState = {
+      ...baselineAntState,
       owner: ''.padEnd(43, '1'),
       balances: { [''.padEnd(43, '1')]: 1 },
     };
-    const result = await transferTokens(_state, {
+    const result = await transferTokens(initState, {
       caller: ''.padEnd(43, '1'),
       input: {
         function: 'transfer',
@@ -102,8 +96,11 @@ describe('transferTokens', () => {
   });
 
   it('should throw if not contract owner', async () => {
-    const _state = { ...state, balances: { [''.padEnd(43, '1')]: 1 } };
-    const result = await transferTokens(_state, {
+    const initState = {
+      ...baselineAntState,
+      balances: { [''.padEnd(43, '1')]: 1 },
+    };
+    const result = await transferTokens(initState, {
       caller: ''.padEnd(43, '1'),
       input: {
         function: 'transfer',
@@ -114,8 +111,8 @@ describe('transferTokens', () => {
   });
 
   it('should transfer ownership', async () => {
-    const result = (await transferTokens(state, {
-      caller: state.owner,
+    const result = (await transferTokens(baselineAntState, {
+      caller: baselineAntState.owner,
       input: {
         function: 'transfer',
         target: ''.padEnd(43, '1'),

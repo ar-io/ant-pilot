@@ -25,16 +25,10 @@ import { baselineAntState } from '../../../tests/utils/constants';
 import { setRecord } from './setRecord';
 
 describe('setRecord', () => {
-  let state = { ...baselineAntState };
-
-  beforeEach(() => {
-    state = { ...baselineAntState };
-  });
-
   it.each([''.padEnd(43, '_'), ''.padEnd(43, 'a'), ''.padEnd(43, '1')])(
     'should throw if not owner or controller',
     async (caller) => {
-      const result = await setRecord(state, {
+      const result = await setRecord(baselineAntState, {
         caller,
         input: {
           function: 'setRecord',
@@ -59,7 +53,7 @@ describe('setRecord', () => {
     '=',
     '?'.padEnd(MAX_NAME_LENGTH + 1, '1'),
   ])('should throw on bad subDomain', async (subDomain: any) => {
-    const result = await setRecord(state, {
+    const result = await setRecord(baselineAntState, {
       caller: 'test',
       input: {
         function: 'setRecord',
@@ -74,7 +68,7 @@ describe('setRecord', () => {
   it.each(['www'])(
     'should throw on invalid or reserved subDomain',
     async (subDomain: any) => {
-      const result = await setRecord(state, {
+      const result = await setRecord(baselineAntState, {
         caller: 'test',
         input: {
           function: 'setRecord',
@@ -99,7 +93,7 @@ describe('setRecord', () => {
     '=',
     '?'.padEnd(MAX_NAME_LENGTH + 1, '1'),
   ])('should throw on bad transactionId', async (transactionId: any) => {
-    const result = await setRecord(state, {
+    const result = await setRecord(baselineAntState, {
       caller: 'test',
       input: {
         function: 'setRecord',
@@ -123,7 +117,7 @@ describe('setRecord', () => {
     '=',
     '?'.padEnd(MAX_NAME_LENGTH + 1, '1'),
   ])('should throw on bad ttlSeconds', async (ttlSeconds: any) => {
-    const result = await setRecord(state, {
+    const result = await setRecord(baselineAntState, {
       caller: 'test',
       input: {
         function: 'setRecord',
@@ -138,11 +132,11 @@ describe('setRecord', () => {
   it.each([''.padEnd(43, '1'), ''.padEnd(43, 'a')])(
     'should set record as controller',
     async (controller: string) => {
-      const _state = {
-        ...state,
+      const initState = {
+        ...baselineAntState,
         controllers: [controller],
       };
-      const result = (await setRecord(_state, {
+      const result = (await setRecord(initState, {
         caller: controller,
         input: {
           function: 'setRecord',
@@ -161,8 +155,8 @@ describe('setRecord', () => {
   );
 
   it('should set record as owner', async () => {
-    const result = (await setRecord(state, {
-      caller: state.owner,
+    const result = (await setRecord(baselineAntState, {
+      caller: baselineAntState.owner,
       input: {
         function: 'setRecord',
         subDomain: 'domain',

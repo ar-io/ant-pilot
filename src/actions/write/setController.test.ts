@@ -23,12 +23,6 @@ import { baselineAntState } from '../../../tests/utils/constants';
 import { setController } from './setController';
 
 describe('setController', () => {
-  let state = { ...baselineAntState };
-
-  beforeEach(() => {
-    state = { ...baselineAntState };
-  });
-
   it.each([
     undefined,
     false,
@@ -39,8 +33,8 @@ describe('setController', () => {
     '?'.padEnd(42, '1'),
     ''.padEnd(44, '2'),
   ])('should throw on bad target', async (target: any) => {
-    const _state = { ...state, controllers: [] };
-    const result = await setController(_state, {
+    const initState = { ...baselineAntState, controllers: [] };
+    const result = await setController(initState, {
       caller: 'test',
       input: {
         function: 'setController',
@@ -53,8 +47,8 @@ describe('setController', () => {
   it.each([''.padEnd(43, '1'), ''.padEnd(43, 'a')])(
     'should not set controller if already set',
     async (target: string) => {
-      const _state = { ...state, controllers: [target] };
-      const result = await setController(_state, {
+      const initState = { ...baselineAntState, controllers: [target] };
+      const result = await setController(initState, {
         caller: 'test',
         input: {
           function: 'setController',
@@ -69,8 +63,8 @@ describe('setController', () => {
   it.each([''.padEnd(43, '1'), ''.padEnd(43, 'a')])(
     'should not set controller as non-owner',
     async (target: string) => {
-      const _state = { ...state, controllers: [] };
-      const result = await setController(_state, {
+      const initState = { ...baselineAntState, controllers: [] };
+      const result = await setController(initState, {
         caller: target,
         input: {
           function: 'setController',
@@ -84,8 +78,8 @@ describe('setController', () => {
   it.each([''.padEnd(43, '1'), ''.padEnd(43, 'a')])(
     'should set controller',
     async (target: string) => {
-      const _state = { ...state, controllers: [] };
-      const result = (await setController(_state, {
+      const initState = { ...baselineAntState, controllers: [] };
+      const result = (await setController(initState, {
         caller: 'test',
         input: {
           function: 'setController',
