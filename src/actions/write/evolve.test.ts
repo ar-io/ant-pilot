@@ -51,7 +51,7 @@ describe('evolve', () => {
     expect(error.message).toEqual(INVALID_INPUT_MESSAGE);
   });
 
-  it.each(['hacker'])(
+  it.each(['hacker', undefined, null, false, true, Infinity, 1, 0, -1, [], {}])(
     'should throw an error on bad caller',
     async (badCaller: string) => {
       const error: any = await evolve(baselineAntState, {
