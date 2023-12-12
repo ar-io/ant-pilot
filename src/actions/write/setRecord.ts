@@ -16,10 +16,7 @@
  */
 import {
   INVALID_INPUT_MESSAGE,
-  MAX_NAME_LENGTH,
-  MIN_TTL_LENGTH,
-  NON_CONTRACT_OWNER_MESSAGE,
-  TX_ID_LENGTH,
+  NON_CONTRACT_OWNER_CONTROLLER_MESSAGE,
 } from '../../constants';
 import { ANTState, AntAction, ContractResult } from '../../types';
 import { validateSetRecord } from '../../validations';
@@ -41,7 +38,7 @@ export const setRecord = async (
 
   // ensure the owner owns this ANT
   if (caller !== owner && !controllers.includes(caller)) {
-    throw new ContractError(NON_CONTRACT_OWNER_MESSAGE);
+    throw new ContractError(NON_CONTRACT_OWNER_CONTROLLER_MESSAGE);
   }
 
   if (subDomain === 'www') {

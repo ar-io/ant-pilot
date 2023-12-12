@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.16.7",
+    "@commitlint/config-conventional": "^18.4.3",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/jest": "^27.4.0",
     "@types/node": "^20.10.3",
@@ -26,6 +27,7 @@
     "arbundles": "^0.6.18",
     "arlocal": "1.1.60",
     "arweave": "1.13.7",
+    "commitlint": "^18.4.3",
     "dotenv": "^16.3.1",
     "esbuild": "^0.17.12",
     "eslint": "^6.7.2",
@@ -35,7 +37,8 @@
     "eslint-plugin-prettier": "^3.3.1",
     "husky": "^8.0.3",
     "jest": "^29.7.0",
-    "prettier": "^3.1.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.1.1",
     "replace-in-file": "^6.2.0",
     "rimraf": "^5.0.5",
     "ts-jest": "^29.1.1",
@@ -46,12 +49,9 @@
   },
   "lint-staged": {
     "**/*.{ts,js,json}": [
-      "eslint --fix .",
-      "prettier --write ."
+      "eslint . --fix",
+      "prettier . --write"
     ]
-  },
-  "dependencies": {
-    "lint-staged": "^15.2.0"
   },
   "resolutions": {
     "arweave": "1.13.7"
