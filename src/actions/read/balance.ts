@@ -33,10 +33,6 @@ export const balance = async (
     throw new ContractError(INVALID_INPUT_MESSAGE);
   }
 
-  if (typeof target !== 'string') {
-    throw new ContractError('Must specify target to get balance for');
-  }
-
   return {
     result: { target, ticker, balance: target === owner ? 1 : 0 },
   };

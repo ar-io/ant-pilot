@@ -14,7 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { INVALID_INPUT_MESSAGE } from '../../constants';
+import {
+  INVALID_INPUT_MESSAGE,
+  NON_CONTRACT_OWNER_MESSAGE,
+} from '../../constants';
 import { ANTState, AntAction, ContractResult } from '../../types';
 // composed by ajv at build
 import { validateRemoveController } from '../../validations';
@@ -34,7 +37,7 @@ export const removeController = async (
   const owner = state.owner;
 
   if (caller !== owner) {
-    throw new ContractError(`Caller is not the token owner!`);
+    throw new ContractError(NON_CONTRACT_OWNER_MESSAGE);
   }
 
   if (!state.controllers.includes(target)) {
