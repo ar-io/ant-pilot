@@ -24,4 +24,8 @@ module.exports = {
   removeControllerSchema: require('./removeController').removeControllerSchema,
   balanceSchema: require('./balance').balanceSchema,
   transferSchema: require('./transfer').transferSchema,
+  claimSchema: require('./claim').claimSchema,
+  allowSchema: require('./allow').allowSchema,
+  rejectSchema: require('./reject').rejectSchema,
+  constructorSchema: require('./constructor').constructorSchema,
 };

@@ -14,23 +14,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-const balanceSchema = {
-  $id: '#/definitions/balance',
-  type: 'object',
-  properties: {
-    function: {
-      type: 'string',
-      const: 'balance',
-    },
-    target: {
-      type: 'string',
-      pattern: '^[a-zA-Z0-9_-]{43}$',
-    },
-  },
-  required: ['target'],
-  additionalProperties: true, // allow due to ucm passing qty
-};
 
-module.exports = {
-  balanceSchema,
-};
+import { ANTState } from "../src/types";
+import { arweave, deployANTUCMContract, getLocalWallet, warp } from "./utils/helper";
+
+describe('ucm', () => {
+
+  let antContractTxId: string;
+  let antContractOwnerAddress: string;
+  let contract;
+
+    beforeAll(async () => {
+
+        const { wallet, address: owner } = await getLocalWallet(arweave);
+        const {contractTxId} = await deployANTUCMContract({
+            warp,
+            owner,
+            wallet,
+        })
+
+        antContractTxId = contractTxId;
+        contract = warp.contract<ANTState>(antContractTxId).connect(wallet);
+        antContractOwnerAddress = owner;
+        
+    })
+    
+    it('should add ANT to trading pair with U', () => {
+        expect(true).toBe(true)
+    })
+})

@@ -14,23 +14,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-const balanceSchema = {
-  $id: '#/definitions/balance',
-  type: 'object',
-  properties: {
-    function: {
-      type: 'string',
-      const: 'balance',
-    },
-    target: {
-      type: 'string',
-      pattern: '^[a-zA-Z0-9_-]{43}$',
-    },
-  },
-  required: ['target'],
-  additionalProperties: true, // allow due to ucm passing qty
-};
+export function constructor(state, action) {
+  if (action.input.args) {
+    state = { 
+        records: {...state.records}, 
+        controllers: [...state.controllers], 
+        ...action.input.args}
+  }
 
-module.exports = {
-  balanceSchema,
-};
+  if (!state.claimable) {
+    state.claimable = []
+  }
+
+  if (!state.balances) {
+    state.balances = {}
+  }
+
+  if (!action.input?.args?.balances) {
+    state.balances[action.caller] = 100
+  }
+
+  state.name = action.input?.args?.name ? action.input.args.name : 'AtomicAsset'
+  state.ticker = action.input?.args?.ticker ? action.input.args.ticker : 'AA'
+
+  return { state }
+
+}

@@ -56,4 +56,17 @@ export const baselineAntState: ANTState = {
   ticker: 'ANT-TEST',
 };
 
+export const baselineAntUcmState: ANTState & {claimable: any[]} = {
+  owner: 'test',
+  evolve: 'test',
+  controllers: ['test'],
+  balances: {
+    test: 1,
+  },
+  claimable: [],
+  name: 'test',
+  records: {},
+  ticker: 'ANT-TEST',
+};
+
 export * from '../../src/constants';

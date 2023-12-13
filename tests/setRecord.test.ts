@@ -26,7 +26,7 @@ describe('Testing setRecord...', () => {
   beforeEach(async () => {
     const { wallet, address } = await getLocalWallet(arweave);
     antContractOwnerAddress = address;
-    antContractTxId = process.env.ANT_CONTRACT_TX_ID;
+    antContractTxId = process.env.ANT_CONTRACT_TX_ID as string;
     contract = warp.contract<ANTState>(antContractTxId).connect(wallet);
   });
 

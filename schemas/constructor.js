@@ -14,23 +14,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-const balanceSchema = {
-  $id: '#/definitions/balance',
+const constructorSchema = {
+  $id: '#/definitions/constructor',
   type: 'object',
   properties: {
     function: {
       type: 'string',
-      const: 'balance',
+      const: 'constructor',
     },
-    target: {
-      type: 'string',
-      pattern: '^[a-zA-Z0-9_-]{43}$',
+    args: {
+      type: 'object',
     },
   },
-  required: ['target'],
-  additionalProperties: true, // allow due to ucm passing qty
+  required: ['args'],
+  additionalProperties: false,
 };
 
 module.exports = {
-  balanceSchema,
+  constructorSchema,
 };

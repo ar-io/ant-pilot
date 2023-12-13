@@ -68,6 +68,8 @@ export type AntFunction =
   | 'balance'
   | 'evolve';
 
+export type UCMFunction = 'constructor' | 'reject' | 'claim' | 'allow';
+
 export type AntContractWriteResult = {
   state: ANTState;
 };

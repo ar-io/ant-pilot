@@ -1,0 +1,18 @@
+{
+  "name": "U",
+  "owner": "9x24zjvs9DA5zAz2DmqBWAg6XcxrrE-8w3EkpwRm4e4",
+  "ticker": "U",
+  "balances": {},
+  "settings": [
+    [
+      "isTradeable",
+      true
+    ],
+    [
+      "communityLogo",
+      "J3WXX4OGa6wP5E9oLhNyqlN4deYI7ARjrd5se740ftE"
+    ]
+  ],
+  "claimable": [],
+  "divisibility": 1000000
+}

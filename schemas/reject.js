@@ -14,23 +14,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-const balanceSchema = {
-  $id: '#/definitions/balance',
+const rejectSchema = {
+  $id: '#/definitions/reject',
   type: 'object',
   properties: {
     function: {
       type: 'string',
-      const: 'balance',
+      const: 'reject',
     },
-    target: {
+    tx: {
       type: 'string',
       pattern: '^[a-zA-Z0-9_-]{43}$',
     },
+    qty: {
+        type: 'number',
+        minimum: 1,
+    }
   },
-  required: ['target'],
-  additionalProperties: true, // allow due to ucm passing qty
+  required: ['tx', 'qty'],
+  additionalProperties: false,
 };
 
 module.exports = {
-  balanceSchema,
+  rejectSchema,
 };
