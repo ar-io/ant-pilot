@@ -95,20 +95,21 @@ describe('transferTokens', () => {
     expect(result.message).toEqual('Invalid token transfer');
   });
 
-  it('should throw if not contract owner', async () => {
-    const initState = {
-      ...baselineAntState,
-      balances: { [''.padEnd(43, '1')]: 1 },
-    };
-    const result = await transferTokens(initState, {
-      caller: ''.padEnd(43, '1'),
-      input: {
-        function: 'transfer',
-        target: ''.padEnd(43, '2'),
-      },
-    }).catch((e) => e);
-    expect(result.message).toEqual(NON_CONTRACT_OWNER_MESSAGE);
-  });
+  // taken out due to UCM not being the owner. Need to allow anyone with a balance to transfer ownership - might be a good idea to change the ownership strategy.
+  // it('should throw if not contract owner', async () => {
+  //   const initState = {
+  //     ...baselineAntState,
+  //     balances: { [''.padEnd(43, '1')]: 1 },
+  //   };
+  //   const result = await transferTokens(initState, {
+  //     caller: ''.padEnd(43, '1'),
+  //     input: {
+  //       function: 'transfer',
+  //       target: ''.padEnd(43, '2'),
+  //     },
+  //   }).catch((e) => e);
+  //   expect(result.message).toEqual(NON_CONTRACT_OWNER_MESSAGE);
+  // });
 
   it('should transfer ownership', async () => {
     const result = (await transferTokens(baselineAntState, {
