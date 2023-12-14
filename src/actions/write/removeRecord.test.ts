@@ -21,7 +21,6 @@ import {
   MAX_NAME_LENGTH,
   MIN_TTL_LENGTH,
   NON_CONTRACT_OWNER_CONTROLLER_MESSAGE,
-  NON_CONTRACT_OWNER_MESSAGE,
   baselineAntState,
 } from '../../../tests/utils/constants';
 import { removeRecord } from './removeRecord';
