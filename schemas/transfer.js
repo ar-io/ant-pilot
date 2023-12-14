@@ -28,7 +28,7 @@ const transferSchema = {
     },
   },
   required: ['target'],
-  additionalProperties: false,
+  additionalProperties: true,
 };
 
 module.exports = {

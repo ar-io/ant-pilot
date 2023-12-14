@@ -14,10 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import {
-  INVALID_INPUT_MESSAGE,
-  NON_CONTRACT_OWNER_MESSAGE,
-} from '../../constants';
+import { INVALID_INPUT_MESSAGE } from '../../constants';
 import { ANTState, AntAction, ContractResult } from '../../types';
 // composed by ajv at build
 import { validateTransferTokens } from '../../validations';
@@ -41,10 +38,6 @@ export const transferTokens = async (
     throw new ContractError('Invalid token transfer');
   }
 
-  if (caller !== owner) {
-    throw new ContractError(NON_CONTRACT_OWNER_MESSAGE);
-  }
-
   if (
     !balances[caller] ||
     balances[caller] == undefined ||
@@ -58,6 +51,7 @@ export const transferTokens = async (
     throw new ContractError(`Caller does not have a token balance!`);
   }
 
+  delete balances[owner];
   state.owner = target;
   delete balances[caller];
   balances[target] = 1;

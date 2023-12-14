@@ -32,11 +32,11 @@ import { ANTState, AntAction, ContractResult } from './types';
 declare const ContractError;
 
 function identity(v) {
-  return v
+  return v;
 }
 
 function handleError(msg) {
-  throw new ContractError(msg)
+  throw new ContractError(msg);
 }
 
 export async function handle(
@@ -46,18 +46,18 @@ export async function handle(
   const input = action.input;
 
   switch (input.function) {
-    case 'noop': 
-        return { state }
+    case 'noop':
+      return { state };
     case '__init':
       return constructor(state, action);
     case 'allow':
-        return allow(state, action).fold(handleError, identity)
+      return allow(state, action).fold(handleError, identity);
     case 'reject':
-        return reject(state, action).fold(handleError, identity)
+      return reject(state, action).fold(handleError, identity);
     case 'claim':
-        return claim(state, action).fold(handleError, identity)
+      return claim(state, action).fold(handleError, identity);
     case 'transfer':
-        // atomic token has its own version, the ANT one should work as well.
+      // atomic token has its own version, the ANT one should work as well.
       return await transferTokens(state, action);
     case 'setRecord':
       return await setRecord(state, action);

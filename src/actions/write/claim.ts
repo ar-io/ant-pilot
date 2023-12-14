@@ -14,11 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { of, Left, Right } from '../../lib/either'
+import { Left, Right, of } from '../../lib/either';
 
-export const claim = (state, action) => of({ state, action })
-  .chain(validate)
-  .map(update)
+export const claim = (state, action) =>
+  of({ state, action }).chain(validate).map(update);
 
 function update({ state, action, idx }) {
   if (!state.balances[action.caller]) {
@@ -33,27 +32,25 @@ function update({ state, action, idx }) {
 
 function validate({ state, action }) {
   if (!action.input.txID) {
-    return Left("txID is not found.");
+    return Left('txID is not found.');
   }
 
   if (!action.input.qty) {
-    return Left("claim quantity is not specified.");
+    return Left('claim quantity is not specified.');
   }
 
-  const idx = state.claimable.findIndex(
-    (c) => c.txID === action.input.txID
-  );
+  const idx = state.claimable.findIndex((c) => c.txID === action.input.txID);
 
   if (idx < 0) {
-    return Left("claimable not found.");
+    return Left('claimable not found.');
   }
 
   if (state.claimable[idx].qty !== action.input.qty) {
-    return Left("claimable qty is not equal to claim qty.");
+    return Left('claimable qty is not equal to claim qty.');
   }
 
   if (state.claimable[idx].to !== action.caller) {
-    return Left("claim is not addressed to caller.");
+    return Left('claim is not addressed to caller.');
   }
 
   return Right({ state, action, idx });

@@ -27,9 +27,9 @@ const rejectSchema = {
       pattern: '^[a-zA-Z0-9_-]{43}$',
     },
     qty: {
-        type: 'number',
-        minimum: 1,
-    }
+      type: 'number',
+      minimum: 1,
+    },
   },
   required: ['tx', 'qty'],
   additionalProperties: false,

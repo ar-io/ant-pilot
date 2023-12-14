@@ -6,15 +6,16 @@ var Right = (x) => ({
   ap: (other) => other.map(x),
   alt: (other) => Right(x),
   extend: (f) => f(Right(x)),
-  concat: (other) => other.fold(
-    (x2) => other,
-    (y) => Right(x.concat(y))
-  ),
+  concat: (other) =>
+    other.fold(
+      (x2) => other,
+      (y) => Right(x.concat(y)),
+    ),
   traverse: (of2, f) => f(x).map(Right),
   map: (f) => Right(f(x)),
   fold: (_, g) => g(x),
   toString: () => `Right(${x})`,
-  extract: () => x
+  extract: () => x,
 });
 var Left = (x) => ({
   isLeft: true,
@@ -27,7 +28,7 @@ var Left = (x) => ({
   map: (_) => Left(x),
   fold: (f, _) => f(x),
   toString: () => `Left(${x})`,
-  extract: () => x
+  extract: () => x,
 });
 var of = Right;
 
@@ -38,7 +39,7 @@ function addPair(state, action) {
 function updatePairs({ state, action }) {
   state.pairs.push({
     pair: action.input.pair,
-    orders: []
+    orders: [],
   });
   return { state };
 }
@@ -47,18 +48,22 @@ function validate({ state, action }) {
     state.pairs = [];
   }
   if (!action.input.pair) {
-    return Left("pair is required");
+    return Left('pair is required');
   }
   if (!action.input.pair[0].length === 43) {
-    return Left("Each pair must be a contract address");
+    return Left('Each pair must be a contract address');
   }
   if (!action.input.pair[1].length === 43) {
-    return Left("Each pair must be a contract address");
+    return Left('Each pair must be a contract address');
   }
-  if (state.pairs.find(
-    ({ pair: existingPair }) => existingPair.includes(action.input.pair[0]) && existingPair.includes(action.input.pair[1])
-  )) {
-    return Left("Pair already exists");
+  if (
+    state.pairs.find(
+      ({ pair: existingPair }) =>
+        existingPair.includes(action.input.pair[0]) &&
+        existingPair.includes(action.input.pair[1]),
+    )
+  ) {
+    return Left('Pair already exists');
   }
   return Right({ state, action });
 }
@@ -82,7 +87,8 @@ function calculateStreak(lastHeight = 0, currentHeight = 0, streak = 0) {
 }
 
 // src/write/claim.js
-var claim = (state, action) => of({ state, action }).chain(validate2).map(update);
+var claim = (state, action) =>
+  of({ state, action }).chain(validate2).map(update);
 function update({ state, action, idx }) {
   if (!state.balances[action.caller]) {
     state.balances[action.caller] = 0;
@@ -93,26 +99,26 @@ function update({ state, action, idx }) {
 }
 function validate2({ state, action }) {
   if (!action.input.txID) {
-    return Left("txID is not found.");
+    return Left('txID is not found.');
   }
   if (!action.input.qty) {
-    return Left("claim quantity is not specified.");
+    return Left('claim quantity is not specified.');
   }
   const idx = state.claimable.findIndex((c) => c.txID === action.input.txID);
   if (idx < 0) {
-    return Left("claimable not found.");
+    return Left('claimable not found.');
   }
   if (state.claimable[idx].qty !== action.input.qty) {
-    return Left("claimable qty is not equal to claim qty.");
+    return Left('claimable qty is not equal to claim qty.');
   }
   if (state.claimable[idx].to !== action.caller) {
-    return Left("claim is not addressed to caller.");
+    return Left('claim is not addressed to caller.');
   }
   return Right({ state, action, idx });
 }
 
 // src/write/create-order.js
-var U = "KTzTXT_ANmF84fWEKHzWURD1LWd9QaFR9yfYUwH2Lxw";
+var U = 'KTzTXT_ANmF84fWEKHzWURD1LWd9QaFR9yfYUwH2Lxw';
 var CreateOrder = async (state, action) => {
   U = state.U;
   const caller = action.caller;
@@ -126,42 +132,56 @@ var CreateOrder = async (state, action) => {
   let balances = state.balances;
   ContractAssert(
     isAddress(usedPair[0]) && isAddress(usedPair[1]),
-    "One of two supplied pair tokens is invalid"
+    'One of two supplied pair tokens is invalid',
   );
   if (price) {
-    ContractAssert(typeof price === "number", "Price must be a number");
+    ContractAssert(typeof price === 'number', 'Price must be a number');
     ContractAssert(
       price === void 0 || price === null || price > 0,
-      "Price must be greater than 0"
+      'Price must be greater than 0',
     );
   }
   if (!Number.isInteger(qty) || qty === void 0) {
-    throw new ContractError("Invalid value for quantity. Must be an integer.");
+    throw new ContractError('Invalid value for quantity. Must be an integer.');
   }
   let contractID = usedPair[0];
   if (contractID === SmartWeave.contract.id) {
-    tokenTx = "INTERNAL_TRANSFER";
+    tokenTx = 'INTERNAL_TRANSFER';
     if (qty <= 0 || caller === SmartWeave.contract.id) {
-      throw new ContractError("Invalid token transfer.");
+      throw new ContractError('Invalid token transfer.');
     }
-    if (state.claimable.find((claim2) => claim2.from === action.caller && claim2.txID === action.input.transaction)) {
-      const claimResult = claim(state, { caller: SmartWeave.contract.id, input: { ...action.input, txID: action.input.transaction } }).fold((m) => {
-        throw new ContractError(
-          "ERROR trying to create order for PIXL: " + m
-        );
-      }, (x) => x);
-      balances[SmartWeave.contract.id] = claimResult.state.balances[SmartWeave.contract.id];
+    if (
+      state.claimable.find(
+        (claim2) =>
+          claim2.from === action.caller &&
+          claim2.txID === action.input.transaction,
+      )
+    ) {
+      const claimResult = claim(state, {
+        caller: SmartWeave.contract.id,
+        input: { ...action.input, txID: action.input.transaction },
+      }).fold(
+        (m) => {
+          throw new ContractError(
+            'ERROR trying to create order for PIXL: ' + m,
+          );
+        },
+        (x) => x,
+      );
+      balances[SmartWeave.contract.id] =
+        claimResult.state.balances[SmartWeave.contract.id];
       state.claimable = claimResult.state.claimable;
     } else {
-      throw new ContractError(
-        "Can not claim balance for PIXL"
-      );
+      throw new ContractError('Can not claim balance for PIXL');
     }
-  } else if (usedPair[1] === SmartWeave.contract.id && tokenTx === "INTERNAL_TRANSFER") {
+  } else if (
+    usedPair[1] === SmartWeave.contract.id &&
+    tokenTx === 'INTERNAL_TRANSFER'
+  ) {
   } else {
     if (tokenTx === void 0 || tokenTx === null) {
       throw new ContractError(
-        "No token transaction provided given the token in the order is from a different contract"
+        'No token transaction provided given the token in the order is from a different contract',
       );
     }
     await claimBalance(contractID, tokenTx, qty);
@@ -176,15 +196,18 @@ var CreateOrder = async (state, action) => {
       }
     } else {
       await SmartWeave.contracts.write(contractID, {
-        function: "transfer",
+        function: 'transfer',
         target: caller,
-        qty
+        qty,
       });
     }
   };
   let pairIndex = -1;
   for (let i = 0; i < pairs.length; i++) {
-    if (pairs[i].pair[0] === usedPair[0] && pairs[i].pair[1] === usedPair[1] || pairs[i].pair[0] === usedPair[1] && pairs[i].pair[1] === usedPair[0]) {
+    if (
+      (pairs[i].pair[0] === usedPair[0] && pairs[i].pair[1] === usedPair[1]) ||
+      (pairs[i].pair[0] === usedPair[1] && pairs[i].pair[1] === usedPair[0])
+    ) {
       pairIndex = i;
     }
   }
@@ -193,15 +216,15 @@ var CreateOrder = async (state, action) => {
     return {
       state,
       result: {
-        status: "failure",
-        message: "This pair does not exist yet"
-      }
+        status: 'failure',
+        message: 'This pair does not exist yet',
+      },
     };
   }
   let sortedOrderbook;
   if (state.pairs[pairIndex].orders.length > 0) {
-    sortedOrderbook = state.pairs[pairIndex].orders.sort(
-      (a, b) => a.price > b.price ? 1 : -1
+    sortedOrderbook = state.pairs[pairIndex].orders.sort((a, b) =>
+      a.price > b.price ? 1 : -1,
     );
   } else {
     sortedOrderbook = [];
@@ -213,28 +236,32 @@ var CreateOrder = async (state, action) => {
         pair: {
           dominant: dominantToken,
           from: contractID,
-          to: usedPair.find((val) => val !== contractID)
+          to: usedPair.find((val) => val !== contractID),
         },
         quantity: qty,
         creator: caller,
         transaction: SmartWeave.transaction.id,
         transfer: tokenTx,
-        price
+        price,
       },
-      sortedOrderbook
+      sortedOrderbook,
     );
-    const maxPrice = matches.reduce((a, v) => v.price > a ? v.price : a, 0);
+    const maxPrice = matches.reduce((a, v) => (v.price > a ? v.price : a), 0);
     if (maxPrice > max) {
-      throw new Error("can not purchase item it is greater than max bid");
+      throw new Error('can not purchase item it is greater than max bid');
     }
     state.pairs[pairIndex].orders = orderbook;
     if (matches.length > 0) {
-      const vwap = matches.map(({ qty: volume, price: price2 }) => volume * price2).reduce((a, b) => a + b, 0) / matches.map(({ qty: volume }) => volume).reduce((a, b) => a + b, 0);
+      const vwap =
+        matches
+          .map(({ qty: volume, price: price2 }) => volume * price2)
+          .reduce((a, b) => a + b, 0) /
+        matches.map(({ qty: volume }) => volume).reduce((a, b) => a + b, 0);
       state.pairs[pairIndex].priceData = {
         dominantToken,
         block: SmartWeave.block.height,
         vwap,
-        matchLogs: matches
+        matchLogs: matches,
       };
     } else {
       state.pairs[pairIndex].priceData = void 0;
@@ -259,17 +286,17 @@ var CreateOrder = async (state, action) => {
           const streakUpdate = calculateStreak(
             state.streaks[buyer].lastHeight,
             Number(SmartWeave.block.height),
-            state.streaks[buyer].days
+            state.streaks[buyer].days,
           );
           state.streaks[buyer] = streakUpdate;
         }
         const result = await SmartWeave.contracts.write(
           foreignCalls[i].contract,
-          foreignCalls[i].input
+          foreignCalls[i].input,
         );
-        if (result.type !== "ok") {
+        if (result.type !== 'ok') {
           throw new ContractError(
-            `Unable to fill order with txID: ${foreignCalls[i].txID}`
+            `Unable to fill order with txID: ${foreignCalls[i].txID}`,
           );
         }
       }
@@ -280,30 +307,31 @@ var CreateOrder = async (state, action) => {
     return {
       state,
       result: {
-        status: "success",
-        message: "Order created successfully"
-      }
+        status: 'success',
+        message: 'Order created successfully',
+      },
     };
   } catch (e) {
     await refundTransfer();
     return {
       state,
       result: {
-        status: "failure",
-        message: e.message
-      }
+        status: 'failure',
+        message: e.message,
+      },
     };
   }
 };
 function matchOrder(input, orderbook) {
-  const orderType = input.price ? "limit" : "market";
+  const orderType = input.price ? 'limit' : 'market';
   const foreignCalls = [];
   const matches = [];
   const reverseOrders = orderbook.filter(
-    (order) => input.pair.from !== order.token && order.id !== input.transaction
+    (order) =>
+      input.pair.from !== order.token && order.id !== input.transaction,
   );
   if (!reverseOrders.length) {
-    if (orderType !== "limit")
+    if (orderType !== 'limit')
       throw new Error('The first order for a pair can only be a "limit" order');
     orderbook.push({
       id: input.transaction,
@@ -312,28 +340,30 @@ function matchOrder(input, orderbook) {
       token: input.pair.from,
       price: input.price,
       quantity: Math.round(input.quantity),
-      originalQuantity: input.quantity
+      originalQuantity: input.quantity,
     });
     return {
       orderbook,
       foreignCalls,
-      matches
+      matches,
     };
   }
   let fillAmount;
   let receiveAmount = 0;
   let remainingQuantity = input.quantity;
   const newOrderbook = orderbook.reduce((acc, currentOrder) => {
-    if (input.pair.from === currentOrder.token || currentOrder.id === input.transaction) {
+    if (
+      input.pair.from === currentOrder.token ||
+      currentOrder.id === input.transaction
+    ) {
       acc.push(currentOrder);
       return acc;
     }
     const reversePrice = 1 / currentOrder.price;
-    if (orderType === "limit" && input.price !== reversePrice) {
+    if (orderType === 'limit' && input.price !== reversePrice) {
       acc.push(currentOrder);
       return acc;
     }
-    ;
     fillAmount = Math.floor(remainingQuantity * (input.price ?? reversePrice));
     let receiveFromCurrent = 0;
     if (fillAmount <= currentOrder.quantity) {
@@ -345,10 +375,10 @@ function matchOrder(input, orderbook) {
           txID: SmartWeave.transaction.id,
           contract: input.pair.from,
           input: {
-            function: "transfer",
+            function: 'transfer',
             target: currentOrder.creator,
-            qty: Math.round(remainingQuantity * 0.995)
-          }
+            qty: Math.round(remainingQuantity * 0.995),
+          },
         });
       }
       remainingQuantity = 0;
@@ -361,10 +391,10 @@ function matchOrder(input, orderbook) {
         txID: SmartWeave.transaction.id,
         contract: input.pair.from,
         input: {
-          function: "transfer",
+          function: 'transfer',
           target: currentOrder.creator,
-          qty: Math.round(sendAmount * 0.995)
-        }
+          qty: Math.round(sendAmount * 0.995),
+        },
       });
       currentOrder.quantity = 0;
     }
@@ -378,7 +408,7 @@ function matchOrder(input, orderbook) {
       matches.push({
         id: currentOrder.id,
         qty: receiveFromCurrent,
-        price: dominantPrice
+        price: dominantPrice,
       });
     }
     if (currentOrder.quantity !== 0) {
@@ -387,7 +417,7 @@ function matchOrder(input, orderbook) {
     return acc;
   }, []);
   if (remainingQuantity > 0) {
-    if (orderType === "limit") {
+    if (orderType === 'limit') {
       newOrderbook.push({
         id: input.transaction,
         transfer: input.transfer,
@@ -395,17 +425,17 @@ function matchOrder(input, orderbook) {
         token: input.pair.from,
         price: input.price,
         quantity: Math.round(remainingQuantity),
-        originalQuantity: input.quantity
+        originalQuantity: input.quantity,
       });
     } else {
       foreignCalls.push({
         txID: SmartWeave.transaction.id,
         contract: input.pair.from,
         input: {
-          function: "transfer",
+          function: 'transfer',
           target: input.creator,
-          qty: remainingQuantity
-        }
+          qty: remainingQuantity,
+        },
       });
     }
   }
@@ -413,24 +443,24 @@ function matchOrder(input, orderbook) {
     txID: SmartWeave.transaction.id,
     contract: input.pair.to,
     input: {
-      function: "transfer",
+      function: 'transfer',
       target: input.creator,
-      qty: Math.round(receiveAmount * 0.995)
-    }
+      qty: Math.round(receiveAmount * 0.995),
+    },
   });
   return {
     orderbook: newOrderbook,
     foreignCalls,
-    matches
+    matches,
   };
 }
 var claimBalance = async (tokenID, transferTx, qty) => {
   const result = await SmartWeave.contracts.write(tokenID, {
-    function: "claim",
+    function: 'claim',
     txID: transferTx,
-    qty
+    qty,
   });
-  if (result.type !== "ok") {
+  if (result.type !== 'ok') {
     throw new ContractError(`Unable to make claim with txID: ${transferTx}`);
   }
 };
@@ -441,13 +471,13 @@ var CancelOrder = async (state, action) => {
   const caller = action.caller;
   const input = action.input;
   const orderTxID = input.orderID;
-  ContractAssert(isAddress2(orderTxID), "Invalid order ID");
+  ContractAssert(isAddress2(orderTxID), 'Invalid order ID');
   const allOrders = state.pairs.map((pair) => pair.orders).flat(1);
   const order = allOrders.find(({ id }) => id === orderTxID);
-  ContractAssert(order !== void 0, "Order does not exist");
+  ContractAssert(order !== void 0, 'Order does not exist');
   ContractAssert(
     order.creator === caller,
-    "Caller is not the creator of the order"
+    'Caller is not the creator of the order',
   );
   if (order.token === SmartWeave.contract.id) {
     state.balances[SmartWeave.contract.id] -= order.quantity;
@@ -458,26 +488,26 @@ var CancelOrder = async (state, action) => {
     }
   } else {
     const result = await SmartWeave.contracts.write(order.token, {
-      function: "transfer",
+      function: 'transfer',
       target: caller,
-      qty: order.quantity
+      qty: order.quantity,
     });
-    if (result.type !== "ok") {
+    if (result.type !== 'ok') {
       throw new ContractError(
-        `Unable to make claim with txID: ${SmartWeave.transaction.id}`
+        `Unable to make claim with txID: ${SmartWeave.transaction.id}`,
       );
     }
   }
-  const acitvePair = state.pairs.find(
-    (pair) => pair.orders.find(({ id }) => id === orderTxID)
+  const acitvePair = state.pairs.find((pair) =>
+    pair.orders.find(({ id }) => id === orderTxID),
   );
   acitvePair.orders = acitvePair.orders.filter(({ id }) => id !== orderTxID);
   return {
     state,
     result: {
-      status: "success",
-      message: "Order cancelled successfully"
-    }
+      status: 'success',
+      message: 'Order cancelled successfully',
+    },
   };
 };
 var isAddress2 = (addr) => /[a-z0-9_-]{43}/i.test(addr);
@@ -489,26 +519,27 @@ function balance(state, action) {
   }
   ContractAssert(
     /[a-z0-9_-]{43}/i.test(action.input.target),
-    "Invalid Target!"
+    'Invalid Target!',
   );
   if (!state.balances[action.input.target]) {
     return {
       result: {
         target: action.input.target,
-        balance: 0
-      }
+        balance: 0,
+      },
     };
   }
   return {
     result: {
       target: action.input.target,
-      balance: state.balances[action.input.target]
-    }
+      balance: state.balances[action.input.target],
+    },
   };
 }
 
 // src/write/transfer.js
-var transfer = (state, action) => of({ state, action }).chain(validate3).map(update2);
+var transfer = (state, action) =>
+  of({ state, action }).chain(validate3).map(update2);
 function update2({ state, action }) {
   state.balances[action.caller] -= action.input.qty;
   state.balances[action.input.target] += action.input.qty;
@@ -516,16 +547,16 @@ function update2({ state, action }) {
 }
 function validate3({ state, action }) {
   if (!action.caller || action.caller.length !== 43) {
-    return Left("Caller is not valid");
+    return Left('Caller is not valid');
   }
-  if (!action.input.qty || typeof action.input.qty !== "number") {
-    return Left("qty is not defined or is not a number");
+  if (!action.input.qty || typeof action.input.qty !== 'number') {
+    return Left('qty is not defined or is not a number');
   }
   if (!action.input.target || action.input.target.length !== 43) {
-    return Left("target is not valid");
+    return Left('target is not valid');
   }
   if (action.caller === action.input.target) {
-    return Left("target cannot be caller");
+    return Left('target cannot be caller');
   }
   if (!state.balances[action.input.target]) {
     state.balances[action.input.target] = 0;
@@ -534,26 +565,27 @@ function validate3({ state, action }) {
     state.balances[action.caller] = 0;
   }
   if (state.balances[action.caller] < action.input.qty) {
-    return Left("not enough balance to transfer");
+    return Left('not enough balance to transfer');
   }
   return Right({ state, action });
 }
 
 // src/read/validate.js
 function validate4(state) {
-  ContractAssert(state.name, "Name is required!");
-  ContractAssert(state.ticker, "Ticker is required!");
-  ContractAssert(state.balances, "Balances Object is required!");
-  ContractAssert(state.pairs, "Pairs Array is required!");
-  ContractAssert(state.claimable, "Claimable Array is required!");
-  ContractAssert(state.streaks, "Streaks Object is required!");
-  ContractAssert(state.lastReward > -1, "Last Reward prop is required");
-  ContractAssert(state.recentRewards, "Recent Rewards prop is required");
-  ContractAssert(state.U, "U is required!");
+  ContractAssert(state.name, 'Name is required!');
+  ContractAssert(state.ticker, 'Ticker is required!');
+  ContractAssert(state.balances, 'Balances Object is required!');
+  ContractAssert(state.pairs, 'Pairs Array is required!');
+  ContractAssert(state.claimable, 'Claimable Array is required!');
+  ContractAssert(state.streaks, 'Streaks Object is required!');
+  ContractAssert(state.lastReward > -1, 'Last Reward prop is required');
+  ContractAssert(state.recentRewards, 'Recent Rewards prop is required');
+  ContractAssert(state.U, 'U is required!');
 }
 
 // src/write/allow.js
-var allow = (state, action) => of({ state, action }).chain(validate5).map(update3);
+var allow = (state, action) =>
+  of({ state, action }).chain(validate5).map(update3);
 function update3({ state, action }) {
   state.balances[action.caller] -= action.input.qty;
   if (!state.claimable) {
@@ -563,31 +595,31 @@ function update3({ state, action }) {
     from: action.caller,
     to: action.input.target,
     qty: action.input.qty,
-    txID: SmartWeave.transaction.id
+    txID: SmartWeave.transaction.id,
   });
   return { state };
 }
 function validate5({ state, action }) {
   if (!Number.isInteger(action.input.qty) || action.input.qty === void 0) {
-    return Left("Invalid value for quantity. Must be an integer.");
+    return Left('Invalid value for quantity. Must be an integer.');
   }
   if (!action?.input?.target) {
-    return Left("No target specified.");
+    return Left('No target specified.');
   }
   if (action.input.target.length !== 43) {
-    return Left("Target is not valid!");
+    return Left('Target is not valid!');
   }
   if (action.input.target === SmartWeave.transaction.id) {
-    return Left("Cant setup claim to transfer a balance to itself");
+    return Left('Cant setup claim to transfer a balance to itself');
   }
   if (action.caller === action.input.target) {
-    return Left("Invalid balance transfer");
+    return Left('Invalid balance transfer');
   }
   if (!state.balances[action.caller]) {
-    return Left("Caller does not have a balance");
+    return Left('Caller does not have a balance');
   }
   if (state.balances[action.caller] < action.input.qty) {
-    return Left("Caller balance is not high enough.");
+    return Left('Caller balance is not high enough.');
   }
   return Right({ state, action });
 }
@@ -602,20 +634,22 @@ async function buyback(state) {
     return state;
   }
   let zAR_U = state.pairs.find(
-    (p) => p.pair.includes(U2) && p.pair.includes(SmartWeave.contract.id)
+    (p) => p.pair.includes(U2) && p.pair.includes(SmartWeave.contract.id),
   );
   if (!zAR_U) {
     state.pairs.push({
       pair: [SmartWeave.contract.id, U2],
       orders: [],
-      priceData: {}
+      priceData: {},
     });
     zAR_U = state.pairs.find(
-      (p) => p.pair.includes(U2) && p.pair.includes(SmartWeave.contract.id)
+      (p) => p.pair.includes(U2) && p.pair.includes(SmartWeave.contract.id),
     );
   }
   let response = null;
-  const orderToUpdate = await zAR_U.orders.find((o) => o.creator === SmartWeave.contract.id);
+  const orderToUpdate = await zAR_U.orders.find(
+    (o) => o.creator === SmartWeave.contract.id,
+  );
   if (orderToUpdate) {
     let price = Math.floor(orderToUpdate.price * DUTCH);
     orderToUpdate.originalQuantity = uBalance;
@@ -628,14 +662,14 @@ async function buyback(state) {
       input: {
         pair: [U2, SmartWeave.contract.id],
         qty: Math.floor(uBalance / price),
-        transaction: "INTERNAL_TRANSFER",
-        price
-      }
+        transaction: 'INTERNAL_TRANSFER',
+        price,
+      },
     });
   }
   if (response) {
     response.state.balances[SmartWeave.contract.id] = 0;
-    if (response.result.status === "success") {
+    if (response.result.status === 'success') {
       return response.state;
     } else {
       return state;
@@ -647,7 +681,9 @@ async function buyback(state) {
 
 // node_modules/ramda/es/internal/_isPlaceholder.js
 function _isPlaceholder(a) {
-  return a != null && typeof a === "object" && a["@@functional/placeholder"] === true;
+  return (
+    a != null && typeof a === 'object' && a['@@functional/placeholder'] === true
+  );
 }
 
 // node_modules/ramda/es/internal/_curry1.js
@@ -668,15 +704,23 @@ function _curry2(fn) {
       case 0:
         return f2;
       case 1:
-        return _isPlaceholder(a) ? f2 : _curry1(function(_b) {
-          return fn(a, _b);
-        });
+        return _isPlaceholder(a)
+          ? f2
+          : _curry1(function (_b) {
+              return fn(a, _b);
+            });
       default:
-        return _isPlaceholder(a) && _isPlaceholder(b) ? f2 : _isPlaceholder(a) ? _curry1(function(_a) {
-          return fn(_a, b);
-        }) : _isPlaceholder(b) ? _curry1(function(_b) {
-          return fn(a, _b);
-        }) : fn(a, b);
+        return _isPlaceholder(a) && _isPlaceholder(b)
+          ? f2
+          : _isPlaceholder(a)
+            ? _curry1(function (_a) {
+                return fn(_a, b);
+              })
+            : _isPlaceholder(b)
+              ? _curry1(function (_b) {
+                  return fn(a, _b);
+                })
+              : fn(a, b);
     }
   };
 }
@@ -691,57 +735,59 @@ var add_default = add;
 function _arity(n, fn) {
   switch (n) {
     case 0:
-      return function() {
+      return function () {
         return fn.apply(this, arguments);
       };
     case 1:
-      return function(a0) {
+      return function (a0) {
         return fn.apply(this, arguments);
       };
     case 2:
-      return function(a0, a1) {
+      return function (a0, a1) {
         return fn.apply(this, arguments);
       };
     case 3:
-      return function(a0, a1, a2) {
+      return function (a0, a1, a2) {
         return fn.apply(this, arguments);
       };
     case 4:
-      return function(a0, a1, a2, a3) {
+      return function (a0, a1, a2, a3) {
         return fn.apply(this, arguments);
       };
     case 5:
-      return function(a0, a1, a2, a3, a4) {
+      return function (a0, a1, a2, a3, a4) {
         return fn.apply(this, arguments);
       };
     case 6:
-      return function(a0, a1, a2, a3, a4, a5) {
+      return function (a0, a1, a2, a3, a4, a5) {
         return fn.apply(this, arguments);
       };
     case 7:
-      return function(a0, a1, a2, a3, a4, a5, a6) {
+      return function (a0, a1, a2, a3, a4, a5, a6) {
         return fn.apply(this, arguments);
       };
     case 8:
-      return function(a0, a1, a2, a3, a4, a5, a6, a7) {
+      return function (a0, a1, a2, a3, a4, a5, a6, a7) {
         return fn.apply(this, arguments);
       };
     case 9:
-      return function(a0, a1, a2, a3, a4, a5, a6, a7, a8) {
+      return function (a0, a1, a2, a3, a4, a5, a6, a7, a8) {
         return fn.apply(this, arguments);
       };
     case 10:
-      return function(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9) {
+      return function (a0, a1, a2, a3, a4, a5, a6, a7, a8, a9) {
         return fn.apply(this, arguments);
       };
     default:
-      throw new Error("First argument to _arity must be a non-negative integer no greater than ten");
+      throw new Error(
+        'First argument to _arity must be a non-negative integer no greater than ten',
+      );
   }
 }
 
 // node_modules/ramda/es/internal/_curryN.js
 function _curryN(length, received, fn) {
-  return function() {
+  return function () {
     var combined = [];
     var argsIdx = 0;
     var left = length;
@@ -749,7 +795,10 @@ function _curryN(length, received, fn) {
     var hasPlaceholder = false;
     while (combinedIdx < received.length || argsIdx < arguments.length) {
       var result;
-      if (combinedIdx < received.length && (!_isPlaceholder(received[combinedIdx]) || argsIdx >= arguments.length)) {
+      if (
+        combinedIdx < received.length &&
+        (!_isPlaceholder(received[combinedIdx]) || argsIdx >= arguments.length)
+      ) {
         result = received[combinedIdx];
       } else {
         result = arguments[argsIdx];
@@ -763,7 +812,9 @@ function _curryN(length, received, fn) {
       }
       combinedIdx += 1;
     }
-    return !hasPlaceholder && left <= 0 ? fn.apply(this, combined) : _arity(Math.max(0, left), _curryN(length, combined, fn));
+    return !hasPlaceholder && left <= 0
+      ? fn.apply(this, combined)
+      : _arity(Math.max(0, left), _curryN(length, combined, fn));
   };
 }
 
@@ -783,48 +834,76 @@ function _curry3(fn) {
       case 0:
         return f3;
       case 1:
-        return _isPlaceholder(a) ? f3 : _curry2(function(_b, _c) {
-          return fn(a, _b, _c);
-        });
+        return _isPlaceholder(a)
+          ? f3
+          : _curry2(function (_b, _c) {
+              return fn(a, _b, _c);
+            });
       case 2:
-        return _isPlaceholder(a) && _isPlaceholder(b) ? f3 : _isPlaceholder(a) ? _curry2(function(_a, _c) {
-          return fn(_a, b, _c);
-        }) : _isPlaceholder(b) ? _curry2(function(_b, _c) {
-          return fn(a, _b, _c);
-        }) : _curry1(function(_c) {
-          return fn(a, b, _c);
-        });
+        return _isPlaceholder(a) && _isPlaceholder(b)
+          ? f3
+          : _isPlaceholder(a)
+            ? _curry2(function (_a, _c) {
+                return fn(_a, b, _c);
+              })
+            : _isPlaceholder(b)
+              ? _curry2(function (_b, _c) {
+                  return fn(a, _b, _c);
+                })
+              : _curry1(function (_c) {
+                  return fn(a, b, _c);
+                });
       default:
-        return _isPlaceholder(a) && _isPlaceholder(b) && _isPlaceholder(c) ? f3 : _isPlaceholder(a) && _isPlaceholder(b) ? _curry2(function(_a, _b) {
-          return fn(_a, _b, c);
-        }) : _isPlaceholder(a) && _isPlaceholder(c) ? _curry2(function(_a, _c) {
-          return fn(_a, b, _c);
-        }) : _isPlaceholder(b) && _isPlaceholder(c) ? _curry2(function(_b, _c) {
-          return fn(a, _b, _c);
-        }) : _isPlaceholder(a) ? _curry1(function(_a) {
-          return fn(_a, b, c);
-        }) : _isPlaceholder(b) ? _curry1(function(_b) {
-          return fn(a, _b, c);
-        }) : _isPlaceholder(c) ? _curry1(function(_c) {
-          return fn(a, b, _c);
-        }) : fn(a, b, c);
+        return _isPlaceholder(a) && _isPlaceholder(b) && _isPlaceholder(c)
+          ? f3
+          : _isPlaceholder(a) && _isPlaceholder(b)
+            ? _curry2(function (_a, _b) {
+                return fn(_a, _b, c);
+              })
+            : _isPlaceholder(a) && _isPlaceholder(c)
+              ? _curry2(function (_a, _c) {
+                  return fn(_a, b, _c);
+                })
+              : _isPlaceholder(b) && _isPlaceholder(c)
+                ? _curry2(function (_b, _c) {
+                    return fn(a, _b, _c);
+                  })
+                : _isPlaceholder(a)
+                  ? _curry1(function (_a) {
+                      return fn(_a, b, c);
+                    })
+                  : _isPlaceholder(b)
+                    ? _curry1(function (_b) {
+                        return fn(a, _b, c);
+                      })
+                    : _isPlaceholder(c)
+                      ? _curry1(function (_c) {
+                          return fn(a, b, _c);
+                        })
+                      : fn(a, b, c);
     }
   };
 }
 
 // node_modules/ramda/es/internal/_isArray.js
-var isArray_default = Array.isArray || function _isArray(val) {
-  return val != null && val.length >= 0 && Object.prototype.toString.call(val) === "[object Array]";
-};
+var isArray_default =
+  Array.isArray ||
+  function _isArray(val) {
+    return (
+      val != null &&
+      val.length >= 0 &&
+      Object.prototype.toString.call(val) === '[object Array]'
+    );
+  };
 
 // node_modules/ramda/es/internal/_isTransformer.js
 function _isTransformer(obj) {
-  return obj != null && typeof obj["@@transducer/step"] === "function";
+  return obj != null && typeof obj['@@transducer/step'] === 'function';
 }
 
 // node_modules/ramda/es/internal/_dispatchable.js
 function _dispatchable(methodNames, transducerCreator, fn) {
-  return function() {
+  return function () {
     if (arguments.length === 0) {
       return fn();
     }
@@ -832,13 +911,19 @@ function _dispatchable(methodNames, transducerCreator, fn) {
     if (!isArray_default(obj)) {
       var idx = 0;
       while (idx < methodNames.length) {
-        if (typeof obj[methodNames[idx]] === "function") {
-          return obj[methodNames[idx]].apply(obj, Array.prototype.slice.call(arguments, 0, -1));
+        if (typeof obj[methodNames[idx]] === 'function') {
+          return obj[methodNames[idx]].apply(
+            obj,
+            Array.prototype.slice.call(arguments, 0, -1),
+          );
         }
         idx += 1;
       }
       if (_isTransformer(obj)) {
-        var transducer = transducerCreator.apply(null, Array.prototype.slice.call(arguments, 0, -1));
+        var transducer = transducerCreator.apply(
+          null,
+          Array.prototype.slice.call(arguments, 0, -1),
+        );
         return transducer(obj);
       }
     }
@@ -848,12 +933,12 @@ function _dispatchable(methodNames, transducerCreator, fn) {
 
 // node_modules/ramda/es/internal/_xfBase.js
 var xfBase_default = {
-  init: function() {
-    return this.xf["@@transducer/init"]();
+  init: function () {
+    return this.xf['@@transducer/init']();
   },
-  result: function(result) {
-    return this.xf["@@transducer/result"](result);
-  }
+  result: function (result) {
+    return this.xf['@@transducer/result'](result);
+  },
 };
 
 // node_modules/ramda/es/internal/_has.js
@@ -863,24 +948,36 @@ function _has(prop, obj) {
 
 // node_modules/ramda/es/internal/_isArguments.js
 var toString = Object.prototype.toString;
-var _isArguments = /* @__PURE__ */ function() {
-  return toString.call(arguments) === "[object Arguments]" ? function _isArguments2(x) {
-    return toString.call(x) === "[object Arguments]";
-  } : function _isArguments2(x) {
-    return _has("callee", x);
-  };
-}();
+var _isArguments = /* @__PURE__ */ (function () {
+  return toString.call(arguments) === '[object Arguments]'
+    ? function _isArguments2(x) {
+        return toString.call(x) === '[object Arguments]';
+      }
+    : function _isArguments2(x) {
+        return _has('callee', x);
+      };
+})();
 var isArguments_default = _isArguments;
 
 // node_modules/ramda/es/keys.js
-var hasEnumBug = !/* @__PURE__ */ {
-  toString: null
-}.propertyIsEnumerable("toString");
-var nonEnumerableProps = ["constructor", "valueOf", "isPrototypeOf", "toString", "propertyIsEnumerable", "hasOwnProperty", "toLocaleString"];
-var hasArgsEnumBug = /* @__PURE__ */ function() {
-  "use strict";
-  return arguments.propertyIsEnumerable("length");
-}();
+var hasEnumBug = !(
+  /* @__PURE__ */ {
+    toString: null,
+  }.propertyIsEnumerable('toString')
+);
+var nonEnumerableProps = [
+  'constructor',
+  'valueOf',
+  'isPrototypeOf',
+  'toString',
+  'propertyIsEnumerable',
+  'hasOwnProperty',
+  'toLocaleString',
+];
+var hasArgsEnumBug = /* @__PURE__ */ (function () {
+  'use strict';
+  return arguments.propertyIsEnumerable('length');
+})();
 var contains = function contains2(list, item) {
   var idx = 0;
   while (idx < list.length) {
@@ -891,37 +988,44 @@ var contains = function contains2(list, item) {
   }
   return false;
 };
-var keys = typeof Object.keys === "function" && !hasArgsEnumBug ? /* @__PURE__ */ _curry1(function keys2(obj) {
-  return Object(obj) !== obj ? [] : Object.keys(obj);
-}) : /* @__PURE__ */ _curry1(function keys3(obj) {
-  if (Object(obj) !== obj) {
-    return [];
-  }
-  var prop, nIdx;
-  var ks = [];
-  var checkArgsLength = hasArgsEnumBug && isArguments_default(obj);
-  for (prop in obj) {
-    if (_has(prop, obj) && (!checkArgsLength || prop !== "length")) {
-      ks[ks.length] = prop;
-    }
-  }
-  if (hasEnumBug) {
-    nIdx = nonEnumerableProps.length - 1;
-    while (nIdx >= 0) {
-      prop = nonEnumerableProps[nIdx];
-      if (_has(prop, obj) && !contains(ks, prop)) {
-        ks[ks.length] = prop;
-      }
-      nIdx -= 1;
-    }
-  }
-  return ks;
-});
+var keys =
+  typeof Object.keys === 'function' && !hasArgsEnumBug
+    ? /* @__PURE__ */ _curry1(function keys2(obj) {
+        return Object(obj) !== obj ? [] : Object.keys(obj);
+      })
+    : /* @__PURE__ */ _curry1(function keys3(obj) {
+        if (Object(obj) !== obj) {
+          return [];
+        }
+        var prop, nIdx;
+        var ks = [];
+        var checkArgsLength = hasArgsEnumBug && isArguments_default(obj);
+        for (prop in obj) {
+          if (_has(prop, obj) && (!checkArgsLength || prop !== 'length')) {
+            ks[ks.length] = prop;
+          }
+        }
+        if (hasEnumBug) {
+          nIdx = nonEnumerableProps.length - 1;
+          while (nIdx >= 0) {
+            prop = nonEnumerableProps[nIdx];
+            if (_has(prop, obj) && !contains(ks, prop)) {
+              ks[ks.length] = prop;
+            }
+            nIdx -= 1;
+          }
+        }
+        return ks;
+      });
 var keys_default = keys;
 
 // node_modules/ramda/es/type.js
 var type = /* @__PURE__ */ _curry1(function type2(val) {
-  return val === null ? "Null" : val === void 0 ? "Undefined" : Object.prototype.toString.call(val).slice(8, -1);
+  return val === null
+    ? 'Null'
+    : val === void 0
+      ? 'Undefined'
+      : Object.prototype.toString.call(val).slice(8, -1);
 });
 var type_default = type;
 
@@ -949,20 +1053,20 @@ function _arrayReduce(reducer, acc, list) {
 }
 
 // node_modules/ramda/es/internal/_xmap.js
-var XMap = /* @__PURE__ */ function() {
+var XMap = /* @__PURE__ */ (function () {
   function XMap2(f, xf) {
     this.xf = xf;
     this.f = f;
   }
-  XMap2.prototype["@@transducer/init"] = xfBase_default.init;
-  XMap2.prototype["@@transducer/result"] = xfBase_default.result;
-  XMap2.prototype["@@transducer/step"] = function(result, input) {
-    return this.xf["@@transducer/step"](result, this.f(input));
+  XMap2.prototype['@@transducer/init'] = xfBase_default.init;
+  XMap2.prototype['@@transducer/result'] = xfBase_default.result;
+  XMap2.prototype['@@transducer/step'] = function (result, input) {
+    return this.xf['@@transducer/step'](result, this.f(input));
   };
   return XMap2;
-}();
+})();
 var _xmap = function _xmap2(f) {
-  return function(xf) {
+  return function (xf) {
     return new XMap(f, xf);
   };
 };
@@ -970,32 +1074,42 @@ var xmap_default = _xmap;
 
 // node_modules/ramda/es/map.js
 var map = /* @__PURE__ */ _curry2(
-  /* @__PURE__ */ _dispatchable(["fantasy-land/map", "map"], xmap_default, function map2(fn, functor) {
-    switch (Object.prototype.toString.call(functor)) {
-      case "[object Function]":
-        return curryN_default(functor.length, function() {
-          return fn.call(this, functor.apply(this, arguments));
-        });
-      case "[object Object]":
-        return _arrayReduce(function(acc, key) {
-          acc[key] = fn(functor[key]);
-          return acc;
-        }, {}, keys_default(functor));
-      default:
-        return _map(fn, functor);
-    }
-  })
+  /* @__PURE__ */ _dispatchable(
+    ['fantasy-land/map', 'map'],
+    xmap_default,
+    function map2(fn, functor) {
+      switch (Object.prototype.toString.call(functor)) {
+        case '[object Function]':
+          return curryN_default(functor.length, function () {
+            return fn.call(this, functor.apply(this, arguments));
+          });
+        case '[object Object]':
+          return _arrayReduce(
+            function (acc, key) {
+              acc[key] = fn(functor[key]);
+              return acc;
+            },
+            {},
+            keys_default(functor),
+          );
+        default:
+          return _map(fn, functor);
+      }
+    },
+  ),
 );
 var map_default = map;
 
 // node_modules/ramda/es/internal/_isInteger.js
-var isInteger_default = Number.isInteger || function _isInteger(n) {
-  return n << 0 === n;
-};
+var isInteger_default =
+  Number.isInteger ||
+  function _isInteger(n) {
+    return n << 0 === n;
+  };
 
 // node_modules/ramda/es/internal/_isString.js
 function _isString(x) {
-  return Object.prototype.toString.call(x) === "[object String]";
+  return Object.prototype.toString.call(x) === '[object String]';
 }
 
 // node_modules/ramda/es/nth.js
@@ -1013,7 +1127,7 @@ var _isArrayLike = /* @__PURE__ */ _curry1(function isArrayLike(x) {
   if (!x) {
     return false;
   }
-  if (typeof x !== "object") {
+  if (typeof x !== 'object') {
     return false;
   }
   if (_isString(x)) {
@@ -1030,7 +1144,8 @@ var _isArrayLike = /* @__PURE__ */ _curry1(function isArrayLike(x) {
 var isArrayLike_default = _isArrayLike;
 
 // node_modules/ramda/es/internal/_createReduce.js
-var symIterator = typeof Symbol !== "undefined" ? Symbol.iterator : "@@iterator";
+var symIterator =
+  typeof Symbol !== 'undefined' ? Symbol.iterator : '@@iterator';
 function _createReduce(arrayReduce, methodReduce, iterableReduce) {
   return function _reduce(xf, acc, list) {
     if (isArrayLike_default(list)) {
@@ -1039,19 +1154,19 @@ function _createReduce(arrayReduce, methodReduce, iterableReduce) {
     if (list == null) {
       return acc;
     }
-    if (typeof list["fantasy-land/reduce"] === "function") {
-      return methodReduce(xf, acc, list, "fantasy-land/reduce");
+    if (typeof list['fantasy-land/reduce'] === 'function') {
+      return methodReduce(xf, acc, list, 'fantasy-land/reduce');
     }
     if (list[symIterator] != null) {
       return iterableReduce(xf, acc, list[symIterator]());
     }
-    if (typeof list.next === "function") {
+    if (typeof list.next === 'function') {
       return iterableReduce(xf, acc, list);
     }
-    if (typeof list.reduce === "function") {
-      return methodReduce(xf, acc, list, "reduce");
+    if (typeof list.reduce === 'function') {
+      return methodReduce(xf, acc, list, 'reduce');
     }
-    throw new TypeError("reduce: list must be array or iterable");
+    throw new TypeError('reduce: list must be array or iterable');
   };
 }
 
@@ -1060,19 +1175,19 @@ function _xArrayReduce(xf, acc, list) {
   var idx = 0;
   var len = list.length;
   while (idx < len) {
-    acc = xf["@@transducer/step"](acc, list[idx]);
-    if (acc && acc["@@transducer/reduced"]) {
-      acc = acc["@@transducer/value"];
+    acc = xf['@@transducer/step'](acc, list[idx]);
+    if (acc && acc['@@transducer/reduced']) {
+      acc = acc['@@transducer/value'];
       break;
     }
     idx += 1;
   }
-  return xf["@@transducer/result"](acc);
+  return xf['@@transducer/result'](acc);
 }
 
 // node_modules/ramda/es/bind.js
 var bind = /* @__PURE__ */ _curry2(function bind2(fn, thisObj) {
-  return _arity(fn.length, function() {
+  return _arity(fn.length, function () {
     return fn.apply(thisObj, arguments);
   });
 });
@@ -1082,50 +1197,56 @@ var bind_default = bind;
 function _xIterableReduce(xf, acc, iter) {
   var step = iter.next();
   while (!step.done) {
-    acc = xf["@@transducer/step"](acc, step.value);
-    if (acc && acc["@@transducer/reduced"]) {
-      acc = acc["@@transducer/value"];
+    acc = xf['@@transducer/step'](acc, step.value);
+    if (acc && acc['@@transducer/reduced']) {
+      acc = acc['@@transducer/value'];
       break;
     }
     step = iter.next();
   }
-  return xf["@@transducer/result"](acc);
+  return xf['@@transducer/result'](acc);
 }
 function _xMethodReduce(xf, acc, obj, methodName) {
-  return xf["@@transducer/result"](obj[methodName](bind_default(xf["@@transducer/step"], xf), acc));
+  return xf['@@transducer/result'](
+    obj[methodName](bind_default(xf['@@transducer/step'], xf), acc),
+  );
 }
-var _xReduce = /* @__PURE__ */ _createReduce(_xArrayReduce, _xMethodReduce, _xIterableReduce);
+var _xReduce = /* @__PURE__ */ _createReduce(
+  _xArrayReduce,
+  _xMethodReduce,
+  _xIterableReduce,
+);
 var xReduce_default = _xReduce;
 
 // node_modules/ramda/es/internal/_xwrap.js
-var XWrap = /* @__PURE__ */ function() {
+var XWrap = /* @__PURE__ */ (function () {
   function XWrap2(fn) {
     this.f = fn;
   }
-  XWrap2.prototype["@@transducer/init"] = function() {
-    throw new Error("init not implemented on XWrap");
+  XWrap2.prototype['@@transducer/init'] = function () {
+    throw new Error('init not implemented on XWrap');
   };
-  XWrap2.prototype["@@transducer/result"] = function(acc) {
+  XWrap2.prototype['@@transducer/result'] = function (acc) {
     return acc;
   };
-  XWrap2.prototype["@@transducer/step"] = function(acc, x) {
+  XWrap2.prototype['@@transducer/step'] = function (acc, x) {
     return this.f(acc, x);
   };
   return XWrap2;
-}();
+})();
 function _xwrap(fn) {
   return new XWrap(fn);
 }
 
 // node_modules/ramda/es/reduce.js
-var reduce = /* @__PURE__ */ _curry3(function(xf, acc, list) {
-  return xReduce_default(typeof xf === "function" ? _xwrap(xf) : xf, acc, list);
+var reduce = /* @__PURE__ */ _curry3(function (xf, acc, list) {
+  return xReduce_default(typeof xf === 'function' ? _xwrap(xf) : xf, acc, list);
 });
 var reduce_default = reduce;
 
 // node_modules/ramda/es/always.js
 var always = /* @__PURE__ */ _curry1(function always2(val) {
-  return function() {
+  return function () {
     return val;
   };
 });
@@ -1173,7 +1294,12 @@ var assocPath = /* @__PURE__ */ _curry3(function assocPath2(path3, val, obj) {
   }
   var idx = path3[0];
   if (path3.length > 1) {
-    var nextObj = !isNil_default(obj) && _has(idx, obj) && typeof obj[idx] === "object" ? obj[idx] : isInteger_default(path3[1]) ? [] : {};
+    var nextObj =
+      !isNil_default(obj) && _has(idx, obj) && typeof obj[idx] === 'object'
+        ? obj[idx]
+        : isInteger_default(path3[1])
+          ? []
+          : {};
     val = assocPath2(Array.prototype.slice.call(path3, 1), val, nextObj);
   }
   return _assoc(idx, val, obj);
@@ -1188,7 +1314,17 @@ var assoc_default = assoc;
 
 // node_modules/ramda/es/internal/_cloneRegExp.js
 function _cloneRegExp(pattern) {
-  return new RegExp(pattern.source, pattern.flags ? pattern.flags : (pattern.global ? "g" : "") + (pattern.ignoreCase ? "i" : "") + (pattern.multiline ? "m" : "") + (pattern.sticky ? "y" : "") + (pattern.unicode ? "u" : "") + (pattern.dotAll ? "s" : ""));
+  return new RegExp(
+    pattern.source,
+    pattern.flags
+      ? pattern.flags
+      : (pattern.global ? 'g' : '') +
+        (pattern.ignoreCase ? 'i' : '') +
+        (pattern.multiline ? 'm' : '') +
+        (pattern.sticky ? 'y' : '') +
+        (pattern.unicode ? 'u' : '') +
+        (pattern.dotAll ? 's' : ''),
+  );
 }
 
 // node_modules/ramda/es/internal/_clone.js
@@ -1211,25 +1347,25 @@ function _clone(value, deep, map3) {
     return copiedValue;
   };
   switch (type_default(value)) {
-    case "Object":
+    case 'Object':
       return copy(Object.create(Object.getPrototypeOf(value)));
-    case "Array":
+    case 'Array':
       return copy([]);
-    case "Date":
+    case 'Date':
       return new Date(value.valueOf());
-    case "RegExp":
+    case 'RegExp':
       return _cloneRegExp(value);
-    case "Int8Array":
-    case "Uint8Array":
-    case "Uint8ClampedArray":
-    case "Int16Array":
-    case "Uint16Array":
-    case "Int32Array":
-    case "Uint32Array":
-    case "Float32Array":
-    case "Float64Array":
-    case "BigInt64Array":
-    case "BigUint64Array":
+    case 'Int8Array':
+    case 'Uint8Array':
+    case 'Uint8ClampedArray':
+    case 'Int16Array':
+    case 'Uint16Array':
+    case 'Int32Array':
+    case 'Uint32Array':
+    case 'Float32Array':
+    case 'Float64Array':
+    case 'BigInt64Array':
+    case 'BigUint64Array':
       return value.slice();
     default:
       return value;
@@ -1237,14 +1373,14 @@ function _clone(value, deep, map3) {
 }
 function _isPrimitive(param) {
   var type3 = typeof param;
-  return param == null || type3 != "object" && type3 != "function";
+  return param == null || (type3 != 'object' && type3 != 'function');
 }
-var _ObjectMap = /* @__PURE__ */ function() {
+var _ObjectMap = /* @__PURE__ */ (function () {
   function _ObjectMap2() {
     this.map = {};
     this.length = 0;
   }
-  _ObjectMap2.prototype.set = function(key, value) {
+  _ObjectMap2.prototype.set = function (key, value) {
     const hashedKey = this.hash(key);
     let bucket = this.map[hashedKey];
     if (!bucket) {
@@ -1253,14 +1389,14 @@ var _ObjectMap = /* @__PURE__ */ function() {
     bucket.push([key, value]);
     this.length += 1;
   };
-  _ObjectMap2.prototype.hash = function(key) {
+  _ObjectMap2.prototype.hash = function (key) {
     let hashedKey = [];
     for (var value in key) {
       hashedKey.push(Object.prototype.toString.call(key[value]));
     }
     return hashedKey.join();
   };
-  _ObjectMap2.prototype.get = function(key) {
+  _ObjectMap2.prototype.get = function (key) {
     if (this.length <= 180) {
       for (const p in this.map) {
         const bucket2 = this.map[p];
@@ -1286,11 +1422,13 @@ var _ObjectMap = /* @__PURE__ */ function() {
     }
   };
   return _ObjectMap2;
-}();
+})();
 
 // node_modules/ramda/es/clone.js
 var clone = /* @__PURE__ */ _curry1(function clone2(value) {
-  return value != null && typeof value.clone === "function" ? value.clone() : _clone(value, true);
+  return value != null && typeof value.clone === 'function'
+    ? value.clone()
+    : _clone(value, true);
 });
 var clone_default = clone;
 
@@ -1302,58 +1440,71 @@ var not_default = not;
 
 // node_modules/ramda/es/internal/_pipe.js
 function _pipe(f, g) {
-  return function() {
+  return function () {
     return g.call(this, f.apply(this, arguments));
   };
 }
 
 // node_modules/ramda/es/internal/_checkForMethod.js
 function _checkForMethod(methodname, fn) {
-  return function() {
+  return function () {
     var length = arguments.length;
     if (length === 0) {
       return fn();
     }
     var obj = arguments[length - 1];
-    return isArray_default(obj) || typeof obj[methodname] !== "function" ? fn.apply(this, arguments) : obj[methodname].apply(obj, Array.prototype.slice.call(arguments, 0, length - 1));
+    return isArray_default(obj) || typeof obj[methodname] !== 'function'
+      ? fn.apply(this, arguments)
+      : obj[methodname].apply(
+          obj,
+          Array.prototype.slice.call(arguments, 0, length - 1),
+        );
   };
 }
 
 // node_modules/ramda/es/slice.js
 var slice = /* @__PURE__ */ _curry3(
-  /* @__PURE__ */ _checkForMethod("slice", function slice2(fromIndex, toIndex, list) {
-    return Array.prototype.slice.call(list, fromIndex, toIndex);
-  })
+  /* @__PURE__ */ _checkForMethod(
+    'slice',
+    function slice2(fromIndex, toIndex, list) {
+      return Array.prototype.slice.call(list, fromIndex, toIndex);
+    },
+  ),
 );
 var slice_default = slice;
 
 // node_modules/ramda/es/tail.js
 var tail = /* @__PURE__ */ _curry1(
   /* @__PURE__ */ _checkForMethod(
-    "tail",
-    /* @__PURE__ */ slice_default(1, Infinity)
-  )
+    'tail',
+    /* @__PURE__ */ slice_default(1, Infinity),
+  ),
 );
 var tail_default = tail;
 
 // node_modules/ramda/es/pipe.js
 function pipe() {
   if (arguments.length === 0) {
-    throw new Error("pipe requires at least one argument");
+    throw new Error('pipe requires at least one argument');
   }
-  return _arity(arguments[0].length, reduce_default(_pipe, arguments[0], tail_default(arguments)));
+  return _arity(
+    arguments[0].length,
+    reduce_default(_pipe, arguments[0], tail_default(arguments)),
+  );
 }
 
 // node_modules/ramda/es/reverse.js
 var reverse = /* @__PURE__ */ _curry1(function reverse2(list) {
-  return _isString(list) ? list.split("").reverse().join("") : Array.prototype.slice.call(list, 0).reverse();
+  return _isString(list)
+    ? list.split('').reverse().join('')
+    : Array.prototype.slice.call(list, 0).reverse();
 });
 var reverse_default = reverse;
 
 // node_modules/ramda/es/compose.js
 function compose() {
   if (arguments.length === 0) {
-    throw new Error("compose requires at least one argument");
+    throw new Error('compose requires at least one argument');
   }
   return pipe.apply(this, reverse_default(arguments));
 }
@@ -1427,7 +1578,7 @@ var dissoc_default = dissoc;
 // node_modules/ramda/es/internal/_objectAssign.js
 function _objectAssign(target) {
   if (target == null) {
-    throw new TypeError("Cannot convert undefined or null to object");
+    throw new TypeError('Cannot convert undefined or null to object');
   }
   var output = Object(target);
   var idx = 1;
@@ -1445,15 +1596,19 @@ function _objectAssign(target) {
   }
   return output;
 }
-var objectAssign_default = typeof Object.assign === "function" ? Object.assign : _objectAssign;
+var objectAssign_default =
+  typeof Object.assign === 'function' ? Object.assign : _objectAssign;
 
 // node_modules/ramda/es/lens.js
 var lens = /* @__PURE__ */ _curry2(function lens2(getter, setter) {
-  return function(toFunctorFn) {
-    return function(target) {
-      return map_default(function(focus) {
-        return setter(focus, target);
-      }, toFunctorFn(getter(target)));
+  return function (toFunctorFn) {
+    return function (target) {
+      return map_default(
+        function (focus) {
+          return setter(focus, target);
+        },
+        toFunctorFn(getter(target)),
+      );
     };
   };
 });
@@ -1461,7 +1616,7 @@ var lens_default = lens;
 
 // node_modules/ramda/es/paths.js
 var paths = /* @__PURE__ */ _curry2(function paths2(pathsArray, obj) {
-  return pathsArray.map(function(paths3) {
+  return pathsArray.map(function (paths3) {
     var val = obj;
     var idx = 0;
     var p;
@@ -1492,10 +1647,14 @@ var lensPath_default = lensPath;
 
 // node_modules/ramda/es/mapObjIndexed.js
 var mapObjIndexed = /* @__PURE__ */ _curry2(function mapObjIndexed2(fn, obj) {
-  return _arrayReduce(function(acc, key) {
-    acc[key] = fn(obj[key], key, obj);
-    return acc;
-  }, {}, keys_default(obj));
+  return _arrayReduce(
+    function (acc, key) {
+      acc[key] = fn(obj[key], key, obj);
+      return acc;
+    },
+    {},
+    keys_default(obj),
+  );
 });
 var mapObjIndexed_default = mapObjIndexed;
 
@@ -1510,16 +1669,16 @@ var mergeAll = /* @__PURE__ */ _curry1(function mergeAll2(list) {
 var mergeAll_default = mergeAll;
 
 // node_modules/ramda/es/over.js
-var Identity = function(x) {
+var Identity = function (x) {
   return {
     value: x,
-    map: function(f) {
+    map: function (f) {
       return Identity(f(x));
-    }
+    },
   };
 };
 var over = /* @__PURE__ */ _curry3(function over2(lens3, f, x) {
-  return lens3(function(y) {
+  return lens3(function (y) {
     return Identity(f(y));
   })(x).value;
 });
@@ -1548,7 +1707,7 @@ function allocate(balances, reward2) {
   var total = reduce_default(
     add_default,
     0,
-    values_default(balances).filter((v) => v > 0)
+    values_default(balances).filter((v) => v > 0),
   );
   const allocation = mergeAll_default(
     reduce_default(
@@ -1558,13 +1717,13 @@ function allocate(balances, reward2) {
         if (balance2 < 1) {
           return a;
         }
-        var pct = balance2 / total * 100;
+        var pct = (balance2 / total) * 100;
         const coins = Math.round(reward2 * (pct / 100));
         return [...a, { [asset]: Number(coins) }];
       },
       [],
-      Object.entries(balances)
-    )
+      Object.entries(balances),
+    ),
   );
   var remainder = reward2 - sum_default(values_default(allocation));
   var iterator = keys_default(allocation).entries();
@@ -1588,12 +1747,17 @@ function reward(state, vouched) {
   if (keys_default(state.streaks).length < 1) {
     return state;
   }
-  const { reward: reward2 } = setReward(Number(SmartWeave.block.height))({ state });
+  const { reward: reward2 } = setReward(Number(SmartWeave.block.height))({
+    state,
+  });
   if (reward2 === 0) {
     return state;
   }
   state.streaks = keys_default(state.streaks).reduce((a, k) => {
-    if (state.streaks[k].lastHeight > Number(SmartWeave.block.height) - DAY * 2) {
+    if (
+      state.streaks[k].lastHeight >
+      Number(SmartWeave.block.height) - DAY * 2
+    ) {
       return { ...a, [k]: state.streaks[k] };
     }
     return a;
@@ -1644,7 +1808,7 @@ function setReward(height) {
       HALVING_SUPPLY,
       CYCLE_INTERVAL,
       height,
-      ORIGIN_HEIGHT
+      ORIGIN_HEIGHT,
     );
     return { state, reward: reward2 };
   };
@@ -1668,16 +1832,19 @@ function getReward(supply, interval, currentHeight, originHeight) {
 
 // src/write/cancel-claim.js
 var cancelClaim = async (state, action) => {
-  ContractAssert(action.input.contract, "contract is required");
-  ContractAssert(action.input.transaction, "transaction is required");
-  ContractAssert(action.input.qty, "transaction is required");
-  ContractAssert(action.input.contract.length === 43, "contract is not valid");
-  ContractAssert(action.input.transaction.length === 43, "transaction is not valid");
-  ContractAssert(Number.isInteger(action.input.qty), "qty must be integer");
+  ContractAssert(action.input.contract, 'contract is required');
+  ContractAssert(action.input.transaction, 'transaction is required');
+  ContractAssert(action.input.qty, 'transaction is required');
+  ContractAssert(action.input.contract.length === 43, 'contract is not valid');
+  ContractAssert(
+    action.input.transaction.length === 43,
+    'transaction is not valid',
+  );
+  ContractAssert(Number.isInteger(action.input.qty), 'qty must be integer');
   await SmartWeave.contracts.write(action.input.contract, {
-    function: "reject",
+    function: 'reject',
     tx: action.input.transaction,
-    qty: action.input.qty
+    qty: action.input.qty,
   });
   return { state };
 };
@@ -1695,13 +1862,31 @@ function contributorMint(state, action) {
     contributor: action.caller,
     height: {
       origin: originHeight,
-      current: currentHeight
-    }
-  }).chain(getContributor).map(calcBlockDiff).map(calcRewardAmount).map(allocateForTier).map(allocateForMember).map(updateBalances2).map(setLastMint4Member);
+      current: currentHeight,
+    },
+  })
+    .chain(getContributor)
+    .map(calcBlockDiff)
+    .map(calcRewardAmount)
+    .map(allocateForTier)
+    .map(allocateForMember)
+    .map(updateBalances2)
+    .map(setLastMint4Member);
 }
 function setLastMint4Member(ctx) {
-  const lastMintPath = ["contributors", "tiers", ctx.contributor.tier.name, "members", ctx.contributor.addr, "lastMint"];
-  ctx.state = set_default(lensPath_default(lastMintPath), ctx.height.current, ctx.state);
+  const lastMintPath = [
+    'contributors',
+    'tiers',
+    ctx.contributor.tier.name,
+    'members',
+    ctx.contributor.addr,
+    'lastMint',
+  ];
+  ctx.state = set_default(
+    lensPath_default(lastMintPath),
+    ctx.height.current,
+    ctx.state,
+  );
   return { state: ctx.state };
 }
 function updateBalances2(ctx) {
@@ -1710,52 +1895,72 @@ function updateBalances2(ctx) {
     state.balances[ctx.contributor.addr] = 0;
   }
   state.balances[ctx.contributor.addr] += ctx.rewardMember;
-  return assoc_default("state", state, ctx);
+  return assoc_default('state', state, ctx);
 }
 function allocateForMember(ctx) {
-  const members = ctx.state.contributors.tiers[ctx.contributor.tier.name].members;
-  const table = reduce_default((acc, [key, value]) => assoc_default(key, value.amount, acc), {}, toPairs_default(members));
+  const members =
+    ctx.state.contributors.tiers[ctx.contributor.tier.name].members;
+  const table = reduce_default(
+    (acc, [key, value]) => assoc_default(key, value.amount, acc),
+    {},
+    toPairs_default(members),
+  );
   const reward2 = allocate(table, ctx.rewardTier);
-  return assoc_default("rewardMember", reward2[ctx.contributor.addr], ctx);
+  return assoc_default('rewardMember', reward2[ctx.contributor.addr], ctx);
 }
 function allocateForTier(ctx) {
   const { contributor, reward: reward2 } = ctx;
   const rewardTier = Math.floor(reward2 * (contributor.tier.percent / 100));
-  return assoc_default("rewardTier", rewardTier, ctx);
+  return assoc_default('rewardTier', rewardTier, ctx);
 }
 function calcRewardAmount(ctx) {
   const { height } = ctx;
   const reward2 = height.diff * REWARD_UNIT_PER_HEIGHT;
-  return assoc_default("reward", reward2, ctx);
+  return assoc_default('reward', reward2, ctx);
 }
 function calcBlockDiff(ctx) {
   const height = ctx.height;
   const contributor = ctx.contributor;
-  const start = contributor.lastMint === 0 ? height.origin : contributor.lastMint;
+  const start =
+    contributor.lastMint === 0 ? height.origin : contributor.lastMint;
   const diff = height.current - start;
-  return assoc_default("height", { ...height, diff }, ctx);
+  return assoc_default('height', { ...height, diff }, ctx);
 }
 function getContributor({ state, contributor, height }) {
   return compose(
-    (c) => c ? Right({ state, contributor: c, height }) : Left("could not find"),
+    (c) =>
+      c ? Right({ state, contributor: c, height }) : Left('could not find'),
     head_default,
     map_default((m) => m[contributor]),
     (tiers) => {
-      const members = reduce_default((a, [tierName, tierValue]) => {
-        const o = mapObjIndexed_default((d, k) => {
-          return { ...d, tier: { name: tierName, percent: tierValue.percent }, addr: k };
-        }, tierValue.members);
-        return a.concat(o);
-      }, [], toPairs_default(tiers));
+      const members = reduce_default(
+        (a, [tierName, tierValue]) => {
+          const o = mapObjIndexed_default((d, k) => {
+            return {
+              ...d,
+              tier: { name: tierName, percent: tierValue.percent },
+              addr: k,
+            };
+          }, tierValue.members);
+          return a.concat(o);
+        },
+        [],
+        toPairs_default(tiers),
+      );
       return members;
     },
-    path_default(["contributors", "tiers"])
+    path_default(['contributors', 'tiers']),
   )(state);
 }
 
 // src/write/contributor-chg.js
 function contributorChg(state, action) {
-  return of({ state, action }).chain(validate6).map(cloneMembers).map(setTarget).map(dissocCaller).map(attachMembers);
+  return of({ state, action })
+    .chain(validate6)
+    .map(cloneMembers)
+    .map(setTarget)
+    .map(dissocCaller)
+    .map(attachMembers);
 }
 function attachMembers(ctx) {
   ctx.state.contributors.tiers[ctx.tier].members = ctx.members;
@@ -1770,27 +1975,35 @@ function setTarget(ctx) {
   return ctx;
 }
 function cloneMembers(ctx) {
-  return { ...ctx, members: clone_default(path_default(["contributors", "tiers", ctx.tier, "members"], ctx.state)) };
+  return {
+    ...ctx,
+    members: clone_default(
+      path_default(['contributors', 'tiers', ctx.tier, 'members'], ctx.state),
+    ),
+  };
 }
 function validate6({ state, action }) {
   if (not_default(action.input.tier)) {
-    return Left("Tier Input is required");
+    return Left('Tier Input is required');
   }
   if (not_default(action.input.target)) {
-    return Left("Target Input is required");
+    return Left('Target Input is required');
   }
   return Right({
     state,
     caller: action.caller,
     tier: action.input.tier,
-    target: action.input.target
+    target: action.input.target,
   });
 }
 
 // src/write/evolve.js
 var EVOLVE_WINDOW = 720 * 180;
 function evolve(state, action) {
-  if (state.canEvolve && Number(SmartWeave.block.height) < state.originHeight + EVOLVE_WINDOW) {
+  if (
+    state.canEvolve &&
+    Number(SmartWeave.block.height) < state.originHeight + EVOLVE_WINDOW
+  ) {
     if (SmartWeave.contract.owner === action.caller) {
       state.evolve = action.input.value;
     }
@@ -1800,52 +2013,54 @@ function evolve(state, action) {
 
 // src/index.js
 var identity = (x) => x;
-var VOUCH_DAO = "_z0ch80z_daDUFqC9jHjfOL8nekJcok4ZRkE_UesYsk";
+var VOUCH_DAO = '_z0ch80z_daDUFqC9jHjfOL8nekJcok4ZRkE_UesYsk';
 export async function handle(state, action) {
   async function CreateOrderPlusBuyback(state2, action2) {
     const result = await CreateOrder(state2, action2);
     return result;
   }
   validate4(state);
-  if (action.input.function === "createOrder") {
-    const vouched = await SmartWeave.contracts.readContractState(VOUCH_DAO).then((s) => Object.keys(s.vouched)).catch((e) => []);
+  if (action.input.function === 'createOrder') {
+    const vouched = await SmartWeave.contracts
+      .readContractState(VOUCH_DAO)
+      .then((s) => Object.keys(s.vouched))
+      .catch((e) => []);
     state = reward(state, vouched);
   }
-  if (action.input.function === "createOrder" && !action.input.price) {
+  if (action.input.function === 'createOrder' && !action.input.price) {
     state = await buyback(state);
   }
   switch (action?.input?.function) {
-    case "noop":
+    case 'noop':
       return { state };
-    case "addPair":
+    case 'addPair':
       return addPair(state, action).extract();
-    case "createOrder":
+    case 'createOrder':
       return CreateOrderPlusBuyback(state, action);
-    case "cancelOrder":
+    case 'cancelOrder':
       return CancelOrder(state, action);
-    case "cancelClaim":
+    case 'cancelClaim':
       return cancelClaim(state, action);
-    case "balance":
+    case 'balance':
       return balance(state, action);
-    case "transfer":
+    case 'transfer':
       return transfer(state, action).fold(handleError, identity);
-    case "allow":
+    case 'allow':
       return allow(state, action).fold(handleError, identity);
-    case "claim":
+    case 'claim':
       return claim(state, action).fold(handleError, identity);
-    case "contributorMint":
+    case 'contributorMint':
       return contributorMint(state, action).fold(handleError, identity);
-    case "contributorChg":
+    case 'contributorChg':
       return contributorChg(state, action).fold(handleError, identity);
-    case "evolve":
+    case 'evolve':
       return evolve(state, action);
     default:
-      throw new ContractError("No Function Found");
+      throw new ContractError('No Function Found');
   }
 }
 function handleError(msg) {
   throw new ContractError(msg);
 }
-
 
 /* eslint-enable */

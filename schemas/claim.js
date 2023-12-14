@@ -27,7 +27,7 @@ const claimSchema = {
     },
     txID: {
       type: 'string',
-      pattern: '^[a-zA-Z0-9_-]{43}$'
+      pattern: '^[a-zA-Z0-9_-]{43}$',
     },
   },
   required: ['qty', 'txID'],

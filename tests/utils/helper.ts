@@ -19,7 +19,13 @@ import Arweave from 'arweave';
 import { JWKInterface } from 'arweave/node/lib/wallet';
 import * as fs from 'fs';
 import path from 'path';
-import { LoggerFactory, SourceType, Tag, Warp, WarpFactory } from 'warp-contracts';
+import {
+  LoggerFactory,
+  SourceType,
+  Tag,
+  Warp,
+  WarpFactory,
+} from 'warp-contracts';
 import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 
 import { ANTState } from '../../src/types';
@@ -166,7 +172,6 @@ export async function deployANTContract({
   };
 }
 
-
 export async function deployANTUCMContract({
   warp,
   owner,
@@ -206,9 +211,18 @@ export async function deployANTUCMContract({
       src: sourceCode,
       initState: JSON.stringify(ownerState),
       wallet,
-      tags: buildANTUCMTags()
+      tags: buildANTUCMTags(),
+      evaluationManifest: {
+        evaluationOptions: {
+          sourceType: 'arweave' as SourceType,
+          unsafeClient: 'skip',
+          allowBigInt: true,
+          internalWrites: true,
+          useConstructor: true,
+        },
+      },
     },
-    true, 
+    true,
   );
   return {
     contractTxId,
@@ -220,10 +234,12 @@ export async function deployUCMContract({
   warp,
   owner,
   wallet,
+  uContractId,
 }: {
   owner: string;
   warp: Warp;
   wallet: JWKInterface;
+  uContractId: string;
 }): Promise<{
   contractTxId: string;
   srcTxId: string;
@@ -236,12 +252,12 @@ export async function deployUCMContract({
     path.join(__dirname, './ucm/state.json'),
     'utf8',
   );
-  const localHeight = global.arweave.blocks.getCurrent();
+  const localHeight = (await arweave.blocks.getCurrent()).height;
   const ownerState = {
     ...JSON.parse(initState),
     creator: owner,
     originHeight: localHeight,
-
+    U: uContractId,
   };
   const { contractTxId, srcTxId } = await warp.deploy(
     {
@@ -253,9 +269,8 @@ export async function deployUCMContract({
           sourceType: 'arweave' as SourceType,
           unsafeClient: 'skip',
           allowBigInt: true,
-
-        }
-      }
+        },
+      },
     },
     true,
   );
@@ -265,15 +280,16 @@ export async function deployUCMContract({
   };
 }
 
-
 export async function deployUContract({
   warp,
   owner,
   wallet,
+  balances,
 }: {
   owner: string;
   warp: Warp;
   wallet: JWKInterface;
+  balances: Record<string, number>;
 }): Promise<{
   contractTxId: string;
   srcTxId: string;
@@ -289,10 +305,7 @@ export async function deployUContract({
   const ownerState = {
     ...JSON.parse(initState),
     owner: owner,
-    balances: {
-      owner: 1000000000
-    }
-
+    balances,
   };
   const { contractTxId, srcTxId } = await warp.deploy(
     {
@@ -305,9 +318,8 @@ export async function deployUContract({
           internalWrites: true,
           unsafeClient: 'skip',
           allowBigInt: true,
-
-        }
-      }
+        },
+      },
     },
     true,
   );
@@ -320,15 +332,14 @@ export async function deployUContract({
 export function buildANTUCMTags(
   title = 'ANT UCM Contract',
   description = 'ANT UCM Contract. This contract allows for registration of names on the Arweave Name System (ArNS). See more at https://ar.io/arns',
-  contentType = 'application/json'
+  contentType = 'application/json',
 ): Tag[] {
   return [
     { name: 'Content-Type', value: contentType },
     { name: 'Title', value: title },
-    { name: 'Description', value: description},
+    { name: 'Description', value: description },
     { name: 'Topic:ANT', value: 'ANT' },
     { name: 'Topic:ArNS', value: 'ArNS' },
-    { name: 'Type', value: 'token' }
-  ].map((t)=> new Tag(t.name, t.value));
+    { name: 'Type', value: 'token' },
+  ].map((t) => new Tag(t.name, t.value));
 }
-

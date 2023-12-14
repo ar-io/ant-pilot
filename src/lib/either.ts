@@ -33,9 +33,7 @@
  * @returns {Either}
  */
 
-
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
 
 export const Right = (x) => ({
   isLeft: false,
@@ -46,7 +44,7 @@ export const Right = (x) => ({
   concat: (other) =>
     other.fold(
       (x) => other,
-      (y) => Right(x.concat(y))
+      (y) => Right(x.concat(y)),
     ),
   traverse: (of, f) => f(x).map(Right),
   map: (f) => Right(f(x)),
@@ -106,4 +104,3 @@ export const Either = {
 };
 
 /* eslint-enable @typescript-eslint/no-unused-vars */
-

@@ -22,8 +22,6 @@ import {
   arweave,
   createLocalWallet,
   deployANTContract,
-  deployUCMContract,
-  deployUContract,
   warp,
 } from './utils/helper';
 
@@ -49,25 +47,6 @@ module.exports = async function () {
     wallet,
   });
 
-  const {contractTxId: ucmContractTxId, srcTxId: ucmSrcTxId} = await deployUCMContract({
-    warp,
-    owner,
-    wallet,
-  })
-
-    const {contractTxId: uContractTxId, srcTxId: uSrcTxId} = await deployUContract({
-    warp,
-    owner,
-    wallet,
-  })
-
   process.env.ANT_CONTRACT_TX_ID = contractTxId;
   process.env.ANT_SRC_TX_ID = srcTxId;
-
-  process.env.UCM_CONTRACT_TX_ID = ucmContractTxId;
-  process.env.UCM_SRC_TX_ID = ucmSrcTxId;
-
-  process.env.U_CONTRACT_TX_ID = uContractTxId;
-  process.env.U_SRC_TX_ID = uSrcTxId;
-
 };
