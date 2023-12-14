@@ -25,12 +25,6 @@ import { baselineAntState } from '../../../tests/utils/constants';
 import { setRecord } from './setRecord';
 
 describe('setRecord', () => {
-  let state = { ...baselineAntState };
-
-  beforeEach(() => {
-    state = { ...baselineAntState };
-  });
-
   it.each([''.padEnd(43, '_'), ''.padEnd(43, 'a'), ''.padEnd(43, '1')])(
     'should throw if not owner or controller',
     async (caller) => {
@@ -210,7 +204,7 @@ describe('setRecord', () => {
     'should set a record of max character length',
     async (subDomain: string) => {
       const result = (await setRecord(
-        { ...state },
+        { ...baselineAntState },
         {
           caller: baselineAntState.owner,
           input: {
@@ -240,7 +234,7 @@ describe('setRecord', () => {
     'should not set a record exceeding max character length',
     async (subDomain: string) => {
       const result = await setRecord(
-        { ...state, records: {} },
+        { ...baselineAntState, records: {} },
         {
           caller: baselineAntState.owner,
           input: {
