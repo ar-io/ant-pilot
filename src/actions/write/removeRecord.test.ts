@@ -21,7 +21,6 @@ import {
   MAX_NAME_LENGTH,
   MIN_TTL_LENGTH,
   NON_CONTRACT_OWNER_CONTROLLER_MESSAGE,
-  NON_CONTRACT_OWNER_MESSAGE,
   baselineAntState,
 } from '../../../tests/utils/constants';
 import { removeRecord } from './removeRecord';
@@ -38,6 +37,12 @@ describe('removeRecord', () => {
     '%',
     '=',
     '?'.padEnd(MAX_NAME_LENGTH + 1, '1'),
+    '-',
+    '_',
+    '3-',
+    '-3',
+    '3_',
+    '_3',
   ])('should throw on bad domain', async (subDomain: any) => {
     const initState = {
       ...baselineAntState,
@@ -142,6 +147,68 @@ describe('removeRecord', () => {
         },
       })) as AntContractWriteResult;
       expect(result.state.records).toEqual({});
+    },
+  );
+
+  it.each([
+    ''.padEnd(61, '1'),
+    ''.padEnd(61, 'a'),
+    '1-'.padEnd(59, '1'),
+    '1_'.padEnd(59, '1'),
+    '1-_'.padEnd(58, '1'),
+    '1_-'.padEnd(58, '1'),
+  ])(
+    'should remove a record of max character length',
+    async (subDomain: string) => {
+      const initState = {
+        ...baselineAntState,
+        records: {
+          [subDomain]: {
+            transactionId: ''.padEnd(43, '1'),
+            ttlSeconds: MIN_TTL_LENGTH,
+          },
+        },
+      };
+
+      const result = (await removeRecord(initState, {
+        caller: baselineAntState.owner,
+        input: {
+          function: 'removeRecord',
+          subDomain,
+        },
+      })) as AntContractWriteResult;
+      expect(result.state.records[subDomain]).not.toBeDefined();
+    },
+  );
+
+  it.each([
+    ''.padEnd(162, '1'),
+    ''.padEnd(62, '1'),
+    ''.padEnd(62, 'a'),
+    '1-'.padEnd(62, '1'),
+    '1_'.padEnd(62, '1'),
+    '1-_'.padEnd(62, '1'),
+    '1_-'.padEnd(62, '1'),
+  ])(
+    'should not remove a record exceeding max character length',
+    async (subDomain: string) => {
+      const initState = {
+        ...baselineAntState,
+        records: {
+          [subDomain]: {
+            transactionId: ''.padEnd(43, '1'),
+            ttlSeconds: MIN_TTL_LENGTH,
+          },
+        },
+      };
+      const result = await removeRecord(initState, {
+        caller: baselineAntState.owner,
+        input: {
+          function: 'removeRecord',
+          subDomain,
+        },
+      }).catch((e) => e);
+      expect(result.message).toEqual(INVALID_INPUT_MESSAGE);
     },
   );
 });

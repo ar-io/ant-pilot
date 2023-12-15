@@ -28,15 +28,18 @@ describe('setRecord', () => {
   it.each([''.padEnd(43, '_'), ''.padEnd(43, 'a'), ''.padEnd(43, '1')])(
     'should throw if not owner or controller',
     async (caller) => {
-      const result = await setRecord(baselineAntState, {
-        caller,
-        input: {
-          function: 'setRecord',
-          subDomain: 'domain',
-          ttlSeconds: MIN_TTL_LENGTH,
-          transactionId: caller,
+      const result = await setRecord(
+        { ...baselineAntState },
+        {
+          caller,
+          input: {
+            function: 'setRecord',
+            subDomain: 'domain',
+            ttlSeconds: MIN_TTL_LENGTH,
+            transactionId: caller,
+          },
         },
-      }).catch((e) => e);
+      ).catch((e) => e);
       expect(result.message).toEqual(NON_CONTRACT_OWNER_CONTROLLER_MESSAGE);
     },
   );
@@ -52,23 +55,16 @@ describe('setRecord', () => {
     '%',
     '=',
     '?'.padEnd(MAX_NAME_LENGTH + 1, '1'),
+    '-',
+    '_',
+    '3-',
+    '-3',
+    '3_',
+    '_3',
   ])('should throw on bad subDomain', async (subDomain: any) => {
-    const result = await setRecord(baselineAntState, {
-      caller: 'test',
-      input: {
-        function: 'setRecord',
-        subDomain,
-        transactionId: ''.padEnd(43, '1'),
-        ttlSeconds: MIN_TTL_LENGTH,
-      },
-    }).catch((e) => e);
-    expect(result.message).toEqual(INVALID_INPUT_MESSAGE);
-  });
-
-  it.each(['www'])(
-    'should throw on invalid or reserved subDomain',
-    async (subDomain: any) => {
-      const result = await setRecord(baselineAntState, {
+    const result = await setRecord(
+      { ...baselineAntState },
+      {
         caller: 'test',
         input: {
           function: 'setRecord',
@@ -76,7 +72,26 @@ describe('setRecord', () => {
           transactionId: ''.padEnd(43, '1'),
           ttlSeconds: MIN_TTL_LENGTH,
         },
-      }).catch((e) => e);
+      },
+    ).catch((e) => e);
+    expect(result.message).toEqual(INVALID_INPUT_MESSAGE);
+  });
+
+  it.each(['www'])(
+    'should throw on invalid or reserved subDomain',
+    async (subDomain: any) => {
+      const result = await setRecord(
+        { ...baselineAntState },
+        {
+          caller: 'test',
+          input: {
+            function: 'setRecord',
+            subDomain,
+            transactionId: ''.padEnd(43, '1'),
+            ttlSeconds: MIN_TTL_LENGTH,
+          },
+        },
+      ).catch((e) => e);
       expect(result.message).toEqual('Invalid ArNS Record Subdomain');
     },
   );
@@ -93,15 +108,18 @@ describe('setRecord', () => {
     '=',
     '?'.padEnd(MAX_NAME_LENGTH + 1, '1'),
   ])('should throw on bad transactionId', async (transactionId: any) => {
-    const result = await setRecord(baselineAntState, {
-      caller: 'test',
-      input: {
-        function: 'setRecord',
-        subDomain: 'domain',
-        transactionId,
-        ttlSeconds: MIN_TTL_LENGTH,
+    const result = await setRecord(
+      { ...baselineAntState },
+      {
+        caller: 'test',
+        input: {
+          function: 'setRecord',
+          subDomain: 'domain',
+          transactionId,
+          ttlSeconds: MIN_TTL_LENGTH,
+        },
       },
-    }).catch((e) => e);
+    ).catch((e) => e);
     expect(result.message).toEqual(INVALID_INPUT_MESSAGE);
   });
 
@@ -117,15 +135,18 @@ describe('setRecord', () => {
     '=',
     '?'.padEnd(MAX_NAME_LENGTH + 1, '1'),
   ])('should throw on bad ttlSeconds', async (ttlSeconds: any) => {
-    const result = await setRecord(baselineAntState, {
-      caller: 'test',
-      input: {
-        function: 'setRecord',
-        subDomain: 'domain',
-        transactionId: ''.padEnd(43, '1'),
-        ttlSeconds,
+    const result = await setRecord(
+      { ...baselineAntState },
+      {
+        caller: 'test',
+        input: {
+          function: 'setRecord',
+          subDomain: 'domain',
+          transactionId: ''.padEnd(43, '1'),
+          ttlSeconds,
+        },
       },
-    }).catch((e) => e);
+    ).catch((e) => e);
     expect(result.message).toEqual(INVALID_INPUT_MESSAGE);
   });
 
@@ -155,17 +176,76 @@ describe('setRecord', () => {
   );
 
   it('should set record as owner', async () => {
-    const result = (await setRecord(baselineAntState, {
-      caller: baselineAntState.owner,
-      input: {
-        function: 'setRecord',
-        subDomain: 'domain',
-        transactionId: ''.padEnd(43, '1'),
-        ttlSeconds: MIN_TTL_LENGTH,
+    const result = (await setRecord(
+      { ...baselineAntState },
+      {
+        caller: baselineAntState.owner,
+        input: {
+          function: 'setRecord',
+          subDomain: 'domain',
+          transactionId: ''.padEnd(43, '1'),
+          ttlSeconds: MIN_TTL_LENGTH,
+        },
       },
-    })) as AntContractWriteResult;
+    )) as AntContractWriteResult;
     expect(result.state.records).toEqual({
       domain: { transactionId: ''.padEnd(43, '1'), ttlSeconds: MIN_TTL_LENGTH },
     });
   });
+
+  it.each([
+    ''.padEnd(61, '1'),
+    ''.padEnd(61, 'a'),
+    '1-'.padEnd(59, '1'),
+    '1_'.padEnd(59, '1'),
+    '1-_'.padEnd(58, '1'),
+    '1_-'.padEnd(58, '1'),
+  ])(
+    'should set a record of max character length',
+    async (subDomain: string) => {
+      const result = (await setRecord(
+        { ...baselineAntState },
+        {
+          caller: baselineAntState.owner,
+          input: {
+            function: 'setRecord',
+            subDomain,
+            transactionId: ''.padEnd(43, '1'),
+            ttlSeconds: MIN_TTL_LENGTH,
+          },
+        },
+      )) as AntContractWriteResult;
+      expect(result.state.records[subDomain]).toEqual({
+        transactionId: ''.padEnd(43, '1'),
+        ttlSeconds: MIN_TTL_LENGTH,
+      });
+    },
+  );
+
+  it.each([
+    ''.padEnd(162, '1'),
+    ''.padEnd(62, '1'),
+    ''.padEnd(62, 'a'),
+    '1-'.padEnd(62, '1'),
+    '1_'.padEnd(62, '1'),
+    '1-_'.padEnd(62, '1'),
+    '1_-'.padEnd(62, '1'),
+  ])(
+    'should not set a record exceeding max character length',
+    async (subDomain: string) => {
+      const result = await setRecord(
+        { ...baselineAntState, records: {} },
+        {
+          caller: baselineAntState.owner,
+          input: {
+            function: 'setRecord',
+            subDomain,
+            transactionId: ''.padEnd(43, '1'),
+            ttlSeconds: MIN_TTL_LENGTH,
+          },
+        },
+      ).catch((e) => e);
+      expect(result.message).toEqual(INVALID_INPUT_MESSAGE);
+    },
+  );
 });
