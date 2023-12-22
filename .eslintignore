@@ -4,3 +4,6 @@ dist
 validations*
 validations-undername-leasing*
 source*
+initial-state-undername-leasing.json
+initial-state.json
+state.json
