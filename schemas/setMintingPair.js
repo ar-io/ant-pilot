@@ -14,32 +14,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-const setRecordSchema = {
-  $id: '#/definitions/setRecord',
+const setMintingPairSchema = {
+  $id: '#/definitions/setMintingPair',
   type: 'object',
   properties: {
     function: {
       type: 'string',
-      const: 'setRecord',
+      const: 'setMintingPair',
     },
-    subDomain: {
-      type: 'string',
-      pattern: '^([a-zA-Z0-9][a-zA-Z0-9-_]{0,59}[a-zA-Z0-9]|[a-zA-Z0-9]{1}|@)$',
+    conversionRate: {
+      type: 'number',
     },
-    transactionId: {
+    tokenId: {
       type: 'string',
       pattern: '^[a-zA-Z0-9_-]{43}$',
     },
-    ttlSeconds: {
-      type: 'integer',
-      minimum: 900,
-      maximum: 2_592_000,
+    transferFunction: {
+      type: 'string',
+    },
+    recipientArg: {
+      type: 'string',
+    },
+    quantityArg: {
+      type: 'string',
     },
   },
-  required: ['subDomain', 'transactionId', 'ttlSeconds'],
+  required: ['tokenId', 'transferFunction', 'recipientArg', 'quantityArg'],
   additionalProperties: false,
 };
 
 module.exports = {
-  setRecordSchema,
+  setMintingPairSchema,
 };

@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
-    "build": "yarn clean && node build.js && tsc --noEmit",
+    "build": "yarn clean && node build.js && node build-undername-leasing.js && tsc --noEmit",
     "format:check": "prettier . --check --cache",
     "format:fix": "prettier . --write",
     "lint:check": "eslint .",

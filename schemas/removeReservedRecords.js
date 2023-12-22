@@ -14,32 +14,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-const setRecordSchema = {
-  $id: '#/definitions/setRecord',
+const removeReservedRecordsSchema = {
+  $id: '#/definitions/removeReservedRecords',
   type: 'object',
   properties: {
     function: {
       type: 'string',
-      const: 'setRecord',
+      const: 'removeReservedRecords',
     },
-    subDomain: {
-      type: 'string',
-      pattern: '^([a-zA-Z0-9][a-zA-Z0-9-_]{0,59}[a-zA-Z0-9]|[a-zA-Z0-9]{1}|@)$',
-    },
-    transactionId: {
-      type: 'string',
-      pattern: '^[a-zA-Z0-9_-]{43}$',
-    },
-    ttlSeconds: {
-      type: 'integer',
-      minimum: 900,
-      maximum: 2_592_000,
+    subDomains: {
+      type: 'array',
+      items: {
+        type: 'string',
+        pattern: '^([a-zA-Z0-9][a-zA-Z0-9-_]{0,59}[a-zA-Z0-9]|[a-zA-Z0-9]{1})$',
+      },
     },
   },
-  required: ['subDomain', 'transactionId', 'ttlSeconds'],
+  required: ['subDomains'],
   additionalProperties: false,
 };
 
 module.exports = {
-  setRecordSchema,
+  removeReservedRecordsSchema,
 };

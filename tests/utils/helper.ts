@@ -1,9 +1,25 @@
+/**
+ * Copyright (C) 2022-2024 Permanent Data Solutions, Inc. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 import ArLocal from 'arlocal';
 import Arweave from 'arweave';
 import { JWKInterface } from 'arweave/node/lib/wallet';
 import * as fs from 'fs';
 import path from 'path';
-import { LoggerFactory, Warp, WarpFactory } from 'warp-contracts';
+import { LoggerFactory, SourceType, Warp, WarpFactory } from 'warp-contracts';
 import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 
 import { ANTState } from '../../src/types';
@@ -43,7 +59,9 @@ export async function mineBlocks(
   arweave: Arweave,
   blocks: number,
 ): Promise<void> {
-  for (let i = 0; i < blocks; i++) {}
+  for (let i = 0; i < blocks; i++) {
+    await mineBlock(arweave);
+  }
 }
 
 export async function createLocalWallet(
@@ -144,6 +162,106 @@ export async function deployANTContract({
   );
   return {
     contractTxId,
-    srcTxId,
+    srcTxId: srcTxId as string,
+  };
+}
+
+export async function deployANTUndernameLeasingContract({
+  warp,
+  owner,
+  wallet,
+}: {
+  owner: string;
+  warp: Warp;
+  wallet: JWKInterface;
+}): Promise<{
+  contractTxId: string;
+  srcTxId: string;
+}> {
+  const sourceCode = fs.readFileSync(
+    path.join(__dirname, '../../dist/contract-undername-leasing.js'),
+    'utf8',
+  );
+  const initState = fs.readFileSync(
+    path.join(__dirname, '../../initial-state-undername-leasing.json'),
+    'utf8',
+  );
+  const ownerState = {
+    ...JSON.parse(initState),
+    owner: owner,
+    records: {
+      remove: {
+        transactionId: '',
+        ttlSeconds: 900,
+      },
+    },
+    controllers: [owner],
+    balances: {
+      [owner]: 1,
+    },
+  };
+  const { contractTxId, srcTxId } = await warp.deploy(
+    {
+      src: sourceCode,
+      initState: JSON.stringify(ownerState),
+      wallet,
+      evaluationManifest: {
+        evaluationOptions: {
+          sourceType: 'both' as SourceType,
+          unsafeClient: 'skip',
+        },
+      },
+    },
+    true,
+  );
+  return {
+    contractTxId,
+    srcTxId: srcTxId as string,
+  };
+}
+
+export async function deployARNSContract({
+  warp,
+  owner,
+  wallet,
+  balances,
+}: {
+  owner: string;
+  warp: Warp;
+  wallet: JWKInterface;
+  balances: Record<string, number>;
+}): Promise<{
+  contractTxId: string;
+  srcTxId: string;
+}> {
+  const sourceCode = fs.readFileSync(
+    path.join(__dirname, './arns/source.js'),
+    'utf8',
+  );
+  const initState = fs.readFileSync(
+    path.join(__dirname, './arns/state.json'),
+    'utf8',
+  );
+  const ownerState = {
+    ...JSON.parse(initState),
+    owner,
+    balances,
+  };
+  const { contractTxId, srcTxId } = await warp.deploy(
+    {
+      src: sourceCode,
+      initState: JSON.stringify(ownerState),
+      wallet,
+      evaluationManifest: {
+        evaluationOptions: {
+          sourceType: 'arweave' as SourceType,
+        },
+      },
+    },
+    true,
+  );
+  return {
+    contractTxId,
+    srcTxId: srcTxId as string,
   };
 }

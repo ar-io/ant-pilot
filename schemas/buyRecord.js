@@ -14,32 +14,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-const setRecordSchema = {
-  $id: '#/definitions/setRecord',
+const buyRecordSchema = {
+  $id: '#/definitions/buyRecord',
   type: 'object',
   properties: {
     function: {
       type: 'string',
-      const: 'setRecord',
+      const: 'buyRecord',
     },
     subDomain: {
       type: 'string',
       pattern: '^([a-zA-Z0-9][a-zA-Z0-9-_]{0,59}[a-zA-Z0-9]|[a-zA-Z0-9]{1}|@)$',
     },
-    transactionId: {
+    contractTxId: {
       type: 'string',
-      pattern: '^[a-zA-Z0-9_-]{43}$',
-    },
-    ttlSeconds: {
-      type: 'integer',
-      minimum: 900,
-      maximum: 2_592_000,
+      pattern: '^(atomic|[a-zA-Z0-9-_]{43})$',
     },
   },
-  required: ['subDomain', 'transactionId', 'ttlSeconds'],
+  required: ['subDomain', 'contractTxId'],
   additionalProperties: false,
 };
 
 module.exports = {
-  setRecordSchema,
+  buyRecordSchema,
 };

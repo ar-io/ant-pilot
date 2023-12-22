@@ -23,3 +23,13 @@ export const UNDERNAME_REGEX = new RegExp('^[a-zA-Z0-9_-]+$');
 export const INVALID_INPUT_MESSAGE = 'Invalid input for interaction';
 export const NON_CONTRACT_OWNER_MESSAGE = `Caller is not the owner of the ANT!`;
 export const NON_CONTRACT_OWNER_CONTROLLER_MESSAGE = `Caller is not the owner or controller of the ANT!`;
+export const SECONDS_IN_A_YEAR = 31_536_000;
+export enum PAYMENT_TYPES {
+  ARWEAVE = 'ARWEAVE',
+  TOKEN = 'TOKEN',
+}
+
+export enum PURCHASE_TYPES {
+  LEASE = 'LEASE',
+  BUY = 'BUY',
+}
