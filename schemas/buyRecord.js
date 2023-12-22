@@ -27,9 +27,9 @@ const buyRecordSchema = {
       pattern: '^([a-zA-Z0-9][a-zA-Z0-9-_]{0,59}[a-zA-Z0-9]|[a-zA-Z0-9]{1}|@)$',
     },
     contractTxId: {
-        type: 'string',
-        pattern: '^(atomic|[a-zA-Z0-9-_]{43})$'
-    }
+      type: 'string',
+      pattern: '^(atomic|[a-zA-Z0-9-_]{43})$',
+    },
   },
   required: ['subDomain', 'contractTxId'],
   additionalProperties: false,

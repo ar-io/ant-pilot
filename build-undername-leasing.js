@@ -77,7 +77,10 @@ const moduleCode = standaloneCode(ajv, {
 });
 
 // Now you can write the module code to file
-fs.writeFileSync(path.join(__dirname, '/src/validations-undername-leasing.js'), moduleCode);
+fs.writeFileSync(
+  path.join(__dirname, '/src/validations-undername-leasing.js'),
+  moduleCode,
+);
 
 build({
   entryPoints: contracts.map((source) => {

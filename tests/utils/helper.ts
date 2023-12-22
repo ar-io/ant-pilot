@@ -220,12 +220,11 @@ export async function deployANTUndernameLeasingContract({
   };
 }
 
-
 export async function deployARNSContract({
   warp,
   owner,
   wallet,
-  balances
+  balances,
 }: {
   owner: string;
   warp: Warp;
@@ -246,7 +245,7 @@ export async function deployARNSContract({
   const ownerState = {
     ...JSON.parse(initState),
     owner,
-    balances
+    balances,
   };
   const { contractTxId, srcTxId } = await warp.deploy(
     {
@@ -266,4 +265,3 @@ export async function deployARNSContract({
     srcTxId: srcTxId as string,
   };
 }
-

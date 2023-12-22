@@ -20,7 +20,7 @@ interface SWTransaction {
   readonly id: string;
   readonly owner: string;
   readonly target: string;
-  readonly tags: {name: string, value: string}[];
+  readonly tags: { name: string; value: string }[];
   readonly sortKey: string;
   readonly dryRun: boolean;
   readonly quantity: number;
@@ -35,35 +35,39 @@ interface SWBlock {
 }
 
 type SmartWeaveGlobal = {
-    gasUsed: number;
-    gasLimit: number;
-    transaction: SWTransaction;
-    block: SWBlock; 
-    vrf: any; // SWVrf replaced with any
-    evaluationOptions: any; // EvaluationOptions replaced with any
-    arweave: Pick<any, 'ar' | 'wallets' | 'utils' | 'crypto'>; // Arweave replaced with any
-    contract: {
-        id: string;
-        owner: string;
-    };
-    unsafeClient: any; // Arweave replaced with any
-    baseArweaveUrl: string;
-    safeArweaveGet: (input: RequestInfo | URL, init?: RequestInit) => Promise<unknown>;
-    contracts: {
-        readContractState: (contractId: string, returnValidity?: boolean) => Promise<any>;
-        viewContractState: (contractId: string, input: any) => Promise<any>;
-        write: (contractId: string, input: any) => Promise<any>;
-        refreshState: () => Promise<any>;
-    };
-    extensions: any;
-    _activeTx?: any; // GQLNodeInterface replaced with any
-    caller?: string;
-    kv: any; // KV replaced with any
-    useGas(gas: number): void;
-    getBalance(address: string, height?: number): Promise<string>;
-}
-
-
+  gasUsed: number;
+  gasLimit: number;
+  transaction: SWTransaction;
+  block: SWBlock;
+  vrf: any; // SWVrf replaced with any
+  evaluationOptions: any; // EvaluationOptions replaced with any
+  arweave: Pick<any, 'ar' | 'wallets' | 'utils' | 'crypto'>; // Arweave replaced with any
+  contract: {
+    id: string;
+    owner: string;
+  };
+  unsafeClient: any; // Arweave replaced with any
+  baseArweaveUrl: string;
+  safeArweaveGet: (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ) => Promise<unknown>;
+  contracts: {
+    readContractState: (
+      contractId: string,
+      returnValidity?: boolean,
+    ) => Promise<any>;
+    viewContractState: (contractId: string, input: any) => Promise<any>;
+    write: (contractId: string, input: any) => Promise<any>;
+    refreshState: () => Promise<any>;
+  };
+  extensions: any;
+  _activeTx?: any; // GQLNodeInterface replaced with any
+  caller?: string;
+  kv: any; // KV replaced with any
+  useGas(gas: number): void;
+  getBalance(address: string, height?: number): Promise<string>;
+};
 
 declare let SmartWeave: SmartWeaveGlobal;
 declare let ContractError: any;

@@ -48,18 +48,18 @@ export async function handle(
   switch (input.function) {
     case 'transfer':
       return await transferTokens(state, action);
-    case 'setRecord':{
-    /**
-     * NOTE: due to buyRecord, we need to protect record owners from direct control. To compose the setRecord without modifying it,
-     * this access-control method is placed here, so as to avoid having to modify the setRecord action.
-     */
-      validateDirectRecordManagement(state, action.caller, input.subDomain)
+    case 'setRecord': {
+      /**
+       * NOTE: due to buyRecord, we need to protect record owners from direct control. To compose the setRecord without modifying it,
+       * this access-control method is placed here, so as to avoid having to modify the setRecord action.
+       */
+      validateDirectRecordManagement(state, action.caller, input.subDomain);
       return await setRecord(state, action);
-      }
-    case 'removeRecord':{
-      validateDirectRecordManagement(state, action.caller, input.subDomain)
+    }
+    case 'removeRecord': {
+      validateDirectRecordManagement(state, action.caller, input.subDomain);
       return await removeRecord(state, action);
-      }
+    }
     case 'setName':
       return await setName(state, action);
     case 'setTicker':
@@ -70,16 +70,16 @@ export async function handle(
       return await removeController(state, action);
     case 'balance':
       return await balance(state, action);
-      case 'setReservedRecords':
+    case 'setReservedRecords':
       return await setReservedRecords(state, action);
     case 'removeReservedRecords':
-        return await removeReservedRecords(state, action);
+      return await removeReservedRecords(state, action);
     case 'setMintingPair':
-        return await setMintingPair(state, action);
-    case 'mint': 
-        return await mint(state, action);
+      return await setMintingPair(state, action);
+    case 'mint':
+      return await mint(state, action);
     case 'buyRecord':
-        return await buyRecord(state, action);
+      return await buyRecord(state, action);
     case 'resolveRecords':
       return await resolveRecords(state);
     case 'evolve':

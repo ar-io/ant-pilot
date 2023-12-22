@@ -14,26 +14,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { MIN_TTL_LENGTH } from "../../constants";
-export const resolveRecords = async (state) => { 
-    const { records } = state
+import { MIN_TTL_LENGTH } from '../../constants';
 
-    for (const [subDomain, record] of Object.entries(records) as any) {
-        if (record.contractTxId) {
-            let error: string | undefined;
-            const ANTState = await SmartWeave.contracts.readContractState(record.contractTxId).catch((e) => {
-            error = e.message
-            })
+export const resolveRecords = async (state) => {
+  const { records } = state;
 
-            const { transactionId, ttlSeconds } = ANTState.records['@']
-            state.records[subDomain] = {
-                ...record,
-                transactionId: transactionId ?? "",
-                ttlSeconds: ttlSeconds ?? MIN_TTL_LENGTH,
-                error // to alert of resolution issues - can possibly be used for notifications
-            }
-        }
+  for (const [subDomain, record] of Object.entries(records) as any) {
+    if (record.contractTxId) {
+      let error: string | undefined;
+      const ANTState = await SmartWeave.contracts
+        .readContractState(record.contractTxId)
+        .catch((e) => {
+          error = e.message;
+        });
+
+      const { transactionId, ttlSeconds } = ANTState.records['@'];
+      state.records[subDomain] = {
+        ...record,
+        transactionId: transactionId ?? '',
+        ttlSeconds: ttlSeconds ?? MIN_TTL_LENGTH,
+        error, // to alert of resolution issues - can possibly be used for notifications
+      };
     }
+  }
 
-    return {state}
-}
+  return { state };
+};

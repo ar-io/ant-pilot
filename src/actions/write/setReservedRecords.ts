@@ -14,29 +14,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import { INVALID_INPUT_MESSAGE } from '../../constants';
+import { validateSetReservedRecords } from '../../validations-undername-leasing';
 
- import { INVALID_INPUT_MESSAGE } from '../../constants'
-import { validateSetReservedRecords } from '../../validations-undername-leasing'
 export const setReservedRecords = async (state, { input, caller }) => {
-    const {pattern, subDomains} = input
+  const { pattern, subDomains } = input;
 
-    if (!validateSetReservedRecords(input)) {
-        throw new ContractError(INVALID_INPUT_MESSAGE)
-    }
+  if (!validateSetReservedRecords(input)) {
+    throw new ContractError(INVALID_INPUT_MESSAGE);
+  }
 
-    if (caller !== state.owner) {
-    throw new ContractError('Caller must be contract owner to set reserved records')
-    }
+  if (caller !== state.owner) {
+    throw new ContractError(
+      'Caller must be contract owner to set reserved records',
+    );
+  }
 
-    const reservedRecords = new Set([...subDomains, ...state.reserved.subDomains])
-    const regexString = reservedRecords.size > 0 ? `(${[...reservedRecords].join('|')}|[${pattern ?? state.reserved.pattern}])` : ''
+  const reservedRecords = new Set([
+    ...subDomains,
+    ...state.reserved.subDomains,
+  ]);
+  const regexString =
+    reservedRecords.size > 0
+      ? `(${[...reservedRecords].join('|')}|[${
+          pattern ?? state.reserved.pattern
+        }])`
+      : '';
 
-    state.reserved = {
-        pattern: regexString,
-        subDomains: [...reservedRecords],
-    }
+  state.reserved = {
+    pattern: regexString,
+    subDomains: [...reservedRecords],
+  };
 
-
-
-return { state }
-}
+  return { state };
+};

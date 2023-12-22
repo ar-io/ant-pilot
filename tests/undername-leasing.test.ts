@@ -16,6 +16,7 @@
  */
 import { Contract, SourceType, Tag } from 'warp-contracts';
 
+import { MIN_TTL_LENGTH } from '../src/constants';
 import { ANTState } from '../src/types';
 import {
   arweave,
@@ -24,7 +25,6 @@ import {
   deployARNSContract,
   warp,
 } from './utils/helper';
-import { MIN_TTL_LENGTH } from '../src/constants';
 
 describe('Undername Leasing', () => {
   let ownerAddress: string;
@@ -56,23 +56,20 @@ describe('Undername Leasing', () => {
         unsafeClient: 'skip',
       });
 
-      const { contractTxId: arnsId } = await deployARNSContract({
+    const { contractTxId: arnsId } = await deployARNSContract({
       warp,
       owner: _ownerAddress,
       wallet: _ownerWallet,
       balances: {
         [_ownerAddress]: 0,
         [_buyer]: mintAmount * 10,
-      }
+      },
     });
     arnsContractTxId = arnsId;
-    arnsContract = warp
-      .contract<any>(arnsContractTxId)
-      .setEvaluationOptions({
-        sourceType: 'arweave' as SourceType,
-        unsafeClient: 'skip',
-      });
-    
+    arnsContract = warp.contract<any>(arnsContractTxId).setEvaluationOptions({
+      sourceType: 'arweave' as SourceType,
+      unsafeClient: 'skip',
+    });
 
     ownerAddress = _ownerAddress;
     ownerWallet = _ownerWallet;
@@ -82,183 +79,244 @@ describe('Undername Leasing', () => {
   });
 
   it('should mint tokens with IO and buy a record on the ANT', async () => {
-    const undername = 'my-super-duper-awesome-undername'
-    const targetId = ''.padEnd(43, 'a')
-    const {contractTxId: antToRegister} = await deployANTUndernameLeasingContract({
-      warp,
-      owner: buyerAddress,
-      wallet: buyerWallet,
-    })
-    const antToRegisterContract = warp.contract<any>(antToRegister).setEvaluationOptions({
+    const undername = 'my-super-duper-awesome-undername';
+    const targetId = ''.padEnd(43, 'a');
+    const { contractTxId: antToRegister } =
+      await deployANTUndernameLeasingContract({
+        warp,
+        owner: buyerAddress,
+        wallet: buyerWallet,
+      });
+    const antToRegisterContract = warp
+      .contract<any>(antToRegister)
+      .setEvaluationOptions({
         sourceType: 'arweave' as SourceType,
         unsafeClient: 'skip',
-      }).connect(buyerWallet)
+      })
+      .connect(buyerWallet);
 
-    const setReservedRecordsTxRegisterAnt = await antToRegisterContract.writeInteraction({
-      function: 'setReservedRecords',
-      pattern: '',
-      subDomains: ['@', '1']
-    })
+    const setReservedRecordsTxRegisterAnt =
+      await antToRegisterContract.writeInteraction({
+        function: 'setReservedRecords',
+        pattern: '',
+        subDomains: ['@', '1'],
+      });
 
     const setRecordRegisterAnt = await antToRegisterContract.writeInteraction({
       function: 'setRecord',
       subDomain: '@',
       transactionId: targetId,
-      ttlSeconds: MIN_TTL_LENGTH
-    })
+      ttlSeconds: MIN_TTL_LENGTH,
+    });
 
-    const {cachedValue: registerAntRecordValue} = await antToRegisterContract.readState()
-    console.log(JSON.stringify(registerAntRecordValue, null, 2))
+    const { cachedValue: registerAntRecordValue } =
+      await antToRegisterContract.readState();
+    console.log(JSON.stringify(registerAntRecordValue, null, 2));
 
-    expect(registerAntRecordValue.state.records['@']?.transactionId).toEqual(targetId)
+    expect(registerAntRecordValue.state.records['@']?.transactionId).toEqual(
+      targetId,
+    );
 
-    expect(setReservedRecordsTxRegisterAnt?.originalTxId).toBeDefined()
-    expect(setRecordRegisterAnt?.originalTxId).toBeDefined()
+    expect(setReservedRecordsTxRegisterAnt?.originalTxId).toBeDefined();
+    expect(setRecordRegisterAnt?.originalTxId).toBeDefined();
 
-    const previousOwnerIOBalance = await arnsContract.readState().then(res => res.cachedValue.state.balances[ownerAddress])
+    const previousOwnerIOBalance = await arnsContract
+      .readState()
+      .then((res) => res.cachedValue.state.balances[ownerAddress]);
 
-    const addMintingPairTx = await antContract.connect(ownerWallet).writeInteraction({
-      function: 'setMintingPair',
-      tokenId: arnsContractTxId,
-      conversionRate: 1,
-      transferFunction: 'transfer',
-      recipientArg: 'target',
-      quantityArg: 'qty'
-    })
-    const {cachedValue: addMintingPairValue} = await antContract.readState()
+    const addMintingPairTx = await antContract
+      .connect(ownerWallet)
+      .writeInteraction({
+        function: 'setMintingPair',
+        tokenId: arnsContractTxId,
+        conversionRate: 1,
+        transferFunction: 'transfer',
+        recipientArg: 'target',
+        quantityArg: 'qty',
+      });
+    const { cachedValue: addMintingPairValue } = await antContract.readState();
 
-    expect(addMintingPairTx?.originalTxId).toBeDefined()
-    expect(addMintingPairValue.state.supportedTokens?.[arnsContractTxId].conversionRate).toEqual(1)
+    expect(addMintingPairTx?.originalTxId).toBeDefined();
+    expect(
+      addMintingPairValue.state.supportedTokens?.[arnsContractTxId]
+        .conversionRate,
+    ).toEqual(1);
 
+    const { cachedValue: prevCachedValue } = await antContract.readState();
 
-    const { cachedValue: prevCachedValue } = await antContract.readState()
-
-    const contractOwner = prevCachedValue.state.owner
-    const mintTx = await antContract.connect(buyerWallet).writeInteraction({
+    const contractOwner = prevCachedValue.state.owner;
+    const mintTx = await antContract.connect(buyerWallet).writeInteraction(
+      {
         function: 'mint',
         type: 'TOKEN',
         tokenId: arnsContractTxId,
-    }, {
-      tags: [
-        { name: 'Contract', value: arnsContractTxId },
-        { name: 'Input', value: JSON.stringify({ function: 'transfer', target: contractOwner, qty: mintAmount }) }
-      ].map(({ name, value }) => (new Tag(name, value)))
-    })
+      },
+      {
+        tags: [
+          { name: 'Contract', value: arnsContractTxId },
+          {
+            name: 'Input',
+            value: JSON.stringify({
+              function: 'transfer',
+              target: contractOwner,
+              qty: mintAmount,
+            }),
+          },
+        ].map(({ name, value }) => new Tag(name, value)),
+      },
+    );
 
-    const {cachedValue: newCachedValue} = await antContract.readState()
-    console.log(JSON.stringify(newCachedValue, null, 2))
-    const newOwnerIOBalance = await arnsContract.readState().then(res => res.cachedValue.state.balances[contractOwner])
+    const { cachedValue: newCachedValue } = await antContract.readState();
+    console.log(JSON.stringify(newCachedValue, null, 2));
+    const newOwnerIOBalance = await arnsContract
+      .readState()
+      .then((res) => res.cachedValue.state.balances[contractOwner]);
 
-    expect(mintTx?.originalTxId).toBeDefined()
-    expect(newCachedValue.state.balances[buyerAddress]).toEqual(mintAmount)
-    expect(newOwnerIOBalance).toEqual(previousOwnerIOBalance + mintAmount)
+    expect(mintTx?.originalTxId).toBeDefined();
+    expect(newCachedValue.state.balances[buyerAddress]).toEqual(mintAmount);
+    expect(newOwnerIOBalance).toEqual(previousOwnerIOBalance + mintAmount);
 
-    const setReservedRecordsTx = await antContract.connect(ownerWallet).writeInteraction({
+    const setReservedRecordsTx = await antContract
+      .connect(ownerWallet)
+      .writeInteraction({
         function: 'setReservedRecords',
         pattern: '',
-        subDomains: ['reserved']
-    })
+        subDomains: ['reserved'],
+      });
 
-    const {cachedValue: setReservedRecordsValue} = await antContract.readState()
+    const { cachedValue: setReservedRecordsValue } =
+      await antContract.readState();
 
-    expect(setReservedRecordsTx?.originalTxId).toBeDefined()
-    expect(setReservedRecordsValue?.state?.reserved?.subDomains).toContain('reserved')
+    expect(setReservedRecordsTx?.originalTxId).toBeDefined();
+    expect(setReservedRecordsValue?.state?.reserved?.subDomains).toContain(
+      'reserved',
+    );
 
-    const buyRecordTx = await antContract.connect(buyerWallet).writeInteraction({
+    const buyRecordTx = await antContract
+      .connect(buyerWallet)
+      .writeInteraction({
         function: 'buyRecord',
         subDomain: undername,
-        contractTxId: antToRegister
-    })
+        contractTxId: antToRegister,
+      });
 
-    const {cachedValue: buyRecordValue} = await antContract.readState()
-    
-    expect(buyRecordTx?.originalTxId).toBeDefined()
-    expect(buyRecordValue.state.records[undername].contractTxId).toEqual(antToRegister)
-    expect(buyRecordValue.state.balances[buyerAddress]).toBeLessThan(newCachedValue.state.balances[buyerAddress])
+    const { cachedValue: buyRecordValue } = await antContract.readState();
 
-    const setRecordTx = await antContract.connect(ownerWallet).writeInteraction({
+    expect(buyRecordTx?.originalTxId).toBeDefined();
+    expect(buyRecordValue.state.records[undername].contractTxId).toEqual(
+      antToRegister,
+    );
+    expect(buyRecordValue.state.balances[buyerAddress]).toBeLessThan(
+      newCachedValue.state.balances[buyerAddress],
+    );
+
+    const setRecordTx = await antContract
+      .connect(ownerWallet)
+      .writeInteraction({
         function: 'setRecord',
         subDomain: 'reserved',
         transactionId: targetId,
-        ttlSeconds: MIN_TTL_LENGTH
-    })
-    const {cachedValue: setRecordValue} = await antContract.readState()
-    console.log(JSON.stringify(setRecordValue, null, 2))
+        ttlSeconds: MIN_TTL_LENGTH,
+      });
+    const { cachedValue: setRecordValue } = await antContract.readState();
+    console.log(JSON.stringify(setRecordValue, null, 2));
 
-    expect(setRecordTx?.originalTxId).toBeDefined()
-    expect(setRecordValue.state.records['reserved'].transactionId).toEqual(targetId)
+    expect(setRecordTx?.originalTxId).toBeDefined();
+    expect(setRecordValue.state.records['reserved'].transactionId).toEqual(
+      targetId,
+    );
 
-    const resolveRecordTx = await antContract.connect(ownerWallet).writeInteraction({
-      function: 'resolveRecords',
-    })
+    const resolveRecordTx = await antContract
+      .connect(ownerWallet)
+      .writeInteraction({
+        function: 'resolveRecords',
+      });
 
-    const {cachedValue: resolveRecordValue} = await antContract.readState()
-    console.log(JSON.stringify(resolveRecordValue, null, 2))
+    const { cachedValue: resolveRecordValue } = await antContract.readState();
+    console.log(JSON.stringify(resolveRecordValue, null, 2));
 
-    expect(resolveRecordTx?.originalTxId).toBeDefined()
-    expect(resolveRecordValue.state.records[undername].transactionId).toEqual(targetId)
-});
+    expect(resolveRecordTx?.originalTxId).toBeDefined();
+    expect(resolveRecordValue.state.records[undername].transactionId).toEqual(
+      targetId,
+    );
+  });
 
+  it('should mint tokens with AR and buy a record on the ANT', async () => {
+    const previousOwnerArBalance =
+      await arweave.wallets.getBalance(ownerAddress);
 
-//   it('should mint tokens with AR and buy a record on the ANT', async () => {
+    const { cachedValue: prevCachedValue } = await antContract.readState();
 
-//     const previousOwnerArBalance = await arweave.wallets.getBalance(ownerAddress)
+    const contractOwner = prevCachedValue.state.owner;
+    const mintTx = await antContract.connect(buyerWallet).writeInteraction(
+      {
+        function: 'mint',
+        type: 'ARWEAVE',
+      },
+      {
+        transfer: {
+          target: contractOwner,
+          winstonQty: mintAmount.toString(),
+        },
+      },
+    );
 
-//     const { cachedValue: prevCachedValue } = await antContract.readState()
+    const { cachedValue: newCachedValue } = await antContract.readState();
+    console.log(JSON.stringify(newCachedValue, null, 2));
+    const newOwnerArBalance = await arweave.wallets.getBalance(ownerAddress);
 
-//     const contractOwner = prevCachedValue.state.owner
-//     const mintTx = await antContract.connect(buyerWallet).writeInteraction({
-//         function: 'mint',
-//         type: 'ARWEAVE'
-//     }, {
-//         transfer: {
-//             target: contractOwner,
-//             winstonQty: mintAmount.toString()
-//         }
-//     })
+    expect(mintTx?.originalTxId).toBeDefined();
+    expect(newCachedValue.state.balances[buyerAddress]).toEqual(mintAmount);
+    expect(+newOwnerArBalance).toEqual(+previousOwnerArBalance + mintAmount);
 
-//     const {cachedValue: newCachedValue} = await antContract.readState()
-//     console.log(JSON.stringify(newCachedValue, null, 2))
-//     const newOwnerArBalance = await arweave.wallets.getBalance(ownerAddress)
+    const setReservedRecordsTx = await antContract
+      .connect(ownerWallet)
+      .writeInteraction({
+        function: 'setReservedRecords',
+        pattern: '',
+        subDomains: ['reserved'],
+      });
 
-//     expect(mintTx?.originalTxId).toBeDefined()
-//     expect(newCachedValue.state.balances[buyerAddress]).toEqual(mintAmount)
-//     expect(+newOwnerArBalance).toEqual(+previousOwnerArBalance + mintAmount)
+    const { cachedValue: setReservedRecordsValue } =
+      await antContract.readState();
 
-//     const setReservedRecordsTx = await antContract.connect(ownerWallet).writeInteraction({
-//         function: 'setReservedRecords',
-//         pattern: '',
-//         subDomains: ['reserved']
-//     })
+    expect(setReservedRecordsTx?.originalTxId).toBeDefined();
+    expect(setReservedRecordsValue?.state?.reserved?.subDomains).toContain(
+      'reserved',
+    );
 
-//     const {cachedValue: setReservedRecordsValue} = await antContract.readState()
+    const buyRecordTx = await antContract
+      .connect(buyerWallet)
+      .writeInteraction({
+        function: 'buyRecord',
+        subDomain: 'test',
+        contractTxId: ''.padEnd(43, 'a'),
+      });
 
-//     expect(setReservedRecordsTx?.originalTxId).toBeDefined()
-//     expect(setReservedRecordsValue?.state?.reserved?.subDomains).toContain('reserved')
+    const { cachedValue: buyRecordValue } = await antContract.readState();
 
-//     const buyRecordTx = await antContract.connect(buyerWallet).writeInteraction({
-//         function: 'buyRecord',
-//         subDomain: 'test',
-//         contractTxId: ''.padEnd(43, 'a')
-//     })
+    expect(buyRecordTx?.originalTxId).toBeDefined();
+    expect(buyRecordValue.state.records['test'].contractTxId).toEqual(
+      ''.padEnd(43, 'a'),
+    );
+    expect(buyRecordValue.state.balances[buyerAddress]).toBeLessThan(
+      newCachedValue.state.balances[buyerAddress],
+    );
 
-//     const {cachedValue: buyRecordValue} = await antContract.readState()
-    
-//     expect(buyRecordTx?.originalTxId).toBeDefined()
-//     expect(buyRecordValue.state.records['test'].contractTxId).toEqual(''.padEnd(43, 'a'))
-//     expect(buyRecordValue.state.balances[buyerAddress]).toBeLessThan(newCachedValue.state.balances[buyerAddress])
+    const setRecordTx = await antContract
+      .connect(ownerWallet)
+      .writeInteraction({
+        function: 'setRecord',
+        subDomain: 'reserved',
+        transactionId: ''.padEnd(43, 'b'),
+        ttlSeconds: MIN_TTL_LENGTH,
+      });
+    const { cachedValue: setRecordValue } = await antContract.readState();
+    console.log(JSON.stringify(setRecordValue, null, 2));
 
-//     const setRecordTx = await antContract.connect(ownerWallet).writeInteraction({
-//         function: 'setRecord',
-//         subDomain: 'reserved',
-//         transactionId: ''.padEnd(43, 'b'),
-//         ttlSeconds: MIN_TTL_LENGTH
-//     })
-//     const {cachedValue: setRecordValue} = await antContract.readState()
-//     console.log(JSON.stringify(setRecordValue, null, 2))
-
-//     expect(setRecordTx?.originalTxId).toBeDefined()
-//     expect(setRecordValue.state.records['reserved'].transactionId).toEqual(''.padEnd(43, 'b'))
-// });
-
+    expect(setRecordTx?.originalTxId).toBeDefined();
+    expect(setRecordValue.state.records['reserved'].transactionId).toEqual(
+      ''.padEnd(43, 'b'),
+    );
+  });
 });

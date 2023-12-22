@@ -14,28 +14,36 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import { INVALID_INPUT_MESSAGE } from '../../constants';
+import { validateRemoveReservedRecords } from '../../validations-undername-leasing';
 
-import { INVALID_INPUT_MESSAGE } from '../../constants'
-import { validateRemoveReservedRecords } from '../../validations-undername-leasing'
 export const removeReservedRecords = async (state, { input, caller }) => {
+  const { subDomains } = input;
 
-    const { subDomains } = input 
+  if (!validateRemoveReservedRecords(input)) {
+    throw new ContractError(INVALID_INPUT_MESSAGE);
+  }
 
-    if (!validateRemoveReservedRecords(input)) {
-        throw new ContractError(INVALID_INPUT_MESSAGE)
-    }
+  if (caller !== state.owner) {
+    throw new ContractError(
+      'Caller must be contract owner to remove reserved records',
+    );
+  }
 
-    if (caller !== state.owner) {
-        throw new ContractError('Caller must be contract owner to remove reserved records')
-    }
+  const reservedRecords = new Set(
+    [...state.reserved.subDomains].filter(
+      (subDomain) => !subDomains.includes(subDomain),
+    ),
+  );
+  const regexString =
+    reservedRecords.size > 0
+      ? `(${[...reservedRecords].join('|')}|[${state.reserved.pattern}])`
+      : '';
 
-    const reservedRecords = new Set([...state.reserved.subDomains].filter(subDomain => !subDomains.includes(subDomain)))
-    const regexString = reservedRecords.size > 0 ? `(${[...reservedRecords].join('|')}|[${state.reserved.pattern}])` : ''
+  state.reserved = {
+    pattern: regexString,
+    subDomains: reservedRecords,
+  };
 
-    state.reserved = {
-        pattern: regexString,
-        subDomains: reservedRecords,
-    }
-
-    return { state }
-}
+  return { state };
+};

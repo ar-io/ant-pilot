@@ -28,11 +28,11 @@ export type ANTOwnableRecord = {
 } & ANTRecord;
 
 export type TokenConfig = {
-    conversionRate: number;
-    transferFunction: string;
-    recipientArg: string;
-    quantityArg: string;
-}
+  conversionRate: number;
+  transferFunction: string;
+  recipientArg: string;
+  quantityArg: string;
+};
 
 export type ANTState = {
   ticker: string; // A short token symbol, shown in block explorers and marketplaces

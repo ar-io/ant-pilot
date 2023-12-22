@@ -26,9 +26,9 @@ const mintSchema = {
       type: 'string',
     },
     tokenId: {
-        type: 'string',
-        pattern:'^[a-zA-Z0-9_-]{43}$'
-    }
+      type: 'string',
+      pattern: '^[a-zA-Z0-9_-]{43}$',
+    },
   },
   required: ['type', 'tokenId'],
   additionalProperties: false,

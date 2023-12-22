@@ -24,14 +24,14 @@ const setReservedRecordsSchema = {
     },
     subDomains: {
       type: 'array',
-        items: {
-            type: 'string',
-            pattern: '^([a-zA-Z0-9][a-zA-Z0-9-_]{0,59}[a-zA-Z0-9]|[a-zA-Z0-9]{1})$'
-        },
+      items: {
+        type: 'string',
+        pattern: '^([a-zA-Z0-9][a-zA-Z0-9-_]{0,59}[a-zA-Z0-9]|[a-zA-Z0-9]{1})$',
+      },
     },
     pattern: {
-        type: 'string',
-    }
+      type: 'string',
+    },
   },
   required: ['subDomains'],
   additionalProperties: false,

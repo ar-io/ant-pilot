@@ -14,47 +14,51 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import { INVALID_INPUT_MESSAGE, MIN_TTL_LENGTH } from '../../constants';
+import { validateBuyRecord } from '../../validations-undername-leasing';
 
-import { INVALID_INPUT_MESSAGE, MIN_TTL_LENGTH } from "../../constants"
-import { validateBuyRecord } from '../../validations-undername-leasing'
+export async function buyRecord(state, { input, caller }) {
+  try {
+    const { subDomain, contractTxId } = input;
 
-export async function buyRecord(state, { input, caller }) { 
-
-    try {
-    const { subDomain, contractTxId } = input
-
-    const fee = state.fees[subDomain.length]
-    const reservedRegex = new RegExp(state.reserved.pattern)
+    const fee = state.fees[subDomain.length];
+    const reservedRegex = new RegExp(state.reserved.pattern);
 
     if (!validateBuyRecord(input)) {
-        throw new Error(INVALID_INPUT_MESSAGE)
+      throw new Error(INVALID_INPUT_MESSAGE);
     }
 
     if (reservedRegex.test(subDomain)) {
-    throw new Error(`Subdomain ${subDomain} is reserved and cannot be purchased: ${state.reserved.pattern}`)
+      throw new Error(
+        `Subdomain ${subDomain} is reserved and cannot be purchased: ${state.reserved.pattern}`,
+      );
     }
 
     if (state.records[subDomain]) {
-    throw new Error(`Subdomain ${subDomain} is permanently owned and will never EVER be available for purchase again`)
+      throw new Error(
+        `Subdomain ${subDomain} is permanently owned and will never EVER be available for purchase again`,
+      );
     }
 
     if (fee > state.balances[caller]) {
-    throw new Error(`Caller does not have enough balance to purchase ${subDomain}`)
+      throw new Error(
+        `Caller does not have enough balance to purchase ${subDomain}`,
+      );
     }
 
-        state.balances[caller] -= fee
-        state.records[subDomain] = {
-            contractTxId: contractTxId === 'atomic' ? SmartWeave.transaction.id : contractTxId,
-            price: fee,
-            buyer: caller,
-            transactionId: '',
-            ttlSeconds: MIN_TTL_LENGTH,
-        }
-        state.totalSupply -= fee
+    state.balances[caller] -= fee;
+    state.records[subDomain] = {
+      contractTxId:
+        contractTxId === 'atomic' ? SmartWeave.transaction.id : contractTxId,
+      price: fee,
+      buyer: caller,
+      transactionId: '',
+      ttlSeconds: MIN_TTL_LENGTH,
+    };
+    state.totalSupply -= fee;
+  } catch (error) {
+    throw new ContractError(`Error executing buyRecord: ${error.message}`);
+  }
 
-    } catch (error) {
-        throw new ContractError(`Error executing buyRecord: ${error.message}`)
-    }
-
-    return { state }
+  return { state };
 }

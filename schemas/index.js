@@ -27,6 +27,8 @@ module.exports = {
   mintSchema: require('./mint').mintSchema,
   setMintingPairSchema: require('./setMintingPair').setMintingPairSchema,
   buyRecordSchema: require('./buyRecord').buyRecordSchema,
-  setReservedRecordsSchema: require('./setReservedRecords').setReservedRecordsSchema,
-  removeReservedRecordsSchema: require('./removeReservedRecords').removeReservedRecordsSchema,
+  setReservedRecordsSchema: require('./setReservedRecords')
+    .setReservedRecordsSchema,
+  removeReservedRecordsSchema: require('./removeReservedRecords')
+    .removeReservedRecordsSchema,
 };

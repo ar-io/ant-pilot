@@ -26,18 +26,18 @@ const setMintingPairSchema = {
       type: 'number',
     },
     tokenId: {
-        type: 'string',
-        pattern:'^[a-zA-Z0-9_-]{43}$'
+      type: 'string',
+      pattern: '^[a-zA-Z0-9_-]{43}$',
     },
     transferFunction: {
       type: 'string',
-    }, 
+    },
     recipientArg: {
-      type: 'string'
+      type: 'string',
     },
     quantityArg: {
-      type: 'string'
-    }
+      type: 'string',
+    },
   },
   required: ['tokenId', 'transferFunction', 'recipientArg', 'quantityArg'],
   additionalProperties: false,

@@ -14,35 +14,40 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { ARWEAVE_ID_REGEX, INVALID_INPUT_MESSAGE } from "../../constants"
-import { validateSetMintingPair } from '../../validations-undername-leasing'
+import { ARWEAVE_ID_REGEX, INVALID_INPUT_MESSAGE } from '../../constants';
+import { validateSetMintingPair } from '../../validations-undername-leasing';
 
-export const setMintingPair = async (state, {input, caller}) => {
+export const setMintingPair = async (state, { input, caller }) => {
+  const {
+    tokenId,
+    conversionRate,
+    transferFunction,
+    recipientArg,
+    quantityArg,
+  } = input;
+  const { owner } = state;
 
-    const { tokenId, conversionRate, transferFunction, recipientArg, quantityArg } = input 
-    const { owner } = state
+  if (!validateSetMintingPair(input)) {
+    throw new ContractError(INVALID_INPUT_MESSAGE);
+  }
 
-    if (!validateSetMintingPair(input)) {
-        throw new ContractError(INVALID_INPUT_MESSAGE)
-    }
+  // NOTE: Smartweaver validation tools should be used to validate the contract client side to check the required fields are present
 
-    // NOTE: Smartweaver validation tools should be used to validate the contract client side to check the required fields are present
+  if (caller !== owner) {
+    throw new ContractError('Caller must be contract owner to add token pair');
+  }
 
-    if (caller !== owner) {
-        throw new ContractError('Caller must be contract owner to add token pair')
-    }
+  if (!ARWEAVE_ID_REGEX.test(tokenId)) {
+    throw new ContractError('Token ID must be an arweave transaction ID');
+  }
 
-    if (!ARWEAVE_ID_REGEX.test(tokenId)) {
-        throw new ContractError('Token ID must be an arweave transaction ID')
-    }
+  state.supportedTokens[tokenId] = {
+    conversionRate: conversionRate ?? 1,
+    revenue: 0,
+    transferFunction,
+    recipientArg,
+    quantityArg,
+  };
 
-    state.supportedTokens[tokenId] = {
-        conversionRate: conversionRate ?? 1,
-        revenue: 0,
-        transferFunction,
-        recipientArg,
-        quantityArg
-    }
-
-    return { state }
-}
+  return { state };
+};
