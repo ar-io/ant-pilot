@@ -20,13 +20,32 @@ export type ANTRecord = {
   ttlSeconds: number;
 };
 
+export type ANTOwnableRecord = {
+  contractTxId?: string;
+  price?: number;
+  buyer?: string;
+  error?: string;
+} & ANTRecord;
+
+export type TokenConfig = {
+    conversionRate: number;
+    transferFunction: string;
+    recipientArg: string;
+    quantityArg: string;
+}
+
 export type ANTState = {
   ticker: string; // A short token symbol, shown in block explorers and marketplaces
   name: string; // The friendly name of the token, shown in block explorers and marketplaces
   owner: string; // The owner of this contract who can execute specific methods
   controllers: string[]; // The controller of the records, who can add/change subdomains and their settings
-  records: Record<string, ANTRecord>;
+  records: Record<string, ANTOwnableRecord>;
   balances: Record<string, number>;
+  reserved?: {
+    pattern: string;
+    subDomains: string[];
+  };
+  supportedTokens?: Record<string, TokenConfig & { revenue: number }>;
   evolve: string; // The new Smartweave Source Code transaction to evolve this contract to
 };
 

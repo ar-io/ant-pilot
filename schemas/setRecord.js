@@ -24,7 +24,7 @@ const setRecordSchema = {
     },
     subDomain: {
       type: 'string',
-      pattern: '^([a-zA-Z0-9][a-zA-Z0-9-_]{0,59}[a-zA-Z0-9]|[a-zA-Z0-9]{1})$',
+      pattern: '^([a-zA-Z0-9][a-zA-Z0-9-_]{0,59}[a-zA-Z0-9]|[a-zA-Z0-9]{1}|@)$',
     },
     transactionId: {
       type: 'string',

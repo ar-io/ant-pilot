@@ -24,4 +24,9 @@ module.exports = {
   removeControllerSchema: require('./removeController').removeControllerSchema,
   balanceSchema: require('./balance').balanceSchema,
   transferSchema: require('./transfer').transferSchema,
+  mintSchema: require('./mint').mintSchema,
+  setMintingPairSchema: require('./setMintingPair').setMintingPairSchema,
+  buyRecordSchema: require('./buyRecord').buyRecordSchema,
+  setReservedRecordsSchema: require('./setReservedRecords').setReservedRecordsSchema,
+  removeReservedRecordsSchema: require('./removeReservedRecords').removeReservedRecordsSchema,
 };

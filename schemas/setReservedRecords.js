@@ -14,22 +14,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-export const MIN_TTL_LENGTH = 900; // 15 minutes
-export const MAX_TTL_LENGTH = 2_592_000; // 30 days
-export const MAX_NAME_LENGTH = 61;
-export const TX_ID_LENGTH = 43;
-export const ARWEAVE_ID_REGEX = new RegExp('^[a-zA-Z0-9_-]{43}$');
-export const UNDERNAME_REGEX = new RegExp('^[a-zA-Z0-9_-]+$');
-export const INVALID_INPUT_MESSAGE = 'Invalid input for interaction';
-export const NON_CONTRACT_OWNER_MESSAGE = `Caller is not the owner of the ANT!`;
-export const NON_CONTRACT_OWNER_CONTROLLER_MESSAGE = `Caller is not the owner or controller of the ANT!`;
-export const SECONDS_IN_A_YEAR = 31_536_000;
-export enum PAYMENT_TYPES {
-    ARWEAVE = 'ARWEAVE',
-    TOKEN = 'TOKEN',
-}
+const setReservedRecordsSchema = {
+  $id: '#/definitions/setReservedRecords',
+  type: 'object',
+  properties: {
+    function: {
+      type: 'string',
+      const: 'setReservedRecords',
+    },
+    subDomains: {
+      type: 'array',
+        items: {
+            type: 'string',
+            pattern: '^([a-zA-Z0-9][a-zA-Z0-9-_]{0,59}[a-zA-Z0-9]|[a-zA-Z0-9]{1})$'
+        },
+    },
+    pattern: {
+        type: 'string',
+    }
+  },
+  required: ['subDomains'],
+  additionalProperties: false,
+};
 
-export enum PURCHASE_TYPES {
-    LEASE = 'LEASE',
-    BUY = 'BUY'
-}
+module.exports = {
+  setReservedRecordsSchema,
+};
